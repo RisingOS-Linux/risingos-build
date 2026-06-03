@@ -1,0 +1,63 @@
+#!/bin/bash
+set -e
+
+# Copiar wallpaper a carpeta oficial de XFCE
+cp /usr/share/risingos/wallpapers/wallpaper-cuesta-del-obispo.jpg \
+   /usr/share/backgrounds/xfce/risingos-default.jpg
+
+# Escribir config en el perfil del usuario live
+mkdir -p /home/usuario/.config/xfce4/xfconf/xfce-perchannel-xml
+
+cat > /home/usuario/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml << 'XML'
+<?xml version="1.1" encoding="UTF-8"?>
+<channel name="xfce4-desktop" version="1.0">
+  <property name="backdrop" type="empty">
+    <property name="screen0" type="empty">
+      <property name="monitorVirtual-1" type="empty">
+        <property name="workspace0" type="empty">
+          <property name="last-image" type="string" value="/usr/share/backgrounds/xfce/risingos-default.jpg"/>
+        </property>
+      </property>
+    </property>
+  </property>
+  <property name="last-settings-migration-version" type="uint" value="1"/>
+</channel>
+XML
+
+chown -R usuario:usuario /home/usuario/.config
+
+# Script de autostart para hardware real
+mkdir -p /etc/xdg/autostart
+
+cat > /etc/xdg/autostart/risingos-wallpaper.desktop << 'DESKTOP'
+[Desktop Entry]
+Type=Application
+Name=RisingOS Wallpaper
+Exec=/usr/local/bin/risingos-set-wallpaper.sh
+Hidden=false
+NoDisplay=true
+X-GNOME-Autostart-enabled=true
+DESKTOP
+
+cat > /usr/local/bin/risingos-set-wallpaper.sh << 'SCRIPT'
+#!/bin/bash
+WALLPAPER="/usr/share/backgrounds/xfce/risingos-default.jpg"
+sleep 2
+
+# Detectar el monitor y workspace reales en XFCE 4.20
+for key in $(xfconf-query -c xfce4-desktop -l 2>/dev/null | grep "workspace.*last-image"); do
+    xfconf-query -c xfce4-desktop -p "$key" -s "$WALLPAPER" 2>/dev/null
+done
+
+# Si no hay ninguna clave aún, crearla con el monitor detectado
+if ! xfconf-query -c xfce4-desktop -l 2>/dev/null | grep -q "workspace.*last-image"; then
+    MONITOR=$(xfconf-query -c xfce4-desktop -l 2>/dev/null | grep "monitor" | head -1 | cut -d'/' -f4)
+    if [ -n "$MONITOR" ]; then
+        xfconf-query -c xfce4-desktop \
+            -p "/backdrop/screen0/${MONITOR}/workspace0/last-image" \
+            --create -t string -s "$WALLPAPER" 2>/dev/null
+    fi
+fi
+SCRIPT
+
+chmod +x /usr/local/bin/risingos-set-wallpaper.sh
