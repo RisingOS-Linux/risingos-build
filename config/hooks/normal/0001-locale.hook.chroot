@@ -1,0 +1,36 @@
+#!/bin/bash
+set -e
+
+# Asegurar que locales está instalado
+apt-get install -y locales
+
+# Generar locale
+echo "es_AR.UTF-8 UTF-8" > /etc/locale.gen
+echo "es_ES.UTF-8 UTF-8" >> /etc/locale.gen
+locale-gen
+
+# Configurar locale por defecto
+cat > /etc/default/locale << 'LOCALE'
+LANG=es_AR.UTF-8
+LANGUAGE=es_AR:es
+LC_ALL=es_AR.UTF-8
+LOCALE
+
+# Timezone
+ln -sf /usr/share/zoneinfo/America/Argentina/Buenos_Aires /etc/localtime
+echo "America/Argentina/Buenos_Aires" > /etc/timezone
+dpkg-reconfigure -f noninteractive tzdata
+
+# Teclado
+cat > /etc/default/keyboard << 'KEYBOARD'
+XKBMODEL="pc105"
+XKBLAYOUT="es"
+XKBVARIANT=""
+XKBOPTIONS=""
+BACKSPACE="guess"
+KEYBOARD
+dpkg-reconfigure -f noninteractive keyboard-configuration
+
+# Variables de entorno globales
+echo "LANG=es_AR.UTF-8" >> /etc/environment
+echo "LC_ALL=es_AR.UTF-8" >> /etc/environment

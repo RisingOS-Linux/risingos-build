@@ -1,0 +1,96 @@
+# === ESCRITORIO XFCE ===
+xfce4
+xfce4-terminal
+xfce4-whiskermenu-plugin
+xfce4-pulseaudio-plugin
+xfce4-battery-plugin
+xfce4-datetime-plugin
+xfce4-notifyd
+xfce4-screenshooter
+xfce4-taskmanager
+thunar
+thunar-archive-plugin
+thunar-media-tags-plugin
+ristretto
+mousepad
+
+# === DISPLAY MANAGER ===
+lightdm
+lightdm-gtk-greeter
+lightdm-gtk-greeter-settings
+
+# === AUDIO ===
+pulseaudio
+pavucontrol
+
+# === OFFICE ===
+libreoffice
+libreoffice-l10n-es
+libreoffice-help-es
+libreoffice-gtk3
+
+# === INTERNET ===
+firefox-esr
+firefox-esr-l10n-es-ar
+thunderbird
+thunderbird-l10n-es-ar
+
+# === MULTIMEDIA ===
+vlc
+ffmpeg
+
+# === FUENTES Y CODECS ===
+fonts-liberation
+fonts-dejavu
+ttf-mscorefonts-installer
+
+# === ARCHIVADORES ===
+xarchiver
+p7zip-full
+p7zip-rar
+zip
+unzip
+unrar
+tar
+
+# === UTILIDADES GUI ===
+baobab
+simple-scan
+atril
+mate-calc
+gnome-software
+gnome-software-plugin-flatpak
+flatpak
+blueman
+system-config-printer
+htop
+
+# === IDIOMA ESPAÑOL ===
+locales-all
+task-spanish
+console-setup
+keyboard-configuration
+aspell-es
+hunspell-es
+
+# === HERRAMIENTAS DE CONSOLA ===
+bash-completion
+curl
+wget
+git
+nano
+vim
+fastfetch
+net-tools
+openssh-client
+rsync
+tree
+
+# === SISTEMA ===
+network-manager
+network-manager-gnome
+gvfs
+gvfs-backends
+udisks2
+polkitd
+pkexec

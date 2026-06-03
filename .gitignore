@@ -1,0 +1,20 @@
+# ISOs y archivos pesados
+*.iso
+*.img
+
+# Logs de wget y build
+wget-log*
+*.log
+build.log
+
+# Directorios generados por live-build
+cache/
+chroot/
+binary/
+.build/
+
+# Archivos de estado del build
+binary.modified_timestamps
+chroot.files
+chroot.packages.*
+RisingOS-amd64.*

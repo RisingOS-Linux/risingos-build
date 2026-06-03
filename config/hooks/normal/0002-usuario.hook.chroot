@@ -1,0 +1,17 @@
+#!/bin/bash
+set -e
+
+# Crear usuario live
+useradd -m -s /bin/bash -G sudo,audio,video,plugdev,netdev usuario
+echo "usuario:live" | chpasswd
+
+# Autologin en LightDM
+mkdir -p /etc/lightdm
+cat > /etc/lightdm/lightdm.conf << 'LIGHTDM'
+[Seat:*]
+autologin-user=usuario
+autologin-user-timeout=0
+user-session=xfce
+greeter-session=lightdm-gtk-greeter
+LIGHTDM
+
