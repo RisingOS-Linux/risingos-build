@@ -1,0 +1,160 @@
+#!/bin/bash
+set -e
+
+# Copiar temas al sistema
+cp -r /risingos-theme/RisingOS-Dark /usr/share/themes/
+cp -r /risingos-theme/RisingOS-Light /usr/share/themes/
+
+mkdir -p /home/usuario/.config/xfce4/xfconf/xfce-perchannel-xml
+
+cat > /home/usuario/.config/xfce4/xfconf/xfce-perchannel-xml/xsettings.xml << 'XML'
+<?xml version="1.1" encoding="UTF-8"?>
+<channel name="xsettings" version="1.0">
+  <property name="Net" type="empty">
+    <property name="ThemeName" type="string" value="RisingOS-Dark"/>
+    <property name="IconThemeName" type="string" value="hicolor"/>
+  </property>
+  <property name="Gtk" type="empty">
+    <property name="CursorThemeName" type="string" value="default"/>
+    <property name="FontName" type="string" value="Sans 10"/>
+  </property>
+</channel>
+XML
+
+cat > /home/usuario/.config/xfce4/xfconf/xfce-perchannel-xml/xfwm4.xml << 'XML'
+<?xml version="1.1" encoding="UTF-8"?>
+<channel name="xfwm4" version="1.0">
+  <property name="general" type="empty">
+    <property name="theme" type="string" value="RisingOS-Dark"/>
+  </property>
+</channel>
+XML
+
+cat > /home/usuario/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml << 'XML'
+<?xml version="1.1" encoding="UTF-8"?>
+<channel name="xfce4-panel" version="1.0">
+  <property name="configver" type="int" value="2"/>
+  <property name="panels" type="array">
+    <value type="int" value="1"/>
+  </property>
+  <property name="panel-1" type="empty">
+    <property name="position" type="string" value="p=8;x=0;y=0"/>
+    <property name="size" type="uint" value="41"/>
+    <property name="position-locked" type="bool" value="true"/>
+    <property name="enable-struts" type="bool" value="true"/>
+    <property name="length-adjust" type="bool" value="false"/>
+    <property name="length" type="double" value="100"/>
+    <property name="enter-opacity" type="uint" value="100"/>
+    <property name="leave-opacity" type="uint" value="100"/>
+    <property name="background-style" type="uint" value="1"/>
+    <property name="background-color" type="string" value="#0c1221ff"/>
+    <property name="icon-size" type="uint" value="0"/>
+    <property name="mode" type="uint" value="0"/>
+    <property name="border-width" type="uint" value="5"/>
+    <property name="autohide-behavior" type="uint" value="0"/>
+    <property name="plugin-ids" type="array">
+      <value type="int" value="7"/>
+      <value type="int" value="15"/>
+      <value type="int" value="4"/>
+      <value type="int" value="14"/>
+      <value type="int" value="13"/>
+      <value type="int" value="1"/>
+      <value type="int" value="8"/>
+      <value type="int" value="11"/>
+      <value type="int" value="10"/>
+      <value type="int" value="12"/>
+      <value type="int" value="2"/>
+      <value type="int" value="9"/>
+    </property>
+  </property>
+  <property name="plugins" type="empty">
+    <property name="plugin-1" type="string" value="systray">
+      <property name="icon-size" type="int" value="0"/>
+      <property name="single-row" type="bool" value="true"/>
+      <property name="symbolic-icons" type="bool" value="false"/>
+    </property>
+    <property name="plugin-2" type="string" value="actions">
+      <property name="appearance" type="uint" value="1"/>
+      <property name="button-title" type="uint" value="1"/>
+    </property>
+    <property name="plugin-4" type="string" value="tasklist">
+      <property name="show-labels" type="bool" value="false"/>
+      <property name="flat-buttons" type="bool" value="true"/>
+      <property name="show-handle" type="bool" value="false"/>
+      <property name="show-tooltips" type="bool" value="true"/>
+    </property>
+    <property name="plugin-7" type="string" value="whiskermenu">
+      <property name="category-show-name" type="bool" value="true"/>
+      <property name="launcher-icon-size" type="int" value="3"/>
+      <property name="category-icon-size" type="int" value="2"/>
+      <property name="menu-opacity" type="int" value="71"/>
+      <property name="position-categories-horizontal" type="bool" value="false"/>
+      <property name="position-categories-alternate" type="bool" value="true"/>
+      <property name="menu-width" type="int" value="659"/>
+      <property name="menu-height" type="int" value="616"/>
+      <property name="position-profile-alternate" type="bool" value="false"/>
+      <property name="position-commands-alternate" type="bool" value="true"/>
+      <property name="position-search-alternate" type="bool" value="true"/>
+      <property name="confirm-session-command" type="bool" value="false"/>
+    </property>
+    <property name="plugin-8" type="string" value="battery"/>
+    <property name="plugin-9" type="string" value="showdesktop">
+      <property name="show-on-hover" type="bool" value="true"/>
+    </property>
+    <property name="plugin-10" type="string" value="notification-plugin"/>
+    <property name="plugin-11" type="string" value="pulseaudio">
+      <property name="enable-keyboard-shortcuts" type="bool" value="true"/>
+    </property>
+    <property name="plugin-12" type="string" value="clock">
+      <property name="mode" type="uint" value="4"/>
+    </property>
+    <property name="plugin-13" type="string" value="pager">
+      <property name="rows" type="uint" value="1"/>
+      <property name="miniature-view" type="bool" value="true"/>
+      <property name="wrap-workspaces" type="bool" value="true"/>
+    </property>
+    <property name="plugin-14" type="string" value="separator">
+      <property name="expand" type="bool" value="true"/>
+      <property name="style" type="uint" value="0"/>
+    </property>
+    <property name="plugin-15" type="string" value="separator">
+      <property name="expand" type="bool" value="false"/>
+      <property name="style" type="uint" value="0"/>
+    </property>
+  </property>
+</channel>
+XML
+
+cat > /home/usuario/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml << 'XML'
+<?xml version="1.1" encoding="UTF-8"?>
+<channel name="xfce4-desktop" version="1.0">
+  <property name="backdrop" type="empty">
+    <property name="screen0" type="empty">
+      <property name="monitorVirtual-1" type="empty">
+        <property name="workspace0" type="empty">
+          <property name="last-image" type="string" value="/usr/share/backgrounds/xfce/risingos-default.jpg"/>
+        </property>
+      </property>
+    </property>
+  </property>
+  <property name="desktop-icons" type="empty">
+    <property name="label-background-enabled" type="bool" value="false"/>
+    <property name="font" type="string" value="Sans 9"/>
+  </property>
+  <property name="last-settings-migration-version" type="uint" value="1"/>
+</channel>
+XML
+
+mkdir -p /home/usuario/.config/libreoffice/4/user
+cat > /home/usuario/.config/libreoffice/4/user/registrymodifications.xcu << 'LOXML'
+<?xml version="1.0" encoding="UTF-8"?>
+<oor:items xmlns:oor="http://openoffice.org/2001/registry">
+  <item oor:path="/org.openoffice.Office.Common/Misc">
+    <prop oor:name="SymbolStyle" oor:op="fuse">
+      <value>colibre_dark</value>
+    </prop>
+  </item>
+</oor:items>
+LOXML
+
+chown -R usuario:usuario /home/usuario/.config

@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=X-GNOME-Metatheme
+Name=RisingOS-Light
+Comment=RisingOS Light Theme
+Encoding=UTF-8
+
+[X-GNOME-Metatheme]
+GtkTheme=RisingOS-Light
+MetacityTheme=RisingOS-Light
+IconTheme=hicolor
