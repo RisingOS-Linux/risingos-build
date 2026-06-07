@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=X-GNOME-Metatheme
+Name=RisingOS-Dark
+Comment=RisingOS Dark Theme
+Encoding=UTF-8
+
+[X-GNOME-Metatheme]
+GtkTheme=RisingOS-Dark
+MetacityTheme=RisingOS-Dark
+IconTheme=hicolor
