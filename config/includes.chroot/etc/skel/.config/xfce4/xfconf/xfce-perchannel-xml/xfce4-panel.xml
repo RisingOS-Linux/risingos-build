@@ -45,12 +45,13 @@
   <property name="plugins" type="empty">
 
     <property name="plugin-1" type="string" value="whiskermenu">
+      <property name="button-icon" type="string" value="distributor-logo"/>
       <property name="category-icon-size"              type="int"  value="2"/>
       <property name="category-show-name"              type="bool" value="true"/>
       <property name="confirm-session-command"         type="bool" value="false"/>
       <property name="launcher-icon-size"              type="int"  value="3"/>
       <property name="menu-height"                     type="int"  value="616"/>
-      <property name="menu-opacity"                    type="int"  value="71"/>
+      <property name="menu-opacity"                    type="int"  value="90"/>
       <property name="menu-width"                      type="int"  value="659"/>
       <property name="position-categories-alternate"  type="bool" value="true"/>
       <property name="position-categories-horizontal" type="bool" value="false"/>
