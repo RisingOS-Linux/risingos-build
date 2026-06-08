@@ -1,0 +1,37 @@
+#!/bin/bash
+set -e
+
+# Configurar lightdm para usar gtk-greeter
+cat > /etc/lightdm/lightdm.conf << 'LIGHTDM'
+[Seat:*]
+greeter-session=lightdm-gtk-greeter
+user-session=xfce
+autologin-user=
+LIGHTDM
+
+# Escribir configuración del greeter
+cat > /etc/lightdm/lightdm-gtk-greeter.conf << 'GREETER'
+[greeter]
+background=/usr/share/backgrounds/xfce/risingos/Dramatic_frozen_andes.png
+theme-name=RisingOS-Dark
+icon-theme-name=RisingOS-orange-dark
+font-name=Sans 11
+xft-antialias=true
+xft-dpi=96
+xft-hintstyle=slight
+xft-rgba=rgb
+indicators=~host;~spacer;~clock;~spacer;~session;~power
+clock-format=%A, %d de %B  %H:%M
+default-user-image=/usr/share/risingos/lightdm/risingos-logo.png
+hide-user-image=false
+user-background=false
+position=50%,center 50%,center
+panel-position=top
+GREETER
+
+chmod 644 /etc/lightdm/lightdm-gtk-greeter.conf
+chmod 644 /etc/lightdm/lightdm.conf
+
+# Hostname
+echo "risingos" > /etc/hostname
+sed -i 's/debian/risingos/g' /etc/hosts 2>/dev/null || true
