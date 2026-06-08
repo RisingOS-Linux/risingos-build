@@ -1,0 +1,13 @@
+#!/bin/bash
+set -e
+
+# Registrar y activar tema RisingOS
+update-alternatives --install /usr/share/plymouth/themes/default.plymouth \
+    default.plymouth \
+    /usr/share/plymouth/themes/risingos/risingos.plymouth 100
+
+update-alternatives --set default.plymouth \
+    /usr/share/plymouth/themes/risingos/risingos.plymouth
+
+# Actualizar initramfs para que Plymouth use el tema nuevo
+update-initramfs -u 2>/dev/null || true
