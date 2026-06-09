@@ -1,0 +1,8 @@
+[Plymouth Theme]
+Name=RisingOS
+Description=RisingOS boot splash
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/risingos
+ScriptFile=/usr/share/plymouth/themes/risingos/risingos.script
