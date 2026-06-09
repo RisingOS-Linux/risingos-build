@@ -18,4 +18,4 @@ binary.modified_timestamps
 chroot.files
 chroot.packages.*
 RisingOS-amd64.*
-includes.chroot/
+/includes.chroot/
