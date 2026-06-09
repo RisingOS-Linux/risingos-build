@@ -1,0 +1,9 @@
+NAME="RisingOS"
+VERSION="1.0"
+ID=risingos
+ID_LIKE=debian
+PRETTY_NAME="RisingOS 1.0"
+VERSION_ID="1.0"
+HOME_URL="https://rising-arrow.com"
+SUPPORT_URL="https://rising-arrow.com"
+BUG_REPORT_URL="https://github.com/RisingOS-Linux/risingos-build/issues"
