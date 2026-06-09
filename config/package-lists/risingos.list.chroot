@@ -94,3 +94,7 @@ gvfs-backends
 udisks2
 polkitd
 pkexec
+
+# === PLYMOUTH (boot splash) ===
+plymouth
+plymouth-themes

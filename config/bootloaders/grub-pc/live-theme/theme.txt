@@ -53,5 +53,7 @@ terminal-font: "Unifont Regular 16"
 + image {
     top = 20%
     left = 50%-135
+    width = 270
+    height = 84
     file = "logo.png"
 }

@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=RisingOS Firstboot Wallpaper
+Comment=Configura el wallpaper andino en el primer inicio de sesión
+Exec=/usr/lib/risingos/firstboot-wallpaper.sh
+Icon=
+Terminal=false
+NoDisplay=true
+OnlyShowIn=XFCE;
+X-GNOME-Autostart-enabled=true

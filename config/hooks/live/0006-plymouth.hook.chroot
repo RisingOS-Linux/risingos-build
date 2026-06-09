@@ -1,0 +1,24 @@
+#!/bin/bash
+# RisingOS — Activa el tema Plymouth risingos y reconstruye el initrd
+set -e
+
+THEME_DIR="/usr/share/plymouth/themes/risingos"
+THEME_NAME="risingos"
+
+# Verificar que el tema esté presente (debe venir de includes.chroot)
+if [ ! -f "${THEME_DIR}/${THEME_NAME}.plymouth" ]; then
+    echo "ERROR: Tema Plymouth '${THEME_NAME}' no encontrado en ${THEME_DIR}" >&2
+    exit 1
+fi
+
+# Registrar el tema en el sistema de alternativas de Plymouth
+update-alternatives --install \
+    /usr/share/plymouth/themes/default.plymouth \
+    default.plymouth \
+    "${THEME_DIR}/${THEME_NAME}.plymouth" \
+    100
+
+# Establecerlo como tema activo y reconstruir initrd
+plymouth-set-default-theme --rebuild-initrd "${THEME_NAME}"
+
+echo "Plymouth: tema '${THEME_NAME}' activado y initrd reconstruido."
