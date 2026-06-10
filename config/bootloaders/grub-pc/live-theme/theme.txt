@@ -35,6 +35,21 @@ terminal-font: "Unifont Regular 16"
         item_icon_space = 0
 }
 
+#progress bar
++ progress_bar {
+        id = "__timeout__"
+        left = 20%
+        top = 100%-55
+        height = 4
+        width = 60%
+        font = "Unifont Regular 16"
+        text_color = "#0c1221"
+        fg_color = "#ff6a3d"
+        bg_color = "#1e2d45"
+        border_color = "#1e2d45"
+        text = ""
+}
+
 + image {
     top = 20%
     left = 50%-135
