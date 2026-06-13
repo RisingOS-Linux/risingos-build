@@ -1,0 +1,10 @@
+rising-welcome (1.0.0) trixie; urgency=medium
+
+  * Versión inicial de rising-welcome para RisingOS 1.0
+  * Tour guiado de 7 pantallas con GTK4 puro
+  * Actualizaciones del sistema con pkexec/Polkit en tiempo real
+  * Detección de conexión a internet
+  * Integración con rising-ia
+  * Checkbox de autostart con flag en ~/.config/risingos/
+
+ -- Francisco Galaso <franciscogalaso@rising-arrow.com>  Fri, 13 Jun 2026 00:00:00 -0300

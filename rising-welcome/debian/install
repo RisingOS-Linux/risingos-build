@@ -1,0 +1,7 @@
+src/rising-welcome                        usr/bin/
+assets/style.css                          usr/lib/rising-welcome/assets/
+assets/icons/logo-256.png                 usr/lib/rising-welcome/assets/icons/
+assets/screenshots/escritorio.png         usr/lib/rising-welcome/assets/screenshots/
+assets/screenshots/personalizacion.png    usr/lib/rising-welcome/assets/screenshots/
+assets/screenshots/software-center.png   usr/lib/rising-welcome/assets/screenshots/
+assets/screenshots/rising-ia.png         usr/lib/rising-welcome/assets/screenshots/

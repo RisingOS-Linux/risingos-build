@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Bienvenido a RisingOS
+Comment=Asistente de bienvenida de RisingOS
+Exec=/usr/bin/rising-welcome
+Icon=/usr/lib/rising-welcome/assets/icons/logo-256.png
+Terminal=false
+Hidden=false
+X-GNOME-Autostart-enabled=true

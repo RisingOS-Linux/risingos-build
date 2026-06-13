@@ -1,0 +1,3 @@
+# Repositorio oficial de RisingOS
+# Rising Arrow — https://rising-arrow.online
+deb [signed-by=/usr/share/keyrings/risingos.gpg] https://repo.rising-arrow.online stable main

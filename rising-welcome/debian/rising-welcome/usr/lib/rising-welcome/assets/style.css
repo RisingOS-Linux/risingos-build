@@ -1,0 +1,514 @@
+/* ── rising-welcome / style.css ─────────────────────────────────────────────
+   Paleta: fondo #0c1221 · acento #ff6a3d
+   GTK4 puro — sin libadwaita
+   ──────────────────────────────────────────────────────────────────────────── */
+
+* {
+  font-family: "Inter", "Cantarell", "Sans-Serif";
+}
+
+/* ── Ventana ──────────────────────────────────────────────────────────────── */
+window {
+  background-color: #0c1221;
+}
+
+.root-box {
+  background-color: #0c1221;
+}
+
+/* ── Layout pantalla ──────────────────────────────────────────────────────── */
+.screen {
+  background: transparent;
+}
+
+.left-panel {
+  min-width: 340px;
+  padding: 42px 32px 32px 44px;
+  background: transparent;
+  border-right: 1px solid rgba(255,255,255,0.07);
+}
+
+.right-panel {
+  background: #0e1526;
+  padding: 28px 24px;
+}
+
+/* ── Logo ─────────────────────────────────────────────────────────────────── */
+.logo-title {
+  font-size: 26px;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 0.03em;
+}
+
+.logo-subtitle {
+  font-size: 13px;
+  color: rgba(255,255,255,0.45);
+  letter-spacing: 0.02em;
+}
+
+.logo-credit {
+  font-size: 11px;
+  color: rgba(255,255,255,0.22);
+  letter-spacing: 0.02em;
+}
+
+/* ── Tipografía ───────────────────────────────────────────────────────────── */
+.screen-tag {
+  font-size: 11px;
+  font-weight: 700;
+  color: #ff6a3d;
+  letter-spacing: 0.14em;
+}
+
+.screen-title {
+  font-size: 24px;
+  font-weight: 500;
+  color: #ffffff;
+  line-height: 1.35;
+}
+
+.screen-body {
+  font-size: 15px;
+  color: rgba(255,255,255,0.55);
+  line-height: 1.75;
+}
+
+/* ── Indicador conexión ───────────────────────────────────────────────────── */
+.conn-indicator {
+  padding: 9px 14px;
+  border-radius: 6px;
+  margin-top: 4px;
+}
+
+.conn-ok {
+  background-color: rgba(39,201,63,0.08);
+  border: 1px solid rgba(39,201,63,0.25);
+}
+
+.conn-fail {
+  background-color: rgba(255,77,77,0.08);
+  border: 1px solid rgba(255,77,77,0.28);
+}
+
+.conn-icon-ok {
+  font-size: 13px;
+  font-weight: 700;
+  color: #27c93f;
+}
+
+.conn-icon-fail {
+  font-size: 13px;
+  font-weight: 700;
+  color: #ff4d4d;
+}
+
+.conn-label {
+  font-size: 13px;
+  color: rgba(255,255,255,0.55);
+}
+
+/* ── Botón acción ─────────────────────────────────────────────────────────── */
+.btn-action {
+  padding: 11px 22px;
+  border-radius: 8px;
+  background-color: rgba(255,106,61,0.10);
+  border: 1px solid rgba(255,106,61,0.32);
+  color: #ff6a3d;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.btn-action:hover {
+  background-color: rgba(255,106,61,0.22);
+  border-color: #ff6a3d;
+}
+
+.btn-action:disabled {
+  opacity: 0.38;
+}
+
+.btn-action-ok {
+  background-color: rgba(39,201,63,0.08);
+  border: 1px solid rgba(39,201,63,0.30);
+  color: #27c93f;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 11px 22px;
+  border-radius: 8px;
+}
+
+/* ── Estado actualizaciones ───────────────────────────────────────────────── */
+.update-status {
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.status-ok   { color: #27c93f; }
+.status-fail { color: #ff4d4d; }
+.status-warn { color: rgba(255,189,46,0.88); }
+
+progressbar.update-progress {
+  min-height: 6px;
+}
+
+progressbar.update-progress trough {
+  background-color: rgba(255,255,255,0.07);
+  border: none;
+  min-height: 6px;
+}
+
+progressbar.update-progress trough progress {
+  background-color: #ff6a3d;
+  border: none;
+}
+
+/* ── Chips de apps ────────────────────────────────────────────────────────── */
+.app-chip {
+  padding: 6px 12px;
+  border-radius: 6px;
+  background-color: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  margin: 2px;
+  min-width: 148px;
+}
+
+.app-chip:hover {
+  background-color: rgba(255,255,255,0.07);
+}
+
+.app-chip-icon {
+  opacity: 0.6;
+}
+
+.app-chip-label {
+  font-size: 12px;
+  color: rgba(255,255,255,0.52);
+}
+
+.chips-scroll {
+  background-color: transparent;
+  max-height: 160px;
+}
+
+/* ── Marco monitor ────────────────────────────────────────────────────────── */
+.monitor-frame {
+  border-radius: 8px;
+  border: 2px solid rgba(255,255,255,0.14);
+  background-color: #1e2940;
+  padding: 6px;
+}
+
+.monitor-screen {
+  border-radius: 4px;
+  min-width: 340px;
+  min-height: 210px;
+  background-color: #0c1221;
+}
+
+.monitor-stand-top {
+  background-color: #1a2235;
+  min-height: 12px;
+  min-width: 50px;
+}
+
+.monitor-stand-base {
+  background-color: #1a2235;
+  border-radius: 3px;
+  min-height: 8px;
+  min-width: 85px;
+}
+
+/* ── Placeholder ──────────────────────────────────────────────────────────── */
+.screenshot-placeholder {
+  min-width: 340px;
+  min-height: 210px;
+  color: rgba(255,255,255,0.18);
+  font-size: 12px;
+}
+
+/* ── Dismiss checkbox ─────────────────────────────────────────────────────── */
+.dismiss-check {
+  font-size: 13px;
+  color: rgba(255,255,255,0.35);
+  margin-top: 8px;
+}
+
+.dismiss-check check {
+  background-color: transparent;
+  border: 1px solid rgba(255,255,255,0.20);
+  border-radius: 3px;
+  min-width: 16px;
+  min-height: 16px;
+}
+
+.dismiss-check:checked check {
+  background-color: #ff6a3d;
+  border-color: #ff6a3d;
+  color: #ffffff;
+}
+
+/* ── Barra inferior ───────────────────────────────────────────────────────── */
+.bottom-bar {
+  background-color: #0a0f1c;
+  border-top: 1px solid rgba(255,255,255,0.07);
+  padding: 12px 28px 16px;
+  min-height: 62px;
+}
+
+/* ── Puntitos progreso ────────────────────────────────────────────────────── */
+.progress-dot {
+  min-width: 8px;
+  min-height: 8px;
+  border-radius: 4px;
+  background-color: rgba(255,255,255,0.14);
+}
+
+.progress-dot.dot-active {
+  min-width: 24px;
+  background-color: #ff6a3d;
+}
+
+.progress-dot.dot-visited {
+  background-color: rgba(255,106,61,0.38);
+}
+
+.step-label {
+  font-size: 12px;
+  color: rgba(255,255,255,0.22);
+}
+
+/* ── Botones nav ──────────────────────────────────────────────────────────── */
+.btn-prev {
+  padding: 9px 22px;
+  border-radius: 8px;
+  background-color: transparent;
+  border: 1px solid rgba(255,255,255,0.10);
+  color: rgba(255,255,255,0.42);
+  font-size: 14px;
+}
+
+.btn-prev:hover {
+  border-color: rgba(255,255,255,0.28);
+  color: rgba(255,255,255,0.82);
+}
+
+.btn-prev:disabled {
+  opacity: 0.20;
+}
+
+.btn-next {
+  padding: 9px 26px;
+  border-radius: 8px;
+  background-color: #ff6a3d;
+  border: 1px solid #ff6a3d;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.btn-next:hover {
+  background-color: #ff8057;
+  border-color: #ff8057;
+}
+
+/* ── Terminal ilustración ─────────────────────────────────────────────────── */
+.fake-terminal {
+  background-color: #0a0f1c;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.10);
+}
+
+.fake-terminal-bar {
+  background-color: #0d1628;
+  border-radius: 10px;
+  padding: 8px 12px;
+  min-height: 32px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.terminal-dot {
+  border-radius: 5px;
+  min-width: 10px;
+  min-height: 10px;
+  background-color: rgba(255,255,255,0.2);
+}
+
+.terminal-title {
+  font-size: 11px;
+  color: rgba(255,255,255,0.25);
+  font-family: monospace;
+}
+
+.terminal-content {
+  background-color: #0a0f1c;
+  color: rgba(255,255,255,0.7);
+  font-family: monospace;
+  font-size: 11px;
+  padding: 10px;
+}
+
+.terminal-scroll {
+  background-color: #0a0f1c;
+}
+
+/* ── Log expandible ───────────────────────────────────────────────────────── */
+.log-scroll {
+  background-color: #080c16;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.07);
+}
+
+.log-view {
+  background-color: #080c16;
+  color: rgba(255,255,255,0.55);
+  font-family: monospace;
+  font-size: 11px;
+  padding: 8px;
+}
+
+.btn-log-toggle {
+  padding: 5px 12px;
+  border-radius: 6px;
+  background-color: transparent;
+  border: 1px solid rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.35);
+  font-size: 11px;
+}
+
+.btn-log-toggle:hover {
+  border-color: rgba(255,255,255,0.18);
+  color: rgba(255,255,255,0.6);
+}
+
+/* ── Log panel derecho completo ───────────────────────────────────────────── */
+.log-panel-full {
+  background-color: #080c16;
+  padding: 16px 16px 0 16px;
+}
+
+.log-header {
+  font-size: 11px;
+  color: #ff6a3d;
+  font-family: monospace;
+  margin-bottom: 10px;
+  letter-spacing: 0.05em;
+}
+
+.log-scroll-full {
+  background-color: #080c16;
+}
+
+.log-view-full {
+  background-color: #080c16;
+  color: rgba(255,255,255,0.65);
+  font-family: monospace;
+  font-size: 12px;
+  padding: 4px 8px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Estilos adicionales — Pantallas 3 a 7
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Pantalla 3 — Tour ────────────────────────────────────────────────────── */
+
+.tour-items-box {
+  margin-top: 4px;
+}
+
+.tour-item-row {
+  background: transparent;
+}
+
+.tour-bullet {
+  min-width: 7px;
+  min-height: 7px;
+  border-radius: 50%;
+  background-color: #ff6a3d;
+  margin-top: 6px;
+  flex-shrink: 0;
+}
+
+.tour-item-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.82);
+}
+
+.tour-item-desc {
+  font-size: 13px;
+  color: rgba(255,255,255,0.42);
+  line-height: 1.5;
+}
+
+/* ── Pantalla 4 — Personalización ────────────────────────────────────────── */
+
+.btns-row {
+  margin-top: 2px;
+}
+
+.tip-label {
+  font-size: 12px;
+  color: rgba(255,255,255,0.32);
+  background-color: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 6px;
+  padding: 9px 12px;
+  line-height: 1.55;
+}
+
+/* ── Pantalla 5 — Aplicaciones ───────────────────────────────────────────── */
+
+.chips-box {
+  background: transparent;
+}
+
+/* ── Pantalla 6 — IA ─────────────────────────────────────────────────────── */
+
+.feats-box {
+  margin-top: 2px;
+  margin-bottom: 4px;
+}
+
+.feat-item {
+  font-size: 13px;
+  color: rgba(255,255,255,0.48);
+  line-height: 1.6;
+}
+
+/* ── Pantalla 7 — Final ──────────────────────────────────────────────────── */
+
+.final-links-box {
+  margin-top: 2px;
+  margin-bottom: 4px;
+}
+
+.final-link-btn {
+  font-size: 13px;
+  color: rgba(255,106,61,0.75);
+  background: transparent;
+  border: none;
+  padding: 2px 0;
+}
+
+.final-link-btn:hover {
+  color: #ff6a3d;
+}
+
+.final-link-btn label {
+  text-decoration: none;
+}
+
+.final-credit {
+  font-size: 13px;
+  color: rgba(255,255,255,0.28);
+  line-height: 1.7;
+}
+
+.final-version {
+  font-size: 11px;
+  color: rgba(255,255,255,0.14);
+  letter-spacing: 0.05em;
+  margin-top: 4px;
+}

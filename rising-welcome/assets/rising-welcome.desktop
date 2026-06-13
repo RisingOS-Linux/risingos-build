@@ -1,0 +1,15 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=RisingOS Bienvenida
+Name[es]=RisingOS Bienvenida
+GenericName=Asistente de bienvenida
+GenericName[es]=Asistente de bienvenida
+Comment=Guía de introducción a RisingOS
+Comment[es]=Guía de introducción a RisingOS
+Exec=rising-welcome
+Icon=rising-welcome
+Terminal=false
+Categories=System;Settings;
+Keywords=bienvenida;welcome;risingos;configuracion;
+StartupNotify=true

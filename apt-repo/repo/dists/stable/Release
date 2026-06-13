@@ -1,0 +1,24 @@
+Architectures: amd64
+Codename: trixie
+Components: main
+Date: Sat, 13 Jun 2026 20:14:05 +0000
+Description: Repositorio oficial de RisingOS - Rising Arrow
+Label: RisingOS
+Origin: RisingOS
+Suite: stable
+MD5Sum:
+ c7f633b3acc7b4bae7ea884ed905fc49              200 Release
+ 039be7723c104f93078f759a09861e31             1618 main/binary-amd64/Packages
+ 4c2137bcaff3819d802a0f7f04c4feb8              866 main/binary-amd64/Packages.gz
+SHA1:
+ 3d8deefe90fd73ab921e89045bfa9da8bf4d1649              200 Release
+ cfb23c5b7e578ce368678cd024bf15928352680d             1618 main/binary-amd64/Packages
+ 9f0825c03f285fe72fd991ad0e60a8f35ea45d82              866 main/binary-amd64/Packages.gz
+SHA256:
+ 92c6a83019ec7966fe570c4c8cc6a39a8f9a67ea9c75010877b1e55a7d9a7eb4              200 Release
+ 68f48066ea7344c0d57b4c066c1c8599eaeac29b0340753b9420176250af0dd3             1618 main/binary-amd64/Packages
+ a6ea2857ffe41cafbf72a291bc6b5a54a1b0e806fe1f8ad35a03553ffa08d2e5              866 main/binary-amd64/Packages.gz
+SHA512:
+ 3b6303d0aebd41bbf03f215429e3560abfff91d8bfbb3a7f9cbfd26c87b6130b42645149b03b57c6cb38a1e9e8acf24957a8acf4e47dc32a7e76c8e7c695f463              200 Release
+ 9e3b58e1df65482842daafabbe03d02d03c37e486e86e8fd06fafc527452571c993f4c99786b528ea170965bea7307fbab23636c0a512c4c05295493d02c9468             1618 main/binary-amd64/Packages
+ c6f57e55a48338bdf9f547fa7cc70ed86fc25146cf39d5620b63347e02588a0c0a906dc3378653c39f4c473c2e83fa4158a834d82673dc16257dc6ec485759a2              866 main/binary-amd64/Packages.gz

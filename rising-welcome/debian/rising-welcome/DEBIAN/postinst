@@ -1,0 +1,30 @@
+#!/bin/bash
+set -e
+
+case "$1" in
+    configure)
+        chmod 755 /usr/bin/rising-welcome
+
+        cat > /usr/share/applications/rising-welcome.desktop << 'DESKTOP'
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Bienvenido a RisingOS
+GenericName=Asistente de bienvenida
+Comment=Tour guiado por tu nuevo sistema
+Exec=/usr/bin/rising-welcome
+Icon=/usr/lib/rising-welcome/assets/icons/logo-256.png
+Terminal=false
+Categories=System;
+Keywords=bienvenida;tour;risingos;
+StartupNotify=true
+DESKTOP
+        chmod 644 /usr/share/applications/rising-welcome.desktop
+
+        if command -v update-desktop-database >/dev/null 2>&1; then
+            update-desktop-database /usr/share/applications || true
+        fi
+        ;;
+esac
+
+exit 0

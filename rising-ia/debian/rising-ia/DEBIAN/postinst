@@ -1,0 +1,33 @@
+#!/bin/bash
+set -e
+
+case "$1" in
+    configure)
+        # Permisos de ejecución
+        chmod 755 /usr/bin/rising-ia
+
+        # Entrada de menú .desktop
+        cat > /usr/share/applications/rising-ia.desktop << 'EOF'
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Rising IA
+GenericName=Instalador de IA Local
+Comment=Instalá Ollama + Qwen + Open WebUI en un clic
+Exec=/usr/bin/rising-ia
+Icon=/usr/lib/rising-ia/assets/icons/logo-256.png
+Terminal=false
+Categories=System;Settings;
+Keywords=ia;ai;ollama;qwen;webui;inteligencia artificial;
+StartupNotify=true
+EOF
+        chmod 644 /usr/share/applications/rising-ia.desktop
+
+        # Actualizar caché de aplicaciones
+        if command -v update-desktop-database >/dev/null 2>&1; then
+            update-desktop-database /usr/share/applications || true
+        fi
+        ;;
+esac
+
+exit 0

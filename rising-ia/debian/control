@@ -1,0 +1,22 @@
+Source: rising-ia
+Section: utils
+Priority: optional
+Maintainer: Francisco Galaso <francisco@rising-arrow.com.ar>
+Build-Depends: debhelper-compat (= 13)
+Standards-Version: 4.6.2
+Homepage: https://github.com/RisingOS-Linux/rising-ia
+
+Package: rising-ia
+Architecture: all
+Depends: python3 (>= 3.11),
+         python3-gi,
+         gir1.2-gtk-4.0,
+         polkitd,
+         pkexec,
+         curl,
+         docker.io
+Description: Instalador de IA local para RisingOS
+ Rising IA automatiza la instalación y configuración de Ollama,
+ el modelo Qwen 2.5 y Open WebUI en RisingOS.
+ Provee una interfaz gráfica GTK4 que guía al usuario paso a paso,
+ mostrando el progreso en tiempo real y lanzando Open WebUI al finalizar.

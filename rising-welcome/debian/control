@@ -1,0 +1,19 @@
+Source: rising-welcome
+Section: utils
+Priority: optional
+Maintainer: Francisco Galaso <francisco@rising-arrow.com.ar>
+Build-Depends: debhelper-compat (= 13)
+Standards-Version: 4.6.2
+Homepage: https://github.com/RisingOS-Linux/rising-welcome
+
+Package: rising-welcome
+Architecture: all
+Depends: python3 (>= 3.11),
+         python3-gi,
+         gir1.2-gtk-4.0,
+         polkitd,
+         pkexec
+Description: Asistente de bienvenida de RisingOS
+ Tour guiado de 7 pantallas que se ejecuta al iniciar sesión.
+ Incluye actualización del sistema con Polkit, tour del escritorio,
+ personalización, aplicaciones preinstaladas e integración con Rising IA.

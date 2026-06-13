@@ -1,0 +1,13 @@
+Package: rising-welcome
+Version: 1.0.0
+Architecture: all
+Maintainer: Francisco Galaso <francisco@rising-arrow.com.ar>
+Installed-Size: 3664
+Depends: python3 (>= 3.11), python3-gi, gir1.2-gtk-4.0, polkitd, pkexec
+Section: utils
+Priority: optional
+Homepage: https://github.com/RisingOS-Linux/rising-welcome
+Description: Asistente de bienvenida de RisingOS
+ Tour guiado de 7 pantallas que se ejecuta al iniciar sesión.
+ Incluye actualización del sistema con Polkit, tour del escritorio,
+ personalización, aplicaciones preinstaladas e integración con Rising IA.

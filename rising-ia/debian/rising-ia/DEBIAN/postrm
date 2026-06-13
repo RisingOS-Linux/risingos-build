@@ -1,0 +1,14 @@
+#!/bin/bash
+set -e
+
+case "$1" in
+    remove|purge)
+        rm -f /usr/share/applications/rising-ia.desktop
+
+        if command -v update-desktop-database >/dev/null 2>&1; then
+            update-desktop-database /usr/share/applications || true
+        fi
+        ;;
+esac
+
+exit 0

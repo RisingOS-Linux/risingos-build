@@ -1,0 +1,39 @@
+Package: rising-ia
+Version: 1.0.0
+Architecture: all
+Maintainer: Francisco Galaso <francisco@rising-arrow.com.ar>
+Installed-Size: 56
+Depends: python3 (>= 3.11), python3-gi, gir1.2-gtk-4.0, polkitd, pkexec, curl, docker.io
+Filename: pool/main/rising-ia_1.0.0_all.deb
+Size: 19980
+MD5sum: b39efbd86b3a1e5457479e2084b82c27
+SHA1: a73368cd163abbfd07361145192d1a628cb804fb
+SHA256: 907ca915c1bbe0dabc534ad01e35107b7a9ee745f04cd677ac1bb7eb86e259c2
+Section: utils
+Priority: optional
+Homepage: https://github.com/RisingOS-Linux/rising-ia
+Description: Instalador de IA local para RisingOS
+ Rising IA automatiza la instalación y configuración de Ollama,
+ el modelo Qwen 2.5 y Open WebUI en RisingOS.
+ Provee una interfaz gráfica GTK4 que guía al usuario paso a paso,
+ mostrando el progreso en tiempo real y lanzando Open WebUI al finalizar.
+
+Package: rising-welcome
+Version: 1.0.0
+Architecture: all
+Maintainer: Francisco Galaso <francisco@rising-arrow.com.ar>
+Installed-Size: 3664
+Depends: python3 (>= 3.11), python3-gi, gir1.2-gtk-4.0, polkitd, pkexec
+Filename: pool/main/rising-welcome_1.0.0_all.deb
+Size: 3663012
+MD5sum: dee6e17574faf2e46b98ce8f33c243b3
+SHA1: d1e4e004fc92259258751716dab1ecf096defded
+SHA256: 55faa10e773de96cc5c1bc465ea81afbecc14de9265fcfd94ee90b2cdf6e86d9
+Section: utils
+Priority: optional
+Homepage: https://github.com/RisingOS-Linux/rising-welcome
+Description: Asistente de bienvenida de RisingOS
+ Tour guiado de 7 pantallas que se ejecuta al iniciar sesión.
+ Incluye actualización del sistema con Polkit, tour del escritorio,
+ personalización, aplicaciones preinstaladas e integración con Rising IA.
+

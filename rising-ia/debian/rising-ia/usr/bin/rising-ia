@@ -1,0 +1,660 @@
+#!/usr/bin/python3
+# rising-ia — Instalador y lanzador de IA local para RisingOS
+# Rising Arrow / Francisco Galaso
+
+import gi
+gi.require_version("Gtk", "4.0")
+from gi.repository import Gtk, GLib, Gdk
+
+import os, sys, subprocess, threading, socket, shutil, urllib.request
+
+# ── Rutas ─────────────────────────────────────────────────────────────────────
+_here      = os.path.dirname(os.path.realpath(__file__))
+_root      = os.path.normpath(os.path.join(_here, ".."))
+
+ASSETS_DIR = os.path.join(_root, "assets")
+ICONS_DIR  = os.path.join(ASSETS_DIR, "icons")
+CSS_FILE   = os.path.join(ASSETS_DIR, "style.css")
+LOGO_256   = os.path.join(ICONS_DIR, "logo-256.png")
+
+if os.path.exists("/usr/lib/rising-ia/assets"):
+    ASSETS_DIR = "/usr/lib/rising-ia/assets"
+    ICONS_DIR  = f"{ASSETS_DIR}/icons"
+    CSS_FILE   = f"{ASSETS_DIR}/style.css"
+    LOGO_256   = f"{ICONS_DIR}/logo-256.png"
+
+WEBUI_URL  = "http://localhost:3000"
+MODEL      = "qwen2.5:3b"
+
+# ── Secuencia de instalación ──────────────────────────────────────────────────
+#
+# Cada paso es (label_corto, comando_bash)
+# Se ejecutan en orden, todos con pkexec bash -c "..."
+# El comando de ollama pull NO necesita pkexec (corre como usuario)
+#
+INSTALL_STEPS = [
+    (
+        "Instalar Ollama",
+        'curl -fsSL https://ollama.ai/install.sh | sh',
+        True,   # necesita pkexec
+    ),
+    (
+        "Activar servicio Ollama",
+        'systemctl enable --now ollama',
+        True,
+    ),
+    (
+        "Instalar Docker",
+        'apt-get install -y docker.io',
+        True,
+    ),
+    (
+        "Activar servicio Docker",
+        'systemctl enable --now docker',
+        True,
+    ),
+    (
+        f"Descargar modelo {MODEL}",
+        f'ollama pull {MODEL}',
+        False,  # corre como usuario, ollama lo gestiona
+    ),
+    (
+        "Lanzar Open WebUI",
+        (
+            'docker run -d --restart always '
+            '-p 3000:8080 '
+            '-v open-webui:/app/backend/data '
+            '--name open-webui '
+            'ghcr.io/open-webui/open-webui:main'
+        ),
+        True,
+    ),
+]
+
+
+# ── Utilidades ────────────────────────────────────────────────────────────────
+
+def check_internet(timeout=2.5) -> bool:
+    try:
+        socket.setdefaulttimeout(timeout)
+        socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect(("8.8.8.8", 53))
+        return True
+    except OSError:
+        return False
+
+
+def is_installed(cmd: str) -> bool:
+    return shutil.which(cmd) is not None
+
+
+def is_docker_container_running(name: str) -> bool:
+    try:
+        out = subprocess.check_output(
+            ["docker", "inspect", "--format", "{{.State.Running}}", name],
+            stderr=subprocess.DEVNULL,
+            text=True,
+        ).strip()
+        return out == "true"
+    except Exception:
+        return False
+
+
+def detect_state() -> dict:
+    """Detecta qué componentes ya están instalados/corriendo."""
+    ollama_ok  = is_installed("ollama")
+    docker_ok  = is_installed("docker")
+    webui_ok   = is_docker_container_running("open-webui")
+
+    # Verificar si el modelo ya está descargado
+    model_ok = False
+    if ollama_ok:
+        try:
+            out = subprocess.check_output(
+                ["ollama", "list"], stderr=subprocess.DEVNULL, text=True
+            )
+            model_ok = MODEL.split(":")[0] in out
+        except Exception:
+            pass
+
+    return {
+        "ollama":  ollama_ok,
+        "docker":  docker_ok,
+        "model":   model_ok,
+        "webui":   webui_ok,
+        "all_ok":  ollama_ok and docker_ok and model_ok and webui_ok,
+    }
+
+
+def load_css():
+    provider = Gtk.CssProvider()
+    try:
+        provider.load_from_path(CSS_FILE)
+    except Exception as e:
+        print(f"[WARN] CSS: {e}")
+    Gtk.StyleContext.add_provider_for_display(
+        Gdk.Display.get_default(),
+        provider,
+        Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION,
+    )
+
+
+def get_screen_size():
+    display = Gdk.Display.get_default()
+    monitor = display.get_monitors().get_item(0)
+    geo = monitor.get_geometry()
+    return geo.width, geo.height
+
+
+def make_logo(size=80) -> Gtk.Image:
+    img = Gtk.Image()
+    if os.path.exists(LOGO_256):
+        img.set_from_file(LOGO_256)
+        img.set_pixel_size(size)
+    else:
+        img.set_from_icon_name("system-run")
+        img.set_pixel_size(size)
+    return img
+
+
+def make_tag(text):
+    l = Gtk.Label(label=text)
+    l.add_css_class("screen-tag")
+    l.set_xalign(0)
+    return l
+
+
+def make_title(text):
+    l = Gtk.Label(label=text)
+    l.add_css_class("screen-title")
+    l.set_xalign(0)
+    l.set_wrap(True)
+    return l
+
+
+def make_body(text):
+    l = Gtk.Label(label=text)
+    l.add_css_class("screen-body")
+    l.set_xalign(0)
+    l.set_wrap(True)
+    l.set_max_width_chars(40)
+    return l
+
+
+def left_panel(*widgets) -> Gtk.Box:
+    box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=18)
+    box.add_css_class("left-panel")
+    box.set_valign(Gtk.Align.CENTER)
+    for w in widgets:
+        box.append(w)
+    return box
+
+
+def right_panel(child: Gtk.Widget) -> Gtk.Box:
+    box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=0)
+    box.add_css_class("right-panel")
+    box.set_hexpand(True)
+    box.set_halign(Gtk.Align.FILL)
+    box.set_valign(Gtk.Align.FILL)
+    child.set_halign(Gtk.Align.CENTER)
+    child.set_valign(Gtk.Align.CENTER)
+    box.append(child)
+    return box
+
+
+# ── Vista 1 — Inicio ──────────────────────────────────────────────────────────
+
+class ViewInicio(Gtk.Box):
+    def __init__(self, has_internet: bool, state: dict, on_install, on_launch):
+        super().__init__(orientation=Gtk.Orientation.HORIZONTAL, spacing=0)
+        self.add_css_class("screen")
+
+        # Indicador internet
+        conn = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
+        conn.add_css_class("conn-indicator")
+        if has_internet:
+            conn.add_css_class("conn-ok")
+            icon = Gtk.Label(label="✓"); icon.add_css_class("conn-icon-ok")
+            lbl  = Gtk.Label(label="Conectado a internet")
+        else:
+            conn.add_css_class("conn-fail")
+            icon = Gtk.Label(label="✕"); icon.add_css_class("conn-icon-fail")
+            lbl  = Gtk.Label(label="Sin conexión — la instalación requiere internet")
+        lbl.add_css_class("conn-label"); lbl.set_xalign(0); lbl.set_wrap(True)
+        conn.append(icon); conn.append(lbl)
+
+        # Requisitos mínimos
+        req_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=4)
+        req_box.add_css_class("ia-req-box")
+
+        req_title = Gtk.Label(label="REQUISITOS MÍNIMOS")
+        req_title.add_css_class("ia-req-title")
+        req_title.set_xalign(0)
+        req_box.append(req_title)
+
+        for r in [
+            "CPU    4 núcleos",
+            "RAM    8 GB",
+            "Disco  10 GB libres",
+            "GPU    No necesaria",
+        ]:
+            lbl = Gtk.Label(label=f"· {r}")
+            lbl.add_css_class("ia-req-item")
+            lbl.set_xalign(0)
+            req_box.append(lbl)
+
+        # Estado de componentes
+        state_box = self._build_state_box(state)
+
+        # Botón principal
+        if state["all_ok"]:
+            btn = Gtk.Button(label="✦  Abrir Open WebUI")
+            btn.add_css_class("btn-action")
+            btn.connect("clicked", lambda _: on_launch())
+        else:
+            btn = Gtk.Button(label="⬇  Instalar Rising IA")
+            btn.add_css_class("btn-next")
+            btn.set_sensitive(has_internet)
+            btn.connect("clicked", lambda _: on_install())
+
+        lp = left_panel(
+            make_logo(72),
+            make_tag("RISING IA"),
+            make_title("Tu asistente de IA\nlocal para RisingOS."),
+            make_body(
+                "Rising IA instala y configura automáticamente "
+                "Ollama, el modelo Qwen 2.5 y Open WebUI. "
+                "Todo corre en tu máquina, sin internet, "
+                "sin suscripciones."
+            ),
+            conn,
+            req_box,
+            state_box,
+            btn,
+        )
+
+        # Panel derecho: ilustración de componentes
+        self.append(lp)
+        self.append(right_panel(self._build_stack_illustration()))
+
+    def _build_state_box(self, state: dict) -> Gtk.Box:
+        box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
+        box.add_css_class("ia-req-box")
+        box.set_margin_top(4)
+
+        items = [
+            ("Ollama",      state["ollama"]),
+            ("Docker",      state["docker"]),
+            (MODEL,         state["model"]),
+            ("Open WebUI",  state["webui"]),
+        ]
+        for label, ok in items:
+            row = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=10)
+            icon = Gtk.Label(label="✓" if ok else "○")
+            icon.add_css_class("state-icon-ok" if ok else "state-icon-pending")
+            lbl = Gtk.Label(label=label)
+            lbl.add_css_class("state-label-ok" if ok else "state-label-pending")
+            lbl.set_xalign(0)
+            row.append(icon); row.append(lbl)
+            box.append(row)
+        return box
+
+    def _build_stack_illustration(self) -> Gtk.Widget:
+        """Ilustración visual del stack tecnológico."""
+        outer = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
+        outer.set_halign(Gtk.Align.CENTER)
+        outer.set_valign(Gtk.Align.CENTER)
+
+        title = Gtk.Label(label="Stack de Rising IA")
+        title.add_css_class("stack-illus-title")
+        outer.append(title)
+
+        layers = [
+            ("Open WebUI",  "Interfaz de chat",        "layer-top"),
+            ("Ollama",      "Motor de inferencia",      "layer-mid"),
+            (MODEL,         "Modelo de lenguaje",       "layer-mid"),
+            ("Docker",      "Contenedor Open WebUI",    "layer-bot"),
+        ]
+        for name, desc, css in layers:
+            card = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=2)
+            card.add_css_class("stack-layer")
+            card.add_css_class(css)
+
+            n = Gtk.Label(label=name)
+            n.add_css_class("stack-layer-name")
+            d = Gtk.Label(label=desc)
+            d.add_css_class("stack-layer-desc")
+
+            card.append(n); card.append(d)
+            outer.append(card)
+
+        return outer
+
+
+# ── Vista 2 — Progreso ────────────────────────────────────────────────────────
+
+class ViewProgreso(Gtk.Box):
+    def __init__(self):
+        super().__init__(orientation=Gtk.Orientation.HORIZONTAL, spacing=0)
+        self.add_css_class("screen")
+
+        # Panel izquierdo: pasos con estado
+        self._step_rows = []
+        steps_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
+        steps_box.add_css_class("steps-box")
+
+        for label, _, _ in INSTALL_STEPS:
+            row = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=12)
+            icon = Gtk.Label(label="○")
+            icon.add_css_class("step-icon-pending")
+            icon.set_size_request(20, 20)
+            lbl = Gtk.Label(label=label)
+            lbl.add_css_class("step-label-pending")
+            lbl.set_xalign(0)
+            row.append(icon); row.append(lbl)
+            steps_box.append(row)
+            self._step_rows.append((row, icon, lbl))
+
+        self._progress = Gtk.ProgressBar()
+        self._progress.add_css_class("update-progress")
+        self._progress.set_visible(True)
+
+        self._status_lbl = Gtk.Label(label="Preparando instalación...")
+        self._status_lbl.add_css_class("update-status")
+        self._status_lbl.set_xalign(0)
+        self._status_lbl.set_wrap(True)
+
+        lp = left_panel(
+            make_tag("INSTALANDO"),
+            make_title("Instalando\nRising IA..."),
+            make_body("Esto puede tardar varios minutos dependiendo "
+                      "de tu conexión. No cierres esta ventana."),
+            steps_box,
+            self._progress,
+            self._status_lbl,
+        )
+
+        # Panel derecho: log en vivo
+        self._log_buf = Gtk.TextBuffer()
+        log_view = Gtk.TextView(buffer=self._log_buf)
+        log_view.set_editable(False)
+        log_view.set_cursor_visible(False)
+        log_view.set_monospace(True)
+        log_view.add_css_class("log-view-full")
+        log_view.set_vexpand(True)
+        log_view.set_hexpand(True)
+
+        self._log_scroll = Gtk.ScrolledWindow()
+        self._log_scroll.set_child(log_view)
+        self._log_scroll.set_vexpand(True)
+        self._log_scroll.set_hexpand(True)
+        self._log_scroll.add_css_class("log-scroll-full")
+
+        log_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=0)
+        log_box.add_css_class("log-panel-full")
+        log_box.set_hexpand(True)
+        log_box.set_vexpand(True)
+
+        log_header = Gtk.Label(label="● Salida en tiempo real")
+        log_header.add_css_class("log-header")
+        log_header.set_xalign(0)
+
+        log_box.append(log_header)
+        log_box.append(self._log_scroll)
+
+        self.append(lp)
+        self.append(log_box)
+
+    def append_log(self, text: str):
+        self._log_buf.insert(self._log_buf.get_end_iter(), text)
+        adj = self._log_scroll.get_vadjustment()
+        GLib.idle_add(adj.set_value, adj.get_upper())
+
+    def set_step_active(self, idx: int):
+        _, icon, lbl = self._step_rows[idx]
+        icon.set_label("▶")
+        icon.remove_css_class("step-icon-pending")
+        icon.remove_css_class("step-icon-ok")
+        icon.add_css_class("step-icon-active")
+        lbl.remove_css_class("step-label-pending")
+        lbl.add_css_class("step-label-active")
+
+    def set_step_ok(self, idx: int):
+        _, icon, lbl = self._step_rows[idx]
+        icon.set_label("✓")
+        icon.remove_css_class("step-icon-active")
+        icon.add_css_class("step-icon-ok")
+        lbl.remove_css_class("step-label-active")
+        lbl.add_css_class("step-label-ok")
+
+    def set_step_fail(self, idx: int):
+        _, icon, lbl = self._step_rows[idx]
+        icon.set_label("✕")
+        icon.remove_css_class("step-icon-active")
+        icon.add_css_class("step-icon-fail")
+        lbl.remove_css_class("step-label-active")
+        lbl.add_css_class("step-label-fail")
+
+    def set_status(self, text: str):
+        self._status_lbl.set_label(text)
+
+    def pulse(self):
+        self._progress.pulse()
+
+    def set_fraction(self, f: float):
+        self._progress.set_fraction(f)
+
+
+# ── Vista 3 — Listo ───────────────────────────────────────────────────────────
+
+class ViewListo(Gtk.Box):
+    def __init__(self, on_launch, on_close, success: bool = True):
+        super().__init__(orientation=Gtk.Orientation.HORIZONTAL, spacing=0)
+        self.add_css_class("screen")
+
+        if success:
+            tag_txt   = "INSTALACIÓN COMPLETA"
+            title_txt = "¡Rising IA está\nlista para usar!"
+            body_txt  = (
+                "Ollama, Qwen 2.5 y Open WebUI están instalados "
+                "y corriendo en tu máquina. "
+                "Hacé clic para abrir la interfaz de chat en tu navegador."
+            )
+            btn_launch = Gtk.Button(label="✦  Abrir Open WebUI en el navegador")
+            btn_launch.add_css_class("btn-next")
+            btn_launch.connect("clicked", lambda _: on_launch())
+        else:
+            tag_txt   = "ERROR DE INSTALACIÓN"
+            title_txt = "Algo salió\nmal."
+            body_txt  = (
+                "Ocurrió un error durante la instalación. "
+                "Revisá el log para más detalles. "
+                "Podés intentarlo de nuevo cuando quieras."
+            )
+            btn_launch = Gtk.Button(label="Reintentar")
+            btn_launch.add_css_class("btn-action")
+            btn_launch.connect("clicked", lambda _: on_launch())
+
+        btn_close = Gtk.Button(label="Cerrar")
+        btn_close.add_css_class("btn-prev")
+        btn_close.connect("clicked", lambda _: on_close())
+
+        lp = left_panel(
+            make_logo(72),
+            make_tag(tag_txt),
+            make_title(title_txt),
+            make_body(body_txt),
+            btn_launch,
+            btn_close,
+        )
+
+        # Panel derecho: logo grande + info
+        right_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=16)
+        right_box.set_halign(Gtk.Align.CENTER)
+        right_box.set_valign(Gtk.Align.FILL)
+        right_box.set_vexpand(True)
+
+        spacer_top = Gtk.Box(); spacer_top.set_vexpand(True)
+        spacer_bot = Gtk.Box(); spacer_bot.set_vexpand(True)
+
+        logo_big = make_logo(148)
+        logo_big.set_halign(Gtk.Align.CENTER)
+
+        if success:
+            sub = Gtk.Label(label="Open WebUI · Ollama · Qwen 2.5:3b")
+            sub.add_css_class("final-version")
+            sub.set_halign(Gtk.Align.CENTER)
+            url_lbl = Gtk.Label(label=WEBUI_URL)
+            url_lbl.add_css_class("webui-url-label")
+            url_lbl.set_halign(Gtk.Align.CENTER)
+            right_box.append(spacer_top)
+            right_box.append(logo_big)
+            right_box.append(sub)
+            right_box.append(url_lbl)
+            right_box.append(spacer_bot)
+        else:
+            right_box.append(spacer_top)
+            right_box.append(logo_big)
+            right_box.append(spacer_bot)
+
+        self.append(lp)
+        self.append(right_panel(right_box))
+
+
+# ── Ventana principal ─────────────────────────────────────────────────────────
+
+class IAWindow(Gtk.ApplicationWindow):
+    def __init__(self, app):
+        super().__init__(application=app, title="Rising IA")
+        self.add_css_class("main-window")
+
+        sw, sh = get_screen_size()
+        self.set_default_size(max(820, int(sw * 0.72)), max(520, int(sh * 0.72)))
+        self.set_resizable(True)
+
+        self._stack = Gtk.Stack()
+        self._stack.set_transition_type(Gtk.StackTransitionType.OVER_LEFT_RIGHT)
+        self._stack.set_transition_duration(220)
+        self._stack.set_vexpand(True)
+        self._stack.set_hexpand(True)
+
+        # Detectar estado en background para no bloquear el arranque
+        self._has_internet = False
+        self._state = detect_state()
+
+        root = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=0)
+        root.add_css_class("root-box")
+        root.append(self._stack)
+        self.set_child(root)
+
+        # Construir vista inicio (internet se verifica rápido en thread)
+        threading.Thread(target=self._probe_internet, daemon=True).start()
+
+    def _probe_internet(self):
+        ok = check_internet()
+        GLib.idle_add(self._init_ui, ok)
+
+    def _init_ui(self, has_internet: bool):
+        self._has_internet = has_internet
+
+        self._view_inicio = ViewInicio(
+            has_internet  = has_internet,
+            state         = self._state,
+            on_install    = self._start_install,
+            on_launch     = self._launch_webui,
+        )
+        self._stack.add_named(self._view_inicio, "inicio")
+        self._stack.set_visible_child_name("inicio")
+
+    def _start_install(self):
+        self._view_progreso = ViewProgreso()
+        self._stack.add_named(self._view_progreso, "progreso")
+        self._stack.set_visible_child_name("progreso")
+        threading.Thread(target=self._run_install, daemon=True).start()
+        GLib.timeout_add(150, self._pulse_progress)
+
+    def _pulse_progress(self):
+        # Pulsa solo mientras la vista progreso está activa
+        if self._stack.get_visible_child_name() == "progreso":
+            self._view_progreso.pulse()
+            return True
+        return False
+
+    def _run_install(self):
+        total = len(INSTALL_STEPS)
+        for idx, (label, cmd, needs_root) in enumerate(INSTALL_STEPS):
+            GLib.idle_add(self._view_progreso.set_step_active, idx)
+            GLib.idle_add(self._view_progreso.set_status, f"Ejecutando: {label}...")
+            GLib.idle_add(self._view_progreso.append_log, f"\n▶ {label}\n{'─'*48}\n")
+
+            if needs_root:
+                full_cmd = ["pkexec", "bash", "-c", cmd]
+            else:
+                full_cmd = ["bash", "-c", cmd]
+
+            try:
+                proc = subprocess.Popen(
+                    full_cmd,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.STDOUT,
+                    text=True,
+                    bufsize=1,
+                )
+                for line in proc.stdout:
+                    GLib.idle_add(self._view_progreso.append_log, line)
+                proc.wait(timeout=600)
+
+                if proc.returncode not in (0, None):
+                    GLib.idle_add(self._view_progreso.set_step_fail, idx)
+                    GLib.idle_add(self._view_progreso.set_status,
+                                  f"Error en: {label} (código {proc.returncode})")
+                    GLib.idle_add(self._finish_install, False)
+                    return
+
+            except Exception as e:
+                GLib.idle_add(self._view_progreso.append_log, f"Excepción: {e}\n")
+                GLib.idle_add(self._view_progreso.set_step_fail, idx)
+                GLib.idle_add(self._finish_install, False)
+                return
+
+            GLib.idle_add(self._view_progreso.set_step_ok, idx)
+            GLib.idle_add(self._view_progreso.set_fraction, (idx + 1) / total)
+
+        GLib.idle_add(self._finish_install, True)
+
+    def _finish_install(self, success: bool):
+        view = ViewListo(
+            on_launch = self._launch_webui if success else self._retry,
+            on_close  = self.get_application().quit,
+            success   = success,
+        )
+        self._stack.add_named(view, "listo")
+        self._stack.set_visible_child_name("listo")
+
+    def _launch_webui(self):
+        try:
+            subprocess.Popen(["xdg-open", WEBUI_URL])
+        except Exception:
+            pass
+
+    def _retry(self):
+        # Vuelve a inicio para reintentar
+        self._stack.set_visible_child_name("inicio")
+
+
+# ── App ───────────────────────────────────────────────────────────────────────
+
+class IAApp(Gtk.Application):
+    def __init__(self):
+        super().__init__(application_id="ar.risingarrow.risingos.ia")
+
+    def do_activate(self):
+        load_css()
+        IAWindow(self).present()
+
+
+def main():
+    IAApp().run(sys.argv)
+
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,161 @@
+/* ── rising-ia / style.css ──────────────────────────────────────────────────
+   Paleta: fondo #0c1221 · acento #ff6a3d
+   Comparte todas las clases base con rising-welcome.
+   ──────────────────────────────────────────────────────────────────────────── */
+
+* { font-family: "Inter", "Cantarell", "Sans-Serif"; }
+
+/* ── Base (idéntico a rising-welcome) ────────────────────────────────────── */
+window          { background-color: #0c1221; }
+.root-box       { background-color: #0c1221; }
+.screen         { background: transparent; }
+
+.left-panel {
+  min-width: 340px;
+  padding: 42px 32px 32px 44px;
+  background: transparent;
+  border-right: 1px solid rgba(255,255,255,0.07);
+}
+
+.right-panel {
+  background: #0e1526;
+  padding: 28px 24px;
+}
+
+.screen-tag {
+  font-size: 11px; font-weight: 700;
+  color: #ff6a3d; letter-spacing: 0.14em;
+}
+
+.screen-title {
+  font-size: 24px; font-weight: 500;
+  color: #ffffff; line-height: 1.35;
+}
+
+.screen-body {
+  font-size: 15px;
+  color: rgba(255,255,255,0.55);
+  line-height: 1.75;
+}
+
+/* ── Conexión / estado ────────────────────────────────────────────────────── */
+.conn-indicator { padding: 9px 14px; border-radius: 6px; margin-top: 4px; }
+.conn-ok   { background-color: rgba(39,201,63,0.08);  border: 1px solid rgba(39,201,63,0.25); }
+.conn-fail { background-color: rgba(255,77,77,0.08);  border: 1px solid rgba(255,77,77,0.28); }
+.conn-icon-ok   { font-size: 13px; font-weight: 700; color: #27c93f; }
+.conn-icon-fail { font-size: 13px; font-weight: 700; color: #ff4d4d; }
+.conn-label     { font-size: 13px; color: rgba(255,255,255,0.55); }
+
+/* ── Botones ──────────────────────────────────────────────────────────────── */
+.btn-next {
+  padding: 11px 26px; border-radius: 8px;
+  background-color: #ff6a3d; border: 1px solid #ff6a3d;
+  color: #ffffff; font-size: 14px; font-weight: 600;
+}
+.btn-next:hover  { background-color: #ff8057; border-color: #ff8057; }
+.btn-next:disabled { opacity: 0.38; }
+
+.btn-action {
+  padding: 11px 22px; border-radius: 8px;
+  background-color: rgba(255,106,61,0.10);
+  border: 1px solid rgba(255,106,61,0.32);
+  color: #ff6a3d; font-size: 14px; font-weight: 500;
+}
+.btn-action:hover { background-color: rgba(255,106,61,0.22); border-color: #ff6a3d; }
+.btn-action:disabled { opacity: 0.38; }
+
+.btn-prev {
+  padding: 9px 22px; border-radius: 8px;
+  background-color: transparent;
+  border: 1px solid rgba(255,255,255,0.10);
+  color: rgba(255,255,255,0.42); font-size: 14px;
+}
+.btn-prev:hover { border-color: rgba(255,255,255,0.28); color: rgba(255,255,255,0.82); }
+
+/* ── Barra de progreso ────────────────────────────────────────────────────── */
+progressbar.update-progress { min-height: 6px; }
+progressbar.update-progress trough {
+  background-color: rgba(255,255,255,0.07); border: none; min-height: 6px;
+}
+progressbar.update-progress trough progress {
+  background-color: #ff6a3d; border: none;
+}
+.update-status { font-size: 13px; line-height: 1.5; color: rgba(255,255,255,0.45); }
+
+/* ── Log en vivo ──────────────────────────────────────────────────────────── */
+.log-panel-full {
+  background-color: #080c16;
+  padding: 16px 16px 0 16px;
+}
+.log-header {
+  font-size: 11px; color: #ff6a3d;
+  font-family: monospace; margin-bottom: 10px; letter-spacing: 0.05em;
+}
+.log-scroll-full { background-color: #080c16; }
+.log-view-full {
+  background-color: #080c16;
+  color: rgba(255,255,255,0.65);
+  font-family: monospace; font-size: 12px; padding: 4px 8px;
+}
+
+/* ── Vista Inicio — estado de componentes ────────────────────────────────── */
+.ia-req-box {
+  background-color: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 8px; padding: 12px 14px; margin-top: 4px;
+}
+
+.state-icon-ok      { font-size: 13px; font-weight: 700; color: #27c93f; }
+.state-icon-pending { font-size: 13px; color: rgba(255,255,255,0.22); }
+
+.state-label-ok      { font-size: 13px; color: rgba(255,255,255,0.75); }
+.state-label-pending { font-size: 13px; color: rgba(255,255,255,0.35); }
+
+/* ── Vista Inicio — ilustración del stack ────────────────────────────────── */
+.stack-illus-title {
+  font-size: 11px; font-weight: 700;
+  color: rgba(255,255,255,0.22); letter-spacing: 0.10em;
+  margin-bottom: 8px;
+}
+
+.stack-layer {
+  padding: 10px 20px; border-radius: 8px;
+  min-width: 280px;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.layer-top { background-color: rgba(255,106,61,0.12); border-color: rgba(255,106,61,0.30); }
+.layer-mid { background-color: rgba(255,255,255,0.04); }
+.layer-bot { background-color: rgba(39,100,255,0.08); border-color: rgba(39,100,255,0.22); }
+
+.stack-layer-name {
+  font-size: 14px; font-weight: 600; color: rgba(255,255,255,0.82);
+}
+.stack-layer-desc {
+  font-size: 12px; color: rgba(255,255,255,0.35);
+}
+
+/* ── Vista Progreso — pasos ───────────────────────────────────────────────── */
+.steps-box { margin-top: 4px; }
+
+.step-icon-pending { font-size: 13px; color: rgba(255,255,255,0.20); }
+.step-icon-active  { font-size: 13px; color: #ff6a3d; }
+.step-icon-ok      { font-size: 13px; font-weight: 700; color: #27c93f; }
+.step-icon-fail    { font-size: 13px; font-weight: 700; color: #ff4d4d; }
+
+.step-label-pending { font-size: 13px; color: rgba(255,255,255,0.28); }
+.step-label-active  { font-size: 13px; color: rgba(255,255,255,0.88); font-weight: 500; }
+.step-label-ok      { font-size: 13px; color: rgba(255,255,255,0.55); }
+.step-label-fail    { font-size: 13px; color: #ff4d4d; }
+
+/* ── Vista Listo — URL ────────────────────────────────────────────────────── */
+.webui-url-label {
+  font-size: 13px; font-family: monospace;
+  color: rgba(255,106,61,0.70); letter-spacing: 0.04em;
+  margin-top: 4px;
+}
+
+.final-version {
+  font-size: 11px; color: rgba(255,255,255,0.18);
+  letter-spacing: 0.05em;
+}

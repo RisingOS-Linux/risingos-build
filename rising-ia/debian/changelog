@@ -1,0 +1,8 @@
+rising-ia (1.0.0) trixie; urgency=medium
+
+  * Versión inicial de rising-ia para RisingOS 1.0
+  * Instalación automatizada de Ollama + Qwen 2.5:3b + Open WebUI
+  * Interfaz GTK4 con log en tiempo real y detección de estado
+  * Verificación de componentes instalados al arranque
+
+ -- Francisco Galaso <franciscogalaso@rising-arrow.com>  Fri, 13 Jun 2026 00:00:00 -0300
