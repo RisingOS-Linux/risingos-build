@@ -43,40 +43,40 @@ SVGEOF
 fi
 
 # ── 3. Escribir branding.desc (items 1, 3 — sidebar y botones) ───────────────
-cat > "${BRANDING_DIR}/branding.desc" << 'EOF'
----
-componentName: risingos
-
-shortProductName: RisingOS
-productName:      RisingOS Linux
-shortVersion:     "1.0"
-version:          "1.0 (Trixie)"
-shortVersionedName: RisingOS 1.0
-versionedName:    RisingOS 1.0 (Trixie)
-
-supportUrl:       ""
-releaseNotesUrl:  ""
-donateUrl:        ""
-knownIssuesUrl:   ""
-
-organizationName: Rising Arrow
-organizationUrl:  https://rising-arrow.com
-
-logoImage: risingos-logo.png
-
-slideshowAPI: 2
-slideshow:    show.qml
-
-style:
-  sidebarBackground:       "#0c1221"
-  sidebarText:             "#ffffff"
-  sidebarTextSelect:       "#ff6a3d"
-  sidebarBackgroundSelect: "#1a2340"
-
-windowExpanding:  normal
-windowSize:       "800px,520px"
-windowPlacement:  center
-EOF
+#cat > "${BRANDING_DIR}/branding.desc" << 'EOF'
+#---
+#componentName: risingos
+#
+#shortProductName: RisingOS
+#productName:      RisingOS Linux
+#shortVersion:     "1.0"
+#version:          "1.0 (Trixie)"
+#shortVersionedName: RisingOS 1.0
+#versionedName:    RisingOS 1.0 (Trixie)
+#
+#supportUrl:       ""
+#releaseNotesUrl:  ""
+#donateUrl:        ""
+#knownIssuesUrl:   ""
+#
+#organizationName: Rising Arrow
+#organizationUrl:  https://rising-arrow.com
+#
+#logoImage: risingos-logo.png
+#
+#slideshowAPI: 2
+#slideshow:    show.qml
+#
+#style:
+#  sidebarBackground:       "#0c1221"
+#  sidebarText:             "#ffffff"
+#  sidebarTextSelect:       "#ff6a3d"
+#  sidebarBackgroundSelect: "#1a2340"
+#
+#windowExpanding:  normal
+#windowSize:       "800px,520px"
+#windowPlacement:  center
+#EOF
 echo "[9900] branding.desc escrito"
 
 # ── 4. Escribir show.qml (item 2 — slideshow funcional) ──────────────────────

@@ -1,32 +1,45 @@
+# SPDX-FileCopyrightText: no
+# SPDX-License-Identifier: CC0-1.0
 ---
-componentName: risingos
+componentName:  risingos
 
-shortProductName: RisingOS
-productName:      RisingOS Linux
-shortVersion:     "1.0"
-version:          "1.0 (Trixie)"
-shortVersionedName: RisingOS 1.0
-versionedName:    RisingOS 1.0 (Trixie)
-
-supportUrl:       ""
-releaseNotesUrl:  ""
-donateUrl:        ""
-knownIssuesUrl:   ""
-
-organizationName: Rising Arrow
-organizationUrl:  https://rising-arrow.com
-
-logoImage: risingos-logo.png
-
-slideshowAPI: 2
-slideshow:    show.qml
-
-style:
-  sidebarBackground:       "#0c1221"
-  sidebarText:             "#ffffff"
-  sidebarTextSelect:       "#ff6a3d"
-  sidebarBackgroundSelect: "#1a2340"
+welcomeStyleCalamares:  false
+welcomeExpandingLogo:   true
 
 windowExpanding:  normal
-windowSize:       "800px,520px"
+windowSize:       800px,520px
 windowPlacement:  center
+
+sidebar:    widget
+navigation: widget
+
+strings:
+    productName:          RisingOS Linux
+    shortProductName:     RisingOS
+    version:              1.0
+    shortVersion:         ""
+    versionedName:        RisingOS 1.0 (Trixie)
+    shortVersionedName:   RisingOS 1.0
+    bootloaderEntryName:  RisingOS
+    productUrl:           "https://rising-arrow.com"
+    supportUrl:           ""
+    knownIssuesUrl:       ""
+    releaseNotesUrl:      ""
+    donateUrl:            ""
+
+images:
+    productLogo:  "risingos-logo.png"
+
+style:
+    SidebarBackground:        "#0c1221"
+    SidebarText:              "#ffffff"
+    SidebarTextCurrent:       "#ff6a3d"
+    SidebarBackgroundCurrent: "#1a2340"
+
+slideshow:    "show.qml"
+slideshowAPI: 2
+
+uploadServer:
+    type:      "fiche"
+    url:       "http://termbin.com:9999"
+    sizeLimit: -1
