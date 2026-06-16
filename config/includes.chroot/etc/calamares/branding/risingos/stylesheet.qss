@@ -1,0 +1,37 @@
+/* RisingOS — Calamares stylesheet */
+
+/* Ocultar botones Ayuda, Notas, Donate, Known Issues */
+#donateButton,
+#supportButton,
+#releaseNotesButton,
+#knownIssuesButton {
+    display: none;
+}
+
+/* Ventana principal */
+#mainApp {
+    background-color: #0c1221;
+    color: #e8eaf0;
+}
+
+/* Botones de navegación (Siguiente, Atrás, Instalar) */
+QPushButton {
+    background-color: #1a2340;
+    color: #e8eaf0;
+    border: 1px solid #1a2340;
+    border-radius: 4px;
+    padding: 6px 14px;
+}
+
+QPushButton:hover {
+    background-color: #ff6a3d;
+    color: #ffffff;
+    border-color: #ff6a3d;
+}
+
+QPushButton#nextButton,
+QPushButton#installButton {
+    background-color: #ff6a3d;
+    color: #ffffff;
+    font-weight: bold;
+}

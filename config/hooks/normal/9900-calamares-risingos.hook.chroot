@@ -54,36 +54,24 @@ version:          "1.0 (Trixie)"
 shortVersionedName: RisingOS 1.0
 versionedName:    RisingOS 1.0 (Trixie)
 
-# Vacíos = sin botones Ayuda ni Notas de lanzamiento (item 3)
 supportUrl:       ""
 releaseNotesUrl:  ""
 donateUrl:        ""
 knownIssuesUrl:   ""
 
 organizationName: Rising Arrow
-organizationUrl:  https://rising-arrow.online
+organizationUrl:  https://rising-arrow.com
 
 logoImage: risingos-logo.png
 
-# Slideshow API 2 (item 2)
 slideshowAPI: 2
 slideshow:    show.qml
 
-# Colores (item 1 — sidebar legible)
 style:
   sidebarBackground:       "#0c1221"
   sidebarText:             "#ffffff"
   sidebarTextSelect:       "#ff6a3d"
   sidebarBackgroundSelect: "#1a2340"
-  buttonFlatText:          "#ffffff"
-  buttonFlatBackground:    "#ff6a3d"
-  progressColor:           "#ff6a3d"
-  progressBackground:      "#1a2340"
-  backgroundColor:         "#0c1221"
-  backgroundItem:          "#111827"
-  textColor:               "#e8eaf0"
-  textHighlight:           "#ff6a3d"
-  welcomeStyleCalamares:   false
 
 windowExpanding:  normal
 windowSize:       "800px,520px"

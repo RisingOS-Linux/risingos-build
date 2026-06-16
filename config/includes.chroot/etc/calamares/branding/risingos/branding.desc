@@ -1,7 +1,6 @@
 ---
 componentName: risingos
 
-# ── Metadatos ────────────────────────────────────────────────────────────────
 shortProductName: RisingOS
 productName:      RisingOS Linux
 shortVersion:     "1.0"
@@ -9,50 +8,25 @@ version:          "1.0 (Trixie)"
 shortVersionedName: RisingOS 1.0
 versionedName:    RisingOS 1.0 (Trixie)
 
-# URLs — dejar vacíos elimina los botones Ayuda y Notas de lanzamiento (item 3)
 supportUrl:       ""
 releaseNotesUrl:  ""
 donateUrl:        ""
 knownIssuesUrl:   ""
 
-# Organización
 organizationName: Rising Arrow
-organizationUrl:  https://rising-arrow.online
+organizationUrl:  https://rising-arrow.com
 
-# Logo (ruta relativa al directorio del branding)
-logoImage:        risingos-logo.png
+logoImage: risingos-logo.png
 
-# ── Slideshow (item 2) ───────────────────────────────────────────────────────
-# Usar "show" con ruta explícita resuelve el problema del QML en blanco
 slideshowAPI: 2
 slideshow:    show.qml
 
-# ── Colores de UI (item 1) ───────────────────────────────────────────────────
 style:
-  # Sidebar
-  sidebarBackground:    "#0c1221"
-  sidebarText:          "#ffffff"
-  sidebarTextSelect:    "#ff6a3d"
+  sidebarBackground:       "#0c1221"
+  sidebarText:             "#ffffff"
+  sidebarTextSelect:       "#ff6a3d"
   sidebarBackgroundSelect: "#1a2340"
 
-  # Botones principales
-  buttonFlatText:       "#ffffff"
-  buttonFlatBackground: "#ff6a3d"
-
-  # Barra de progreso
-  progressColor:        "#ff6a3d"
-  progressBackground:   "#1a2340"
-
-  # Ventana general
-  backgroundColor:      "#0c1221"
-  backgroundItem:       "#111827"
-  textColor:            "#e8eaf0"
-  textHighlight:        "#ff6a3d"
-
-  # Página de bienvenida
-  welcomeStyleCalamares: false
-
-# ── Ventana ──────────────────────────────────────────────────────────────────
 windowExpanding:  normal
 windowSize:       "800px,520px"
 windowPlacement:  center
