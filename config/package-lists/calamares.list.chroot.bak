@@ -2,6 +2,7 @@
 # Instalador gráfico Calamares y dependencias para RisingOS
 
 calamares
+calamares-settings-debian
 dosfstools
 btrfs-progs
 e2fsprogs

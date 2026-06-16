@@ -363,7 +363,7 @@ class ScreenActualizaciones(Gtk.Box):
 
     def _run_update(self):
         ok = True
-        for cmd in [["pkexec", "apt-get", "-y", "update"], ["pkexec", "apt-get", "-y", "upgrade"]]:
+        for cmd in [["sudo", "apt-get", "-y", "update"], ["sudo", "apt-get", "-y", "upgrade"]]:
             try:
                 proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, bufsize=1)
                 for line in proc.stdout:
@@ -650,7 +650,7 @@ class ScreenFinal(Gtk.Box):
         links_data = [
             ("github.com/RisingOS-Linux",  "https://github.com/RisingOS-Linux"),
             ("Comunidad · Foro de soporte", "https://github.com/RisingOS-Linux/discussions"),
-            ("rising-arrow.com.ar",        "https://rising-arrow.com.ar"),
+            ("rising-arrow.com",        "https://rising-arrow.com"),
         ]
         for label, url in links_data:
             btn = Gtk.LinkButton(uri=url, label=f"→  {label}")
@@ -725,7 +725,7 @@ class ScreenFinal(Gtk.Box):
 
     def _launch_installer(self, _btn):
         try:
-            subprocess.Popen(["pkexec", "/usr/bin/calamares"])
+            subprocess.Popen(["sudo", "/usr/bin/calamares"])
         except FileNotFoundError:
             pass
 
