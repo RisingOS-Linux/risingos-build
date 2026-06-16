@@ -1,0 +1,15 @@
+# calamares.list.chroot
+# Instalador gráfico Calamares y dependencias para RisingOS
+
+calamares
+calamares-settings-debian
+dosfstools
+btrfs-progs
+e2fsprogs
+squashfs-tools
+rsync
+os-prober
+grub-efi-amd64
+efibootmgr
+parted
+libparted2

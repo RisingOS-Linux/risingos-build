@@ -1,0 +1,415 @@
+/* =============================================================================
+ * RisingOS GTK Theme — gtk.css
+ * Paleta: fondo oscuro #0c1221, acento #ff6a3d
+ * Compatible con GTK 3.20+ y GTK 4
+ *
+ * Instalar en: /usr/share/themes/RisingOS-GTK/gtk-3.0/gtk.css
+ *              /usr/share/themes/RisingOS-GTK/gtk-4.0/gtk.css
+ * ============================================================================= */
+
+/* ── Variables de color ─────────────────────────────────────────────────────── */
+@define-color window_bg_color          #0c1221;
+@define-color window_fg_color          #e8eaf0;
+
+@define-color view_bg_color            #111827;
+@define-color view_fg_color            #e8eaf0;
+
+@define-color headerbar_bg_color       #0d1425;
+@define-color headerbar_fg_color       #e8eaf0;
+@define-color headerbar_border_color   #1a2340;
+
+@define-color sidebar_bg_color         #0a0f1e;
+@define-color sidebar_fg_color         #c8cce0;
+
+@define-color card_bg_color            #111827;
+@define-color card_fg_color            #e8eaf0;
+@define-color card_shade_color         rgba(0,0,0,0.25);
+
+@define-color popover_bg_color         #131f35;
+@define-color popover_fg_color         #e8eaf0;
+
+@define-color dialog_bg_color          #0d1425;
+@define-color dialog_fg_color          #e8eaf0;
+
+@define-color accent_color             #ff6a3d;
+@define-color accent_bg_color          #ff6a3d;
+@define-color accent_fg_color          #ffffff;
+@define-color accent_shadow_color      rgba(255, 106, 61, 0.3);
+
+@define-color destructive_color        #e05252;
+@define-color destructive_bg_color     #c0392b;
+@define-color destructive_fg_color     #ffffff;
+
+@define-color success_color            #5cb85c;
+@define-color warning_color            #f0ad4e;
+@define-color error_color              #e05252;
+
+@define-color border_color             #1a2340;
+@define-color dim_label_color          #6b7694;
+
+@define-color button_bg_color          #1a2340;
+@define-color button_fg_color          #e8eaf0;
+@define-color button_hover_bg          #1f2d52;
+@define-color button_active_bg         #ff6a3d;
+
+/* ── Ventana base ────────────────────────────────────────────────────────────── */
+window,
+.background {
+    background-color: @window_bg_color;
+    color:            @window_fg_color;
+}
+
+/* ── Headerbar ───────────────────────────────────────────────────────────────── */
+headerbar {
+    background-color: @headerbar_bg_color;
+    color:            @headerbar_fg_color;
+    border-bottom:    1px solid @headerbar_border_color;
+    padding:          6px 12px;
+    min-height:       42px;
+    box-shadow:       none;
+}
+
+headerbar .title {
+    font-weight: bold;
+    font-size:   13px;
+    color:       @headerbar_fg_color;
+}
+
+headerbar .subtitle {
+    font-size: 11px;
+    color:     @dim_label_color;
+}
+
+/* Botones de la headerbar (cerrar, minimizar, maximizar) */
+headerbar button.titlebutton {
+    background-color: transparent;
+    border:           none;
+    color:            @headerbar_fg_color;
+    border-radius:    50%;
+    min-width:        22px;
+    min-height:       22px;
+    padding:          2px;
+}
+
+headerbar button.titlebutton:hover {
+    background-color: rgba(255, 106, 61, 0.2);
+    color:            @accent_color;
+}
+
+headerbar button.titlebutton.close:hover {
+    background-color: @destructive_bg_color;
+    color:            @destructive_fg_color;
+}
+
+/* ── Botones ─────────────────────────────────────────────────────────────────── */
+button {
+    background-color: @button_bg_color;
+    color:            @button_fg_color;
+    border:           1px solid @border_color;
+    border-radius:    6px;
+    padding:          6px 14px;
+    transition:       background-color 150ms ease, border-color 150ms ease;
+    box-shadow:       none;
+}
+
+button:hover {
+    background-color: @button_hover_bg;
+    border-color:     rgba(255, 106, 61, 0.4);
+}
+
+button:active,
+button:checked {
+    background-color: @accent_bg_color;
+    color:            @accent_fg_color;
+    border-color:     @accent_bg_color;
+}
+
+button:disabled {
+    background-color: rgba(26, 35, 64, 0.5);
+    color:            @dim_label_color;
+    border-color:     @border_color;
+}
+
+/* Botón sugerido (primary) */
+button.suggested-action {
+    background-color: @accent_bg_color;
+    color:            @accent_fg_color;
+    border-color:     @accent_bg_color;
+    font-weight:      bold;
+}
+
+button.suggested-action:hover {
+    background-color: #ff7d55;
+    border-color:     #ff7d55;
+}
+
+/* Botón destructivo */
+button.destructive-action {
+    background-color: @destructive_bg_color;
+    color:            @destructive_fg_color;
+    border-color:     @destructive_bg_color;
+}
+
+/* ── Entradas de texto ───────────────────────────────────────────────────────── */
+entry,
+spinbutton,
+.entry {
+    background-color: @view_bg_color;
+    color:            @view_fg_color;
+    border:           1px solid @border_color;
+    border-radius:    6px;
+    padding:          6px 10px;
+    caret-color:      @accent_color;
+    box-shadow:       none;
+}
+
+entry:focus,
+spinbutton:focus {
+    border-color: @accent_color;
+    box-shadow:   0 0 0 2px @accent_shadow_color;
+}
+
+entry:disabled {
+    background-color: rgba(17, 24, 39, 0.5);
+    color:            @dim_label_color;
+}
+
+/* ── Menús ───────────────────────────────────────────────────────────────────── */
+menu,
+.menu,
+popover.menu {
+    background-color: @popover_bg_color;
+    color:            @popover_fg_color;
+    border:           1px solid @border_color;
+    border-radius:    8px;
+    padding:          4px;
+    box-shadow:       0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+menuitem,
+.menuitem {
+    padding:      6px 12px;
+    border-radius: 4px;
+}
+
+menuitem:hover,
+.menuitem:hover {
+    background-color: rgba(255, 106, 61, 0.15);
+    color:            @accent_color;
+}
+
+menuitem:disabled {
+    color: @dim_label_color;
+}
+
+/* ── Sidebar / Panel ─────────────────────────────────────────────────────────── */
+.sidebar,
+.sidebar-pane,
+placessidebar {
+    background-color: @sidebar_bg_color;
+    color:            @sidebar_fg_color;
+    border-right:     1px solid @border_color;
+}
+
+.sidebar row:selected,
+placessidebar row:selected {
+    background-color: rgba(255, 106, 61, 0.2);
+    color:            @accent_color;
+}
+
+.sidebar row:hover,
+placessidebar row:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* ── Scrollbars ──────────────────────────────────────────────────────────────── */
+scrollbar {
+    background-color: transparent;
+}
+
+scrollbar slider {
+    background-color: rgba(255, 106, 61, 0.4);
+    border-radius:    4px;
+    min-width:        6px;
+    min-height:       6px;
+}
+
+scrollbar slider:hover {
+    background-color: rgba(255, 106, 61, 0.7);
+}
+
+/* ── Notebook / Pestañas ─────────────────────────────────────────────────────── */
+notebook header {
+    background-color: @headerbar_bg_color;
+    border-bottom:    1px solid @border_color;
+}
+
+notebook tab {
+    background-color: transparent;
+    color:            @dim_label_color;
+    padding:          8px 16px;
+    border-bottom:    2px solid transparent;
+}
+
+notebook tab:checked {
+    color:           @window_fg_color;
+    border-bottom:   2px solid @accent_color;
+}
+
+notebook tab:hover {
+    color: @window_fg_color;
+}
+
+/* ── Checkboxes y Radios ─────────────────────────────────────────────────────── */
+checkbutton check,
+radiobutton radio {
+    background-color: @view_bg_color;
+    border:           1px solid @border_color;
+    border-radius:    4px;
+    min-width:        16px;
+    min-height:       16px;
+}
+
+checkbutton check:checked,
+radiobutton radio:checked {
+    background-color: @accent_bg_color;
+    border-color:     @accent_bg_color;
+    color:            @accent_fg_color;
+}
+
+radiobutton radio {
+    border-radius: 50%;
+}
+
+/* ── Switch ──────────────────────────────────────────────────────────────────── */
+switch {
+    background-color: @button_bg_color;
+    border:           1px solid @border_color;
+    border-radius:    12px;
+    min-width:        40px;
+    min-height:       22px;
+}
+
+switch:checked {
+    background-color: @accent_bg_color;
+    border-color:     @accent_bg_color;
+}
+
+switch slider {
+    background-color: #ffffff;
+    border-radius:    50%;
+    min-width:        16px;
+    min-height:       16px;
+    margin:           2px;
+}
+
+/* ── Progress bar ────────────────────────────────────────────────────────────── */
+progressbar trough {
+    background-color: @button_bg_color;
+    border-radius:    4px;
+    min-height:       6px;
+}
+
+progressbar progress {
+    background-color: @accent_bg_color;
+    border-radius:    4px;
+}
+
+/* ── Scale / Slider ──────────────────────────────────────────────────────────── */
+scale trough {
+    background-color: @button_bg_color;
+    border-radius:    4px;
+    min-height:       4px;
+}
+
+scale highlight {
+    background-color: @accent_bg_color;
+    border-radius:    4px;
+}
+
+scale slider {
+    background-color: @accent_bg_color;
+    border-radius:    50%;
+    min-width:        16px;
+    min-height:       16px;
+    box-shadow:       0 1px 4px rgba(0, 0, 0, 0.4);
+}
+
+/* ── Treeview / Listview ─────────────────────────────────────────────────────── */
+treeview,
+listview {
+    background-color: @view_bg_color;
+    color:            @view_fg_color;
+}
+
+treeview:selected,
+listview row:selected {
+    background-color: rgba(255, 106, 61, 0.2);
+    color:            @accent_color;
+}
+
+treeview header button {
+    background-color: @headerbar_bg_color;
+    color:            @dim_label_color;
+    border:           none;
+    border-bottom:    1px solid @border_color;
+    border-radius:    0;
+}
+
+/* ── Tooltips ────────────────────────────────────────────────────────────────── */
+tooltip {
+    background-color: #1a2340;
+    color:            @window_fg_color;
+    border:           1px solid @border_color;
+    border-radius:    6px;
+    padding:          4px 8px;
+}
+
+/* ── Diálogos ────────────────────────────────────────────────────────────────── */
+dialog {
+    background-color: @dialog_bg_color;
+    color:            @dialog_fg_color;
+    border-radius:    12px;
+    box-shadow:       0 8px 32px rgba(0, 0, 0, 0.6);
+}
+
+/* ── Frames y separadores ────────────────────────────────────────────────────── */
+frame {
+    border:        1px solid @border_color;
+    border-radius: 8px;
+    padding:       2px;
+}
+
+separator {
+    background-color: @border_color;
+    min-height:       1px;
+    min-width:        1px;
+}
+
+/* ── Etiquetas de estado ─────────────────────────────────────────────────────── */
+.dim-label  { color: @dim_label_color; }
+.success    { color: @success_color; }
+.warning    { color: @warning_color; }
+.error      { color: @error_color; }
+
+/* ── Barra de estado / Statusbar ─────────────────────────────────────────────── */
+statusbar {
+    background-color: @sidebar_bg_color;
+    color:            @dim_label_color;
+    border-top:       1px solid @border_color;
+    font-size:        11px;
+    padding:          4px 8px;
+}
+
+/* ── Barra de tareas XFCE (xfce4-panel) ─────────────────────────────────────── */
+.xfce4-panel {
+    background-color: #080e1a;
+    color:            @window_fg_color;
+    border-top:       1px solid @border_color;
+}
+
+/* ── Selección de texto ───────────────────────────────────────────────────────── */
+selection {
+    background-color: rgba(255, 106, 61, 0.3);
+    color:            @window_fg_color;
+}

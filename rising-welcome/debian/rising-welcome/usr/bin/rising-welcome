@@ -36,6 +36,13 @@ def check_internet(timeout=2.5) -> bool:
     except OSError:
         return False
 
+def is_live_session() -> bool:
+    """Detecta si estamos corriendo en una sesión live."""
+    try:
+        with open("/proc/cmdline") as f:
+            return "boot=live" in f.read()
+    except Exception:
+        return False
 
 def load_css():
     provider = Gtk.CssProvider()
@@ -655,7 +662,14 @@ class ScreenFinal(Gtk.Box):
         )
         self._check.add_css_class("dismiss-check")
 
-        lp = left_panel(
+        # Botón instalar — solo en sesión live
+        btn_install = None
+        if is_live_session():
+            btn_install = Gtk.Button(label="💿  Instalar RisingOS")
+            btn_install.add_css_class("btn-install")
+            btn_install.connect("clicked", self._launch_installer)
+
+        widgets = [
             logo_img,
             logo_title,
             logo_sub,
@@ -667,7 +681,11 @@ class ScreenFinal(Gtk.Box):
             ),
             links_box,
             self._check,
-        )
+        ]
+        if btn_install is not None:
+            widgets.insert(4, btn_install)
+
+        lp = left_panel(*widgets)
 
         # Panel derecho: logo grande + crédito — centrado real con spacers
         right_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=16)
@@ -704,6 +722,12 @@ class ScreenFinal(Gtk.Box):
 
     def should_dismiss(self) -> bool:
         return self._check.get_active()
+
+    def _launch_installer(self, _btn):
+        try:
+            subprocess.Popen(["pkexec", "/usr/bin/calamares"])
+        except FileNotFoundError:
+            pass
 
 # ── Ventana principal ─────────────────────────────────────────────────────────
 

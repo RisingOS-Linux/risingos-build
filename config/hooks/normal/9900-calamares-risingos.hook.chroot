@@ -1,0 +1,317 @@
+#!/bin/bash
+# =============================================================================
+# RisingOS — Hook 9900: Configuración completa de Calamares
+# Resuelve: items 1 (sidebar), 2 (slideshow), 3 (botones), 4 (GRUB),
+#           5 (ícono instalar), 6 (calamares-install-debian.desktop), 7 (sudoers)
+# Se ejecuta dentro del chroot de live-build (sistema live, NO el instalado)
+# =============================================================================
+set -euo pipefail
+
+BRANDING_DIR="/etc/calamares/branding/risingos"
+MODULES_DIR="/etc/calamares/modules"
+LOGO_SRC="/usr/share/rising-welcome/assets/icons/logo-256.png"
+LOGO_DST="${BRANDING_DIR}/risingos-logo.png"
+SKEL_DESKTOP="/etc/skel/Desktop"
+SKEL_AUTOSTART="/etc/skel/.config/autostart"
+
+echo "[9900] === Iniciando configuración de Calamares para RisingOS ==="
+
+# ── 0. Asegurar que Calamares esté instalado ──────────────────────────────────
+if ! command -v calamares &>/dev/null; then
+    echo "[9900] WARN: calamares no encontrado, saltando configuración"
+    exit 0
+fi
+
+# ── 1. Crear directorio de branding ──────────────────────────────────────────
+mkdir -p "${BRANDING_DIR}"
+mkdir -p "${MODULES_DIR}"
+
+# ── 2. Copiar logo al branding (item 7) ──────────────────────────────────────
+if [ -f "${LOGO_SRC}" ]; then
+    cp "${LOGO_SRC}" "${LOGO_DST}"
+    echo "[9900] Logo copiado: ${LOGO_DST}"
+else
+    echo "[9900] WARN: Logo no encontrado en ${LOGO_SRC}"
+    # Crear placeholder SVG como fallback
+    cat > "${LOGO_DST%.png}.svg" << 'SVGEOF'
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <rect width="256" height="256" rx="32" fill="#0c1221"/>
+  <text x="128" y="148" font-family="sans-serif" font-size="80" font-weight="bold"
+        text-anchor="middle" fill="#ff6a3d">R</text>
+</svg>
+SVGEOF
+fi
+
+# ── 3. Escribir branding.desc (items 1, 3 — sidebar y botones) ───────────────
+cat > "${BRANDING_DIR}/branding.desc" << 'EOF'
+---
+componentName: risingos
+
+shortProductName: RisingOS
+productName:      RisingOS Linux
+shortVersion:     "1.0"
+version:          "1.0 (Trixie)"
+shortVersionedName: RisingOS 1.0
+versionedName:    RisingOS 1.0 (Trixie)
+
+# Vacíos = sin botones Ayuda ni Notas de lanzamiento (item 3)
+supportUrl:       ""
+releaseNotesUrl:  ""
+donateUrl:        ""
+knownIssuesUrl:   ""
+
+organizationName: Rising Arrow
+organizationUrl:  https://rising-arrow.online
+
+logoImage: risingos-logo.png
+
+# Slideshow API 2 (item 2)
+slideshowAPI: 2
+slideshow:    show.qml
+
+# Colores (item 1 — sidebar legible)
+style:
+  sidebarBackground:       "#0c1221"
+  sidebarText:             "#ffffff"
+  sidebarTextSelect:       "#ff6a3d"
+  sidebarBackgroundSelect: "#1a2340"
+  buttonFlatText:          "#ffffff"
+  buttonFlatBackground:    "#ff6a3d"
+  progressColor:           "#ff6a3d"
+  progressBackground:      "#1a2340"
+  backgroundColor:         "#0c1221"
+  backgroundItem:          "#111827"
+  textColor:               "#e8eaf0"
+  textHighlight:           "#ff6a3d"
+  welcomeStyleCalamares:   false
+
+windowExpanding:  normal
+windowSize:       "800px,520px"
+windowPlacement:  center
+EOF
+echo "[9900] branding.desc escrito"
+
+# ── 4. Escribir show.qml (item 2 — slideshow funcional) ──────────────────────
+cat > "${BRANDING_DIR}/show.qml" << 'QMLEOF'
+import QtQuick 2.15
+import QtQuick.Controls 2.15
+
+Item {
+    id: root
+    width:  800
+    height: 520
+
+    function onActivate()  { timer.start() }
+    function onLeave()     { timer.stop()  }
+
+    property int currentSlide: 0
+    property var slides: [
+        { title: "Bienvenido a RisingOS",      body: "Una distribución Linux moderna\npara Latinoamérica.",                    icon: "🚀" },
+        { title: "Inteligencia Artificial",     body: "Rising IA: instalá Ollama, Qwen y\nOpen WebUI con un solo clic.",         icon: "🤖" },
+        { title: "Rising Welcome",              body: "Tu guía desde el primer arranque:\nconfigurá y personalizá tu sistema.",  icon: "🛠" },
+        { title: "Comunidad latinoamericana",   body: "Soporte en español y repositorios\npensados para la región.",             icon: "🌎" }
+    ]
+
+    Timer {
+        id: timer
+        interval: 5000
+        repeat:   true
+        onTriggered: currentSlide = (currentSlide + 1) % slides.length
+    }
+
+    Rectangle { anchors.fill: parent; color: "#0c1221" }
+
+    Column {
+        anchors.centerIn: parent
+        spacing: 24
+        width: parent.width * 0.75
+
+        Text {
+            text: slides[currentSlide].icon
+            font.pixelSize: 64
+            anchors.horizontalCenter: parent.horizontalCenter
+        }
+        Text {
+            text: slides[currentSlide].title
+            color: "#ff6a3d"
+            font.pixelSize: 26
+            font.bold: true
+            anchors.horizontalCenter: parent.horizontalCenter
+            horizontalAlignment: Text.AlignHCenter
+        }
+        Text {
+            text: slides[currentSlide].body
+            color: "#e8eaf0"
+            font.pixelSize: 15
+            wrapMode: Text.WordWrap
+            anchors.horizontalCenter: parent.horizontalCenter
+            horizontalAlignment: Text.AlignHCenter
+            width: parent.width
+        }
+    }
+
+    Row {
+        anchors { horizontalCenter: parent.horizontalCenter; bottom: parent.bottom; bottomMargin: 28 }
+        spacing: 10
+        Repeater {
+            model: slides.length
+            Rectangle {
+                width:  index === currentSlide ? 22 : 8
+                height: 8; radius: 4
+                color:  index === currentSlide ? "#ff6a3d" : "#1a2340"
+                Behavior on width { NumberAnimation { duration: 300 } }
+                Behavior on color { ColorAnimation  { duration: 300 } }
+            }
+        }
+    }
+}
+QMLEOF
+echo "[9900] show.qml escrito"
+
+# ── 5. Escribir settings.conf (item 7 — con shellprocess-grub en exec) ────────
+cat > "/etc/calamares/settings.conf" << 'EOF'
+modules-search: [ local, /usr/lib/calamares/modules ]
+sequence:
+- show:
+  - welcome
+  - locale
+  - keyboard
+  - partition
+  - users
+  - summary
+- exec:
+  - partition
+  - mount
+  - unpackfs
+  - machineid
+  - fstab
+  - locale
+  - keyboard
+  - localecfg
+  - users
+  - displaymanager
+  - networkcfg
+  - hwclock
+  - services-systemd
+  - grubcfg
+  - bootloader
+  - shellprocess-grub
+  - removeuser
+  - umount
+- show:
+  - finished
+branding: risingos
+prompt-install: false
+dont-chroot: false
+disable-cancel-during-exec: true
+EOF
+echo "[9900] settings.conf escrito (con shellprocess-grub)"
+
+# ── 6. Módulo shellprocess-grub (item 4) ──────────────────────────────────────
+cat > "${MODULES_DIR}/shellprocess-grub.conf" << 'EOF'
+# Copia el tema GRUB de RisingOS al sistema instalado
+dontChroot: false
+script:
+  - "-": "mkdir -p /boot/grub/themes/risingos"
+  - "-": "test -d /usr/share/grub/themes/risingos && cp -r /usr/share/grub/themes/risingos/. /boot/grub/themes/risingos/ || true"
+  - "-": "grep -q '^GRUB_THEME=' /etc/default/grub && sed -i 's|^GRUB_THEME=.*|GRUB_THEME=\"/boot/grub/themes/risingos/theme.txt\"|' /etc/default/grub || echo 'GRUB_THEME=\"/boot/grub/themes/risingos/theme.txt\"' >> /etc/default/grub"
+  - "-": "update-grub"
+EOF
+echo "[9900] shellprocess-grub.conf escrito"
+
+# ── 7. /etc/sudoers.d/calamares (item 7) ─────────────────────────────────────
+mkdir -p /etc/sudoers.d
+cat > /etc/sudoers.d/calamares << 'EOF'
+# Permite al usuario live ejecutar Calamares sin contraseña
+user ALL=(ALL) NOPASSWD: /usr/bin/calamares, /usr/local/bin/risingos-install
+EOF
+chmod 440 /etc/sudoers.d/calamares
+echo "[9900] sudoers.d/calamares escrito"
+
+# ── 8. /usr/local/bin/risingos-install (item 7) ───────────────────────────────
+cat > /usr/local/bin/risingos-install << 'EOF'
+#!/bin/bash
+# Lanzador de Calamares con privilegios para RisingOS
+exec sudo /usr/bin/calamares "$@"
+EOF
+chmod +x /usr/local/bin/risingos-install
+echo "[9900] risingos-install escrito"
+
+# ── 9. Limpiar Desktop del skel (items 5 y 6) ────────────────────────────────
+echo "[9900] Limpiando Desktop del skel..."
+
+# Eliminar calamares-install-debian.desktop (item 6 — 0 bytes, lo crea calamares-settings-debian)
+for f in \
+    "${SKEL_DESKTOP}/calamares-install-debian.desktop" \
+    "${SKEL_DESKTOP}/install-debian.desktop" \
+    "${SKEL_DESKTOP}/calamares.desktop"; do
+    if [ -f "$f" ]; then
+        rm -f "$f"
+        echo "[9900] Eliminado: $f"
+    fi
+done
+
+# Asegurar que solo existe el .desktop de RisingOS en el Desktop
+# (el de la fase anterior lo pone el includes.chroot)
+echo "[9900] Desktop del skel limpio"
+
+# ── 10. Autostart: solo rising-welcome (item 5) ───────────────────────────────
+# Verificar que rising-welcome.desktop tiene la guarda de sesión live
+RWAUTO="${SKEL_AUTOSTART}/rising-welcome.desktop"
+if [ -f "${RWAUTO}" ]; then
+    # Si ya tiene OnlyShowIn o X-GNOME-Autostart-enabled, no tocar
+    if ! grep -q "^X-RisingOS-LiveGuard=" "${RWAUTO}"; then
+        echo "" >> "${RWAUTO}"
+        echo "# Solo ejecutar en sesión instalada (no en live)" >> "${RWAUTO}"
+        echo "X-RisingOS-LiveGuard=true" >> "${RWAUTO}"
+    fi
+    echo "[9900] rising-welcome.desktop verificado"
+fi
+
+# ── 11. Copiar tema GRUB al sistema live (para que shellprocess lo encuentre) ──
+GRUB_THEME_SRC="/usr/share/grub/themes/risingos"
+mkdir -p "${GRUB_THEME_SRC}"
+
+# theme.txt básico si no existe aún
+if [ ! -f "${GRUB_THEME_SRC}/theme.txt" ]; then
+    cat > "${GRUB_THEME_SRC}/theme.txt" << 'GRUBEOF'
+title-text:   ""
+desktop-color: "#0c1221"
+
++ boot_menu {
+    left:   15%
+    top:    28%
+    width:  70%
+    height: 45%
+    item_color:            "#e8eaf0"
+    item_font:             "DejaVu Sans Regular 14"
+    item_height:           36
+    item_padding:          14
+    item_spacing:          4
+    selected_item_color:   "#ffffff"
+    selected_item_font:    "DejaVu Sans Bold 14"
+    + highlight {
+        style: box
+        color: "#ff6a3d"
+        left:  0
+        width: 100%
+        height: 36
+    }
+}
+
++ label {
+    top:    85%
+    left:   0
+    width:  100%
+    height: 6%
+    align:  center
+    color:  "#6b7694"
+    font:   "DejaVu Sans Regular 11"
+    text:   "Use ↑↓ para navegar  •  Enter para iniciar"
+}
+GRUBEOF
+    echo "[9900] theme.txt de GRUB creado en ${GRUB_THEME_SRC}"
+fi
+rm -f /home/user/Desktop/calamares-install-debian.desktop
+rm -f /home/user/Desktop/install-debian.desktop
+echo "[9900] === Configuración de Calamares completada ==="

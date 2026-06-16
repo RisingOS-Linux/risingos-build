@@ -14,37 +14,30 @@ thunar-media-tags-plugin
 ristretto
 mousepad
 mugshot
-
 # === DISPLAY MANAGER ===
 lightdm
 lightdm-gtk-greeter
 lightdm-gtk-greeter-settings
-
 # === AUDIO ===
 pulseaudio
 pavucontrol
-
 # === OFFICE ===
 libreoffice
 libreoffice-l10n-es
 libreoffice-help-es
 libreoffice-gtk3
-
 # === INTERNET ===
 firefox-esr
 firefox-esr-l10n-es-ar
 thunderbird
 thunderbird-l10n-es-ar
-
 # === MULTIMEDIA ===
 vlc
 ffmpeg
-
 # === FUENTES Y CODECS ===
 fonts-liberation
 fonts-dejavu
 ttf-mscorefonts-installer
-
 # === ARCHIVADORES ===
 xarchiver
 p7zip-full
@@ -53,7 +46,6 @@ zip
 unzip
 unrar
 tar
-
 # === UTILIDADES GUI ===
 baobab
 simple-scan
@@ -65,15 +57,14 @@ flatpak
 blueman
 system-config-printer
 htop
-
 # === IDIOMA ESPAÑOL ===
 locales-all
 task-spanish
 console-setup
 keyboard-configuration
+locales
 aspell-es
 hunspell-es
-
 # === HERRAMIENTAS DE CONSOLA ===
 bash-completion
 curl
@@ -86,7 +77,6 @@ net-tools
 openssh-client
 rsync
 tree
-
 # === SISTEMA ===
 network-manager
 network-manager-gnome
@@ -95,7 +85,8 @@ gvfs-backends
 udisks2
 polkitd
 pkexec
-
-# === PLYMOUTH (boot splash) ===
-plymouth
-plymouth-themes
+python3
+python3-gi
+gir1.2-gtk-4.0
+docker.io
+xdg-utils

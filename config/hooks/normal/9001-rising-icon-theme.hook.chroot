@@ -1,0 +1,97 @@
+#!/bin/bash
+# =============================================================================
+# RisingOS — Hook: Renombrar tema de íconos "Reversal" → "Rising dark orange"
+# Item 11: corrige el nombre visible en configuración de apariencia
+# =============================================================================
+set -euo pipefail
+
+echo "[icons] === Corrigiendo nombre del tema de íconos ==="
+
+# Posibles ubicaciones del tema Reversal en el sistema live
+ICON_THEME_DIRS=(
+    "/usr/share/icons/Reversal"
+    "/usr/share/icons/Reversal-dark"
+    "/usr/share/icons/Reversal-orange"
+)
+
+RISING_THEME_DIR="/usr/share/icons/Rising-dark-orange"
+
+for SRC_DIR in "${ICON_THEME_DIRS[@]}"; do
+    if [ -d "${SRC_DIR}" ]; then
+        echo "[icons] Encontrado: ${SRC_DIR}"
+
+        # Crear directorio destino
+        mkdir -p "${RISING_THEME_DIR}"
+
+        # Copiar o enlazar simbólicamente
+        if [ "${SRC_DIR}" != "${RISING_THEME_DIR}" ]; then
+            cp -r "${SRC_DIR}/." "${RISING_THEME_DIR}/"
+            echo "[icons] Copiado a: ${RISING_THEME_DIR}"
+        fi
+
+        # Corregir index.theme dentro del directorio destino
+        INDEX="${RISING_THEME_DIR}/index.theme"
+        if [ -f "${INDEX}" ]; then
+            # Cambiar Name= en la sección [Icon Theme]
+            sed -i 's/^Name=.*/Name=Rising dark orange/' "${INDEX}"
+            # Cambiar Comment= si existe
+            sed -i 's/^Comment=.*/Comment=Tema de íconos RisingOS — dark con acento naranja/' "${INDEX}"
+            echo "[icons] index.theme actualizado:"
+            grep -E '^(Name|Comment)=' "${INDEX}"
+        fi
+
+        # Crear enlace simbólico para compatibilidad (por si algo apunta al nombre original)
+        if [ ! -L "${SRC_DIR}" ] && [ "${SRC_DIR}" != "${RISING_THEME_DIR}" ]; then
+            rm -rf "${SRC_DIR}"
+            ln -sf "${RISING_THEME_DIR}" "${SRC_DIR}"
+            echo "[icons] Enlace simbólico creado: ${SRC_DIR} → ${RISING_THEME_DIR}"
+        fi
+    fi
+done
+
+# Si no se encontró ningún directorio Reversal, crear tema mínimo como placeholder
+if [ ! -d "${RISING_THEME_DIR}" ]; then
+    echo "[icons] WARN: No se encontró tema Reversal — creando tema mínimo"
+    mkdir -p "${RISING_THEME_DIR}"
+    cat > "${RISING_THEME_DIR}/index.theme" << 'EOF'
+[Icon Theme]
+Name=Rising dark orange
+Comment=Tema de íconos RisingOS — dark con acento naranja
+Inherits=Papirus-Dark,hicolor
+Directories=
+
+[X-RisingOS]
+Version=1.0
+EOF
+fi
+
+# Configurar el tema en XFCE4 vía defaults del skel
+XFCE_SKEL="/etc/skel/.config/xfce4/xfconf/xfce-perchannel-xml"
+mkdir -p "${XFCE_SKEL}"
+
+XSETTINGS_FILE="${XFCE_SKEL}/xsettings.xml"
+if [ -f "${XSETTINGS_FILE}" ]; then
+    # Actualizar si ya existe
+    sed -i 's|value="Reversal[^"]*"|value="Rising-dark-orange"|g' "${XSETTINGS_FILE}"
+    echo "[icons] xsettings.xml actualizado"
+else
+    # Crear con valores por defecto de RisingOS
+    cat > "${XSETTINGS_FILE}" << 'EOF'
+<?xml version="1.0" encoding="UTF-8"?>
+<channel name="xsettings" version="1.0">
+  <property name="Net" type="empty">
+    <property name="ThemeName" type="string" value="RisingOS-GTK"/>
+    <property name="IconThemeName" type="string" value="Rising-dark-orange"/>
+    <property name="SoundThemeName" type="string" value="default"/>
+  </property>
+  <property name="Gtk" type="empty">
+    <property name="CursorThemeName" type="string" value="Adwaita"/>
+    <property name="FontName" type="string" value="Inter 10"/>
+    <property name="MonospaceFontName" type="string" value="JetBrains Mono 10"/>
+  </property>
+</channel>
+EOF
+    echo "[icons] xsettings.xml creado con tema Rising-dark-orange"
+fi
+
+echo "[icons] === Tema de íconos configurado ==="

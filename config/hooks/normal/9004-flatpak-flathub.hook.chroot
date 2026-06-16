@@ -1,0 +1,81 @@
+#!/bin/bash
+# =============================================================================
+# RisingOS — Hook: Configurar Flatpak y agregar repositorio Flathub
+# Item 14: soporte Flatpak en gnome-software
+# =============================================================================
+set -euo pipefail
+
+echo "[flatpak] === Configurando Flatpak y Flathub ==="
+
+# Verificar que flatpak esté instalado
+if ! command -v flatpak &>/dev/null; then
+    echo "[flatpak] WARN: flatpak no instalado, saltando"
+    exit 0
+fi
+
+# ── Agregar repositorio Flathub (sistema) ─────────────────────────────────────
+echo "[flatpak] Agregando repositorio Flathub..."
+flatpak remote-add --if-not-exists --system flathub \
+    https://dl.flathub.org/repo/flathub.flatpakrepo 2>/dev/null || \
+    echo "[flatpak] WARN: No se pudo agregar Flathub en línea, configurando offline"
+
+# ── Configurar el archivo de repositorio como fallback (sin internet) ──────────
+# Esto permite que gnome-software muestre Flathub aunque no haya conexión
+# durante el build. Se activará al primer uso del usuario con internet.
+FLATPAK_SYSTEM_DIR="/var/lib/flatpak"
+FLATHUB_REPO_FILE="/etc/flatpak/remotes.d/flathub.flatpakrepo"
+
+mkdir -p "$(dirname "${FLATHUB_REPO_FILE}")"
+
+cat > "${FLATHUB_REPO_FILE}" << 'EOF'
+[Flatpak Repo]
+Title=Flathub
+Name=flathub
+Comment=Repositorio central de aplicaciones Flatpak
+Description=Flathub es el mejor lugar para instalar y distribuir apps en Linux.
+Homepage=https://flathub.org
+Url=https://dl.flathub.org/repo/
+Icon=https://dl.flathub.org/repo/logo.svg
+GPGKey=mQINBFlD2sABEADsiUZUO...
+DefaultBranch=stable
+Filter=
+EOF
+echo "[flatpak] Archivo de repositorio Flathub creado en ${FLATHUB_REPO_FILE}"
+
+# ── Configurar política de instalación ────────────────────────────────────────
+# Permitir instalaciones de usuario (sin sudo para el usuario final)
+mkdir -p /etc/flatpak
+cat > /etc/flatpak/policy.conf << 'EOF'
+[flatpak]
+# Permitir instalaciones a nivel de usuario sin contraseña
+user-installations=true
+system-installations=true
+EOF
+
+# ── Configurar autostart de gnome-software en modo background ─────────────────
+# Para que actualice los metadatos de Flathub en el primer arranque
+mkdir -p /etc/skel/.config/autostart
+cat > /etc/skel/.config/autostart/gnome-software-service.desktop << 'EOF'
+[Desktop Entry]
+Type=Application
+Name=GNOME Software Service
+Comment=Servicio de actualización de aplicaciones
+Exec=/usr/bin/gnome-software --gapplication-service
+X-GNOME-Autostart-enabled=true
+X-GNOME-AutoRestart=false
+NoDisplay=true
+EOF
+
+# ── Integración con XFCE (lanzador en menú) ──────────────────────────────────
+# gnome-software ya tiene su propio .desktop; asegurar que aparezca en XFCE
+GSOFTWARE_DESKTOP="/usr/share/applications/org.gnome.Software.desktop"
+if [ -f "${GSOFTWARE_DESKTOP}" ]; then
+    # Agregar categoría si no está
+    if ! grep -q "^Categories=.*PackageManager" "${GSOFTWARE_DESKTOP}"; then
+        sed -i 's/^Categories=/Categories=PackageManager;/' "${GSOFTWARE_DESKTOP}"
+    fi
+    echo "[flatpak] gnome-software.desktop configurado"
+fi
+
+echo "[flatpak] === Flatpak y Flathub configurados ==="
+echo "[flatpak] NOTA: Flathub se sincronizará completamente al primer uso con internet"

@@ -2,7 +2,7 @@ Package: rising-ia
 Version: 1.0.0
 Architecture: all
 Maintainer: Francisco Galaso <francisco@rising-arrow.com.ar>
-Installed-Size: 56
+Installed-Size: 54
 Depends: python3 (>= 3.11), python3-gi, gir1.2-gtk-4.0, polkitd, pkexec, curl, docker.io
 Section: utils
 Priority: optional

@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=X-GNOME-Metatheme
+Name=RisingOS-GTK
+Comment=Tema GTK oscuro para RisingOS — fondo #0c1221, acento #ff6a3d
+Encoding=UTF-8
+
+[X-GNOME-Metatheme]
+GtkTheme=RisingOS-GTK
+MetacityTheme=RisingOS-GTK
+IconTheme=Rising-dark-orange
+CursorTheme=Adwaita
+ButtonLayout=close,minimize,maximize:menu

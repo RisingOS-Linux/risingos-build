@@ -512,3 +512,18 @@ progressbar.update-progress trough progress {
   letter-spacing: 0.05em;
   margin-top: 4px;
 }
+
+.btn-install {
+  padding: 12px 22px;
+  border-radius: 8px;
+  background-color: #ff6a3d;
+  border: 1px solid #ff6a3d;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 700;
+  margin-top: 4px;
+}
+.btn-install:hover {
+  background-color: #ff8057;
+  border-color: #ff8057;
+}

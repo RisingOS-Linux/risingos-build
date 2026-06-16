@@ -1,0 +1,69 @@
+# RisingOS GRUB Theme
+# Paleta: fondo #0c1221, acento #ff6a3d, texto #e8eaf0
+# Instalar en: /usr/share/grub/themes/risingos/
+
+# ── Título ────────────────────────────────────────────────────────────────────
+title-text:     ""
+title-color:    "#ff6a3d"
+title-font:     "DejaVu Sans Bold 18"
+
+# ── Fondo ─────────────────────────────────────────────────────────────────────
+# Si existe background.png se usa; si no, color sólido
+desktop-color:  "#0c1221"
+# desktop-image: "background.png"    ← descomentar si tenés el PNG
+
+# ── Menú de opciones ──────────────────────────────────────────────────────────
++ boot_menu {
+    left:   15%
+    top:    28%
+    width:  70%
+    height: 45%
+
+    # Ítem normal
+    item_color:            "#e8eaf0"
+    item_font:             "DejaVu Sans Regular 14"
+    item_height:           36
+    item_padding:          14
+    item_spacing:          4
+
+    # Ítem seleccionado
+    selected_item_color:        "#ffffff"
+    selected_item_font:         "DejaVu Sans Bold 14"
+
+    # Highlight del ítem seleccionado
+    + highlight {
+        style:  box
+        color:  "#ff6a3d"
+        left:   0
+        width:  100%
+        height: 36
+    }
+
+    scrollbar_width: 4
+    scrollbar_color: "#ff6a3d"
+}
+
+# ── Barra de información inferior ─────────────────────────────────────────────
++ label {
+    top:        85%
+    left:       0
+    width:      100%
+    height:     6%
+    align:      center
+    color:      "#6b7694"
+    font:       "DejaVu Sans Regular 11"
+    text:       "Use ↑↓ para navegar  •  Enter para iniciar  •  'e' para editar"
+}
+
+# ── Contador de tiempo ────────────────────────────────────────────────────────
++ label {
+    top:        78%
+    left:       0
+    width:      100%
+    height:     5%
+    align:      center
+    color:      "#ff6a3d"
+    font:       "DejaVu Sans Regular 12"
+    id:         "__timeout__"
+    text:       "Iniciando automáticamente en %d segundos"
+}

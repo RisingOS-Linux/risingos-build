@@ -1,0 +1,50 @@
+#!/bin/bash
+# =============================================================================
+# RisingOS — Hook: Generar caché de íconos
+# Item 12: elimina advertencias "icon cache missing" al iniciar apps GTK
+# =============================================================================
+set -euo pipefail
+
+echo "[icon-cache] === Generando caché de íconos ==="
+
+# Directorios de íconos que necesitan caché
+ICON_DIRS=(
+    /usr/share/icons/Rising-dark-orange
+    /usr/share/icons/Papirus
+    /usr/share/icons/Papirus-Dark
+    /usr/share/icons/hicolor
+    /usr/share/icons/Adwaita
+    /usr/share/icons/gnome
+    /usr/share/icons/locolor
+)
+
+# gtk-update-icon-cache necesita el paquete gtk-update-icon-cache o libgtk-3-bin
+if ! command -v gtk-update-icon-cache &>/dev/null; then
+    echo "[icon-cache] Instalando gtk-update-icon-cache..."
+    apt-get install -y --no-install-recommends libgtk-3-bin 2>/dev/null || \
+    apt-get install -y --no-install-recommends gtk-update-icon-cache 2>/dev/null || true
+fi
+
+if ! command -v gtk-update-icon-cache &>/dev/null; then
+    echo "[icon-cache] WARN: gtk-update-icon-cache no disponible, saltando"
+    exit 0
+fi
+
+for DIR in "${ICON_DIRS[@]}"; do
+    if [ -d "${DIR}" ]; then
+        echo "[icon-cache] Procesando: ${DIR}"
+        gtk-update-icon-cache -f -t "${DIR}" 2>/dev/null && \
+            echo "[icon-cache]   ✓ caché generado" || \
+            echo "[icon-cache]   WARN: falló (no crítico)"
+    fi
+done
+
+# También actualizar todos los temas en /usr/share/icons/ que tengan index.theme
+echo "[icon-cache] Actualizando todos los temas con index.theme..."
+find /usr/share/icons -maxdepth 1 -type d | while read -r dir; do
+    if [ -f "${dir}/index.theme" ] && [ "${dir}" != "/usr/share/icons" ]; then
+        gtk-update-icon-cache -f -t "${dir}" 2>/dev/null || true
+    fi
+done
+
+echo "[icon-cache] === Caché de íconos generado ==="
