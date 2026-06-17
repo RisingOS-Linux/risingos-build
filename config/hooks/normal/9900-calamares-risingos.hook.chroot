@@ -183,7 +183,6 @@ sequence:
   - services-systemd
   - grubcfg
   - bootloader
-  - shellprocess-grub
   - removeuser
   - umount
 - show:
