@@ -211,7 +211,7 @@ echo "[9900] shellprocess-grub.conf escrito"
 mkdir -p /etc/sudoers.d
 cat > /etc/sudoers.d/calamares << 'EOF'
 # Permite al usuario live ejecutar Calamares sin contraseña
-user ALL=(ALL) NOPASSWD: /usr/bin/calamares, /usr/local/bin/risingos-install
+usuario ALL=(ALL) NOPASSWD: /usr/bin/calamares, /usr/local/bin/risingos-install
 EOF
 chmod 440 /etc/sudoers.d/calamares
 echo "[9900] sudoers.d/calamares escrito"
@@ -302,4 +302,22 @@ GRUBEOF
 fi
 rm -f /home/user/Desktop/calamares-install-debian.desktop
 rm -f /home/user/Desktop/install-debian.desktop
+# Crear .desktop de instalar RisingOS en el Desktop del usuario live
+mkdir -p /home/usuario/Desktop
+cat > /home/usuario/Desktop/instalar-risingos.desktop << 'DEOF'
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=Instalar RisingOS
+GenericName=Instalador de RisingOS
+Comment=Instalá RisingOS en tu disco
+Exec=/usr/local/bin/risingos-install
+Icon=/etc/calamares/branding/risingos/risingos-logo.png
+Terminal=false
+Categories=Qt;System;
+StartupWMClass=calamares
+StartupNotify=true
+DEOF
+chmod +x /home/usuario/Desktop/instalar-risingos.desktop
+chown -R usuario:usuario /home/usuario/Desktop
 echo "[9900] === Configuración de Calamares completada ==="
