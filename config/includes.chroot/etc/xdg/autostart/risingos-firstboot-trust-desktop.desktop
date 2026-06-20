@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=RisingOS Trust Desktop Launchers
+Comment=Marca los lanzadores del escritorio como confiables en el primer inicio de sesión
+Exec=/usr/lib/risingos/firstboot-trust-desktop.sh
+Icon=
+Terminal=false
+NoDisplay=true
+OnlyShowIn=XFCE;
+X-GNOME-Autostart-enabled=true
