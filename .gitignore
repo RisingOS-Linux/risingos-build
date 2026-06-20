@@ -21,3 +21,4 @@ RisingOS-amd64.*
 /includes.chroot/
 *.buildinfo
 *.changes
+*.bak*
