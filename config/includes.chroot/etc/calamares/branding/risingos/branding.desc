@@ -29,6 +29,7 @@ strings:
 
 images:
     productLogo:  "risingos-logo.png"
+    productWelcome: "rising-imagotipo.png"
 
 style:
     SidebarBackground:        "#0c1221"
