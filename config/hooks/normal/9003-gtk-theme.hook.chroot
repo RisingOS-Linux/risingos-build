@@ -27,7 +27,7 @@ Encoding=UTF-8
 
 [X-GNOME-Metatheme]
 GtkTheme=RisingOS-GTK
-IconTheme=Rising-dark-orange
+IconTheme=RisingOS-orange-dark
 CursorTheme=Adwaita
 EOF
 
@@ -102,7 +102,7 @@ fi
 cat > "${SKEL_GTK3}/settings.ini" << 'EOF'
 [Settings]
 gtk-theme-name          = RisingOS-GTK
-gtk-icon-theme-name     = Rising-dark-orange
+gtk-icon-theme-name     = RisingOS-orange-dark
 gtk-cursor-theme-name   = Adwaita
 gtk-cursor-theme-size   = 24
 gtk-font-name           = Inter 10
@@ -120,7 +120,7 @@ EOF
 cat > "${SKEL_GTK4}/settings.ini" << 'EOF'
 [Settings]
 gtk-theme-name          = RisingOS-GTK
-gtk-icon-theme-name     = Rising-dark-orange
+gtk-icon-theme-name     = RisingOS-orange-dark
 gtk-cursor-theme-name   = Adwaita
 gtk-cursor-theme-size   = 24
 gtk-font-name           = Inter 10
@@ -133,7 +133,7 @@ cp "${SKEL_GTK3}/settings.ini" /root/.config/gtk-3.0/
 cp "${SKEL_GTK4}/settings.ini" /root/.config/gtk-4.0/
 
 # ── Copiar CSS de GTK4 al directorio de usuario live ─────────────────────────
-LIVE_HOME="/home/user"
+LIVE_HOME="/home/usuario"
 if [ -d "${LIVE_HOME}" ]; then
     mkdir -p "${LIVE_HOME}/.config/gtk-3.0" "${LIVE_HOME}/.config/gtk-4.0"
     cp "${SKEL_GTK3}/settings.ini" "${LIVE_HOME}/.config/gtk-3.0/"

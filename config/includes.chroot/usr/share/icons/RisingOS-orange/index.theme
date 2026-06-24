@@ -1,6 +1,6 @@
 [Icon Theme]
-Name=Reversal
-Comment=MacOSX style icon theme for linux.
+Name=Reversal Light - Rising
+Comment=Reversal icon theme by vinceliuice, adaptado para RisingOS con logo de distribuidor personalizado
 Inherits=hicolor,breeze
 Example=folder
 
