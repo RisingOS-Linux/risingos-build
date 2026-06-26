@@ -248,6 +248,9 @@ instances:
 - id:       shellprocess-grub
   module:   shellprocess
   config:   shellprocess-grub.conf
+- id:       shellprocess-removecalamares
+  module:   shellprocess
+  config:   shellprocess-removecalamares.conf
 sequence:
 - show:
   - welcome
@@ -273,6 +276,7 @@ sequence:
   - grubcfg
   - bootloader
   - shellprocess@shellprocess-grub
+  - shellprocess@shellprocess-removecalamares
   - removeuser
   - umount
 - show:
@@ -306,6 +310,18 @@ script:
   - "echo '--- shellprocess-grub end ---' >> /var/log/risingos-grub-theme.log"
 EOF
 echo "[9900] shellprocess-grub.conf escrito"
+# ── 6b. Módulo shellprocess-removecalamares (purga calamares post-instalación) ─
+cat > "${MODULES_DIR}/shellprocess-removecalamares.conf" << 'EOF'
+---
+# Purga el paquete calamares y dependencias huerfanas del sistema instalado.
+# Calamares esta pensado para correr desde el live, no debe quedar disponible
+# ni ejecutable en el sistema ya instalado (riesgo de uso accidental).
+dontChroot: false
+script:
+  - "apt-get purge -y calamares >> /var/log/risingos-remove-calamares.log 2>&1"
+  - "apt-get autoremove -y --purge >> /var/log/risingos-remove-calamares.log 2>&1"
+EOF
+echo "[9900] shellprocess-removecalamares.conf escrito"
 
 # ── 7. /etc/sudoers.d/calamares (item 7) ─────────────────────────────────────
 mkdir -p /etc/sudoers.d
