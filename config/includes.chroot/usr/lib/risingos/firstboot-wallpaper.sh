@@ -9,7 +9,7 @@
 # (Virtual-1, eDP-1, HDMI-1, DP-1, etc.) — sin transformación alguna.
 # Confirmado en xfdesktop-backdrop-manager.c línea 363.
 
-WALLPAPER='/usr/share/backgrounds/xfce/risingos/Dramatic_frozen_andes.png'
+WALLPAPER='/usr/share/backgrounds/xfce/risingos/andes_icy_rising.png'
 STAMP="$HOME/.config/risingos/.wallpaper-configured"
 
 # Salir si ya se ejecutó para este usuario

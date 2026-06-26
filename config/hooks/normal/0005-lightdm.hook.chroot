@@ -12,7 +12,7 @@ LIGHTDM
 # Escribir configuración del greeter
 cat > /etc/lightdm/lightdm-gtk-greeter.conf << 'GREETER'
 [greeter]
-background=/usr/share/backgrounds/xfce/risingos/Dramatic_frozen_andes.png
+background=/usr/share/backgrounds/xfce/risingos/andes_icy_rising.png
 theme-name=RisingOS-Dark
 icon-theme-name=RisingOS-orange-dark
 font-name=Sans 11
