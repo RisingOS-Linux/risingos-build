@@ -1,107 +1,23 @@
 #!/bin/bash
 # =============================================================================
-# RisingOS — Hook: Instalar y activar tema GTK RisingOS
-# Item 13: botones GTK3/4 recoloreados con #0c1221 / #ff6a3d
+# RisingOS — Hook: Activar tema GTK RisingOS-Dark por defecto
+# El tema en si (gtk-3.0/gtk.css, gtk-4.0, assets) ya viene completo desde
+# includes.chroot/usr/share/themes/RisingOS-Dark/ - este hook solo setea
+# los settings.ini del skel/root/usuario live para que apunten a el.
 # =============================================================================
 set -euo pipefail
 
-echo "[gtk-theme] === Instalando tema GTK RisingOS ==="
+echo "[gtk-theme] === Activando tema GTK RisingOS-Dark ==="
 
-GTK_THEME_DIR="/usr/share/themes/RisingOS-GTK"
-GTK3_DIR="${GTK_THEME_DIR}/gtk-3.0"
-GTK4_DIR="${GTK_THEME_DIR}/gtk-4.0"
 SKEL_GTK3="/etc/skel/.config/gtk-3.0"
 SKEL_GTK4="/etc/skel/.config/gtk-4.0"
 
-# ── Crear directorios del tema ────────────────────────────────────────────────
-mkdir -p "${GTK3_DIR}" "${GTK4_DIR}"
 mkdir -p "${SKEL_GTK3}" "${SKEL_GTK4}"
-
-# ── index.theme ───────────────────────────────────────────────────────────────
-cat > "${GTK_THEME_DIR}/index.theme" << 'EOF'
-[Desktop Entry]
-Type=X-GNOME-Metatheme
-Name=RisingOS-GTK
-Comment=Tema GTK oscuro para RisingOS
-Encoding=UTF-8
-
-[X-GNOME-Metatheme]
-GtkTheme=RisingOS-GTK
-IconTheme=RisingOS-orange-dark
-CursorTheme=Adwaita
-EOF
-
-# ── gtk.css (copiado desde includes.chroot o generado inline) ─────────────────
-# Si el archivo fue incluido via includes.chroot, ya estará en su lugar.
-# Este bloque lo genera inline como fallback.
-INLINE_CSS_TARGET="${GTK3_DIR}/gtk.css"
-
-if [ ! -f "${INLINE_CSS_TARGET}" ]; then
-    echo "[gtk-theme] Generando gtk.css inline..."
-    cat > "${INLINE_CSS_TARGET}" << 'CSSEOF'
-@define-color window_bg_color    #0c1221;
-@define-color window_fg_color    #e8eaf0;
-@define-color view_bg_color      #111827;
-@define-color view_fg_color      #e8eaf0;
-@define-color headerbar_bg_color #0d1425;
-@define-color border_color       #1a2340;
-@define-color accent_bg_color    #ff6a3d;
-@define-color accent_fg_color    #ffffff;
-@define-color button_bg_color    #1a2340;
-@define-color dim_label_color    #6b7694;
-
-window, .background {
-    background-color: @window_bg_color;
-    color: @window_fg_color;
-}
-headerbar {
-    background-color: @headerbar_bg_color;
-    border-bottom: 1px solid @border_color;
-    min-height: 42px;
-}
-button {
-    background-color: @button_bg_color;
-    color: @window_fg_color;
-    border: 1px solid @border_color;
-    border-radius: 6px;
-    padding: 6px 14px;
-}
-button:hover { background-color: #1f2d52; }
-button.suggested-action, button:active, button:checked {
-    background-color: @accent_bg_color;
-    color: @accent_fg_color;
-    border-color: @accent_bg_color;
-    font-weight: bold;
-}
-entry, spinbutton {
-    background-color: @view_bg_color;
-    color: @view_fg_color;
-    border: 1px solid @border_color;
-    border-radius: 6px;
-    padding: 6px 10px;
-    caret-color: @accent_bg_color;
-}
-entry:focus { border-color: @accent_bg_color; }
-progressbar trough { background-color: @button_bg_color; border-radius: 4px; min-height: 6px; }
-progressbar progress { background-color: @accent_bg_color; border-radius: 4px; }
-scrollbar slider { background-color: rgba(255,106,61,0.4); border-radius: 4px; min-width: 6px; }
-scrollbar slider:hover { background-color: rgba(255,106,61,0.7); }
-selection { background-color: rgba(255,106,61,0.3); color: @window_fg_color; }
-.dim-label { color: @dim_label_color; }
-CSSEOF
-    echo "[gtk-theme] gtk.css generado"
-fi
-
-# GTK4 usa el mismo CSS (symlink)
-if [ ! -f "${GTK4_DIR}/gtk.css" ]; then
-    ln -sf "${GTK3_DIR}/gtk.css" "${GTK4_DIR}/gtk.css"
-    echo "[gtk-theme] Enlace GTK4 creado"
-fi
 
 # ── settings.ini para GTK3 del skel ──────────────────────────────────────────
 cat > "${SKEL_GTK3}/settings.ini" << 'EOF'
 [Settings]
-gtk-theme-name          = RisingOS-GTK
+gtk-theme-name          = RisingOS-Dark
 gtk-icon-theme-name     = RisingOS-orange-dark
 gtk-cursor-theme-name   = Adwaita
 gtk-cursor-theme-size   = 24
@@ -119,7 +35,7 @@ EOF
 # ── settings.ini para GTK4 del skel ──────────────────────────────────────────
 cat > "${SKEL_GTK4}/settings.ini" << 'EOF'
 [Settings]
-gtk-theme-name          = RisingOS-GTK
+gtk-theme-name          = RisingOS-Dark
 gtk-icon-theme-name     = RisingOS-orange-dark
 gtk-cursor-theme-name   = Adwaita
 gtk-cursor-theme-size   = 24
@@ -127,12 +43,12 @@ gtk-font-name           = Inter 10
 gtk-application-prefer-dark-theme = 1
 EOF
 
-# ── Copiar CSS a ~/.config también para root (por si el calamares corre como root) ──
+# ── Copiar settings.ini también para root (por si Calamares corre como root) ──
 mkdir -p /root/.config/gtk-3.0 /root/.config/gtk-4.0
 cp "${SKEL_GTK3}/settings.ini" /root/.config/gtk-3.0/
 cp "${SKEL_GTK4}/settings.ini" /root/.config/gtk-4.0/
 
-# ── Copiar CSS de GTK4 al directorio de usuario live ─────────────────────────
+# ── Copiar settings.ini al directorio de usuario live ────────────────────────
 LIVE_HOME="/home/usuario"
 if [ -d "${LIVE_HOME}" ]; then
     mkdir -p "${LIVE_HOME}/.config/gtk-3.0" "${LIVE_HOME}/.config/gtk-4.0"
@@ -140,4 +56,4 @@ if [ -d "${LIVE_HOME}" ]; then
     cp "${SKEL_GTK4}/settings.ini" "${LIVE_HOME}/.config/gtk-4.0/"
 fi
 
-echo "[gtk-theme] === Tema GTK instalado y activado ==="
+echo "[gtk-theme] === Tema GTK RisingOS-Dark activado ==="
