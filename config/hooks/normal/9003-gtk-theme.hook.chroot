@@ -22,7 +22,6 @@ gtk-icon-theme-name     = RisingOS-orange-dark
 gtk-cursor-theme-name   = Adwaita
 gtk-cursor-theme-size   = 24
 gtk-font-name           = Inter 10
-gtk-application-prefer-dark-theme = 1
 gtk-button-images       = 0
 gtk-menu-images         = 0
 gtk-toolbar-style       = GTK_TOOLBAR_BOTH_HORIZ
