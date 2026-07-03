@@ -22,3 +22,4 @@ RisingOS-amd64.*
 *.buildinfo
 *.changes
 *.bak*
+__pycache__/
