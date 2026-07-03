@@ -1,7 +1,7 @@
 Source: rising-welcome
 Section: utils
 Priority: optional
-Maintainer: Francisco Galaso <francisco@rising-arrow.com.ar>
+Maintainer: Francisco Galaso <franciscogalaso@rising-arrow.com>
 Build-Depends: debhelper-compat (= 13)
 Standards-Version: 4.6.2
 Homepage: https://github.com/RisingOS-Linux/rising-welcome

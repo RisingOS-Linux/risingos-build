@@ -1,3 +1,10 @@
+rising-welcome (1.0.1) trixie; urgency=medium
+
+  * Fix: re-detección dinámica de conectividad en Pantallas 1 y 2
+    (polling con threading, se detiene al conectar)
+
+ -- Francisco Galaso <franciscogalaso@rising-arrow.com>  Fri, 03 Jul 2026 00:00:00 -0300
+
 rising-welcome (1.0.0) trixie; urgency=medium
 
   * Versión inicial de rising-welcome para RisingOS 1.0
