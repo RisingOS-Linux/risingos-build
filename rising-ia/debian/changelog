@@ -1,3 +1,16 @@
+rising-ia (1.1.0) trixie; urgency=medium
+
+  * Nuevo: detección de GPU NVIDIA (lspci) con oferta opcional de
+    instalar el driver propietario (nvidia-driver + firmware-misc-nonfree),
+    checkbox desmarcado por defecto, botón de reinicio post-instalación
+  * Nuevo: selector de modelo — deepseek-r1:latest, qwen2.5-coder:3b,
+    o ambos — con preselección automática según RAM detectada
+    (>=15 GB recomienda DeepSeek-R1, <15 GB recomienda Qwen 2.5 Coder)
+  * La secuencia de instalación ahora se arma dinámicamente según
+    la elección del usuario, en vez de ser una lista fija
+
+ -- Francisco Galaso <franciscogalaso@rising-arrow.com>  Fri, 03 Jul 2026 00:00:00 -0300
+
 rising-ia (1.0.0) trixie; urgency=medium
 
   * Versión inicial de rising-ia para RisingOS 1.0
