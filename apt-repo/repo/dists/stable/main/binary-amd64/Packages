@@ -1,34 +1,36 @@
 Package: rising-ia
-Version: 1.0.0
+Version: 1.1.0
 Architecture: all
-Maintainer: Francisco Galaso <francisco@rising-arrow.com.ar>
-Installed-Size: 56
+Maintainer: Francisco Galaso <franciscogalaso@rising-arrow.com>
+Installed-Size: 64
 Depends: python3 (>= 3.11), python3-gi, gir1.2-gtk-4.0, polkitd, pkexec, curl, docker.io
-Filename: pool/main/rising-ia_1.0.0_all.deb
-Size: 19980
-MD5sum: b39efbd86b3a1e5457479e2084b82c27
-SHA1: a73368cd163abbfd07361145192d1a628cb804fb
-SHA256: 907ca915c1bbe0dabc534ad01e35107b7a9ee745f04cd677ac1bb7eb86e259c2
+Filename: pool/main/rising-ia_1.1.0_all.deb
+Size: 22232
+MD5sum: b9cf96e55533a52fcb453a0701e219d6
+SHA1: ac0dc41ffad5292697192256df89969e730c1919
+SHA256: c35b616a8c5a7250baff058804503934649a4edac5a9f744fe3acccd14579ea9
 Section: utils
 Priority: optional
 Homepage: https://github.com/RisingOS-Linux/rising-ia
 Description: Instalador de IA local para RisingOS
  Rising IA automatiza la instalación y configuración de Ollama,
- el modelo Qwen 2.5 y Open WebUI en RisingOS.
+ el modelo de lenguaje que elijas (DeepSeek-R1 o Qwen 2.5 Coder)
+ y Open WebUI en RisingOS. Detecta GPU NVIDIA y ofrece instalar
+ el driver propietario si está disponible.
  Provee una interfaz gráfica GTK4 que guía al usuario paso a paso,
  mostrando el progreso en tiempo real y lanzando Open WebUI al finalizar.
 
 Package: rising-welcome
-Version: 1.0.0
+Version: 1.0.1
 Architecture: all
-Maintainer: Francisco Galaso <francisco@rising-arrow.com.ar>
-Installed-Size: 3664
+Maintainer: Francisco Galaso <franciscogalaso@rising-arrow.com>
+Installed-Size: 3667
 Depends: python3 (>= 3.11), python3-gi, gir1.2-gtk-4.0, polkitd, pkexec
-Filename: pool/main/rising-welcome_1.0.0_all.deb
-Size: 3663012
-MD5sum: dee6e17574faf2e46b98ce8f33c243b3
-SHA1: d1e4e004fc92259258751716dab1ecf096defded
-SHA256: 55faa10e773de96cc5c1bc465ea81afbecc14de9265fcfd94ee90b2cdf6e86d9
+Filename: pool/main/rising-welcome_1.0.1_all.deb
+Size: 3663600
+MD5sum: ecb0a419dc141fe0ce8b7023365a2467
+SHA1: 30762622eda6734a2a8d71cea00068b5affb8b17
+SHA256: 50861d0c1dcce145e9039e50fc9199389c8a98b64f8db77046e987aea0e75c95
 Section: utils
 Priority: optional
 Homepage: https://github.com/RisingOS-Linux/rising-welcome
