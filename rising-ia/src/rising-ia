@@ -24,7 +24,18 @@ if os.path.exists("/usr/lib/rising-ia/assets"):
     LOGO_256   = f"{ICONS_DIR}/logo-256.png"
 
 WEBUI_URL  = "http://localhost:3000"
-MODEL      = "qwen2.5:3b"
+
+AVAILABLE_MODELS = [
+    ("deepseek-r1:latest", "5.2 GB — recomendado con 16 GB+ de RAM"),
+    ("qwen2.5-coder:3b",   "1.9 GB — recomendado con menos de 16 GB de RAM"),
+]
+RAM_THRESHOLD_GB = 15.0  # margen bajo 16 GB real, compensa memoria reservada por el hardware
+
+NVIDIA_DRIVER_STEP = (
+    "Instalar driver NVIDIA propietario",
+    'apt-get install -y nvidia-driver firmware-misc-nonfree',
+    True,
+)
 
 # ── Secuencia de instalación ──────────────────────────────────────────────────
 #
@@ -32,43 +43,54 @@ MODEL      = "qwen2.5:3b"
 # Se ejecutan en orden, todos con pkexec bash -c "..."
 # El comando de ollama pull NO necesita pkexec (corre como usuario)
 #
-INSTALL_STEPS = [
-    (
-        "Instalar Ollama",
-        'curl -fsSL https://ollama.ai/install.sh | sh',
-        True,   # necesita pkexec
-    ),
-    (
-        "Activar servicio Ollama",
-        'systemctl enable --now ollama',
-        True,
-    ),
-    (
-        "Configurar Ollama (escucha en red)",
+def build_install_steps(selected_models: list, install_nvidia: bool) -> list:
+    """Arma la secuencia de instalación según lo elegido en ViewInicio."""
+    steps = []
+
+    if install_nvidia:
+        steps.append(NVIDIA_DRIVER_STEP)
+
+    steps += [
         (
-            'mkdir -p /etc/systemd/system/ollama.service.d && '
-            "echo '[Service]' > /etc/systemd/system/ollama.service.d/override.conf && "
-            "echo 'Environment=OLLAMA_HOST=0.0.0.0' >> /etc/systemd/system/ollama.service.d/override.conf && "
-            'systemctl daemon-reload && systemctl restart ollama'
+            "Instalar Ollama",
+            'curl -fsSL https://ollama.ai/install.sh | sh',
+            True,
         ),
-        True,
-    ),
-    (
-        "Instalar Docker",
-        'apt-get install -y docker.io',
-        True,
-    ),
-    (
-        "Activar servicio Docker",
-        'systemctl enable --now docker',
-        True,
-    ),
-    (
-        f"Descargar modelo {MODEL}",
-        f'ollama pull {MODEL}',
-        False,  # corre como usuario, ollama lo gestiona
-    ),
-    (
+        (
+            "Activar servicio Ollama",
+            'systemctl enable --now ollama',
+            True,
+        ),
+        (
+            "Configurar Ollama (escucha en red)",
+            (
+                'mkdir -p /etc/systemd/system/ollama.service.d && '
+                "echo '[Service]' > /etc/systemd/system/ollama.service.d/override.conf && "
+                "echo 'Environment=OLLAMA_HOST=0.0.0.0' >> /etc/systemd/system/ollama.service.d/override.conf && "
+                'systemctl daemon-reload && systemctl restart ollama'
+            ),
+            True,
+        ),
+        (
+            "Instalar Docker",
+            'apt-get install -y docker.io',
+            True,
+        ),
+        (
+            "Activar servicio Docker",
+            'systemctl enable --now docker',
+            True,
+        ),
+    ]
+
+    for model in selected_models:
+        steps.append((
+            f"Descargar modelo {model}",
+            f'ollama pull {model}',
+            False,
+        ))
+
+    steps.append((
         "Lanzar Open WebUI",
         (
             'docker run -d --restart always '
@@ -80,8 +102,8 @@ INSTALL_STEPS = [
             'ghcr.io/open-webui/open-webui:main'
         ),
         True,
-    ),
-    (
+    ))
+    steps.append((
         "Crear acceso directo Open WebUI",
         (
             'REAL_HOME=$(getent passwd ${PKEXEC_UID:-$UID} | cut -d: -f6) && '
@@ -100,8 +122,9 @@ INSTALL_STEPS = [
             'chown "$REAL_USER:$REAL_USER" "$D"'
         ),
         True,
-    ),
-]
+    ))
+
+    return steps
 
 
 # ── Utilidades ────────────────────────────────────────────────────────────────
@@ -131,29 +154,69 @@ def is_docker_container_running(name: str) -> bool:
         return False
 
 
+def is_nvidia_gpu_present() -> bool:
+    try:
+        out = subprocess.check_output(["lspci"], stderr=subprocess.DEVNULL, text=True)
+        for line in out.splitlines():
+            if ("VGA compatible controller" in line or "3D controller" in line) and "NVIDIA" in line:
+                return True
+        return False
+    except Exception:
+        return False
+
+def is_nvidia_driver_installed() -> bool:
+    try:
+        out = subprocess.check_output(
+            ["dpkg-query", "-W", "-f=${Status}", "nvidia-driver"],
+            stderr=subprocess.DEVNULL, text=True,
+        )
+        return "install ok installed" in out
+    except Exception:
+        return False
+
+def detect_ram_gb() -> float:
+    try:
+        with open("/proc/meminfo") as f:
+            for line in f:
+                if line.startswith("MemTotal:"):
+                    kb = int(line.split()[1])
+                    return kb / (1024 * 1024)
+    except Exception:
+        pass
+    return 0.0
+
+def recommended_model() -> str:
+    return "deepseek-r1:latest" if detect_ram_gb() >= RAM_THRESHOLD_GB else "qwen2.5-coder:3b"
+
 def detect_state() -> dict:
     """Detecta qué componentes ya están instalados/corriendo."""
     ollama_ok  = is_installed("ollama")
     docker_ok  = is_installed("docker")
     webui_ok   = is_docker_container_running("open-webui")
 
-    # Verificar si el modelo ya está descargado
-    model_ok = False
+    # Verificar qué modelos del catálogo ya están descargados
+    models_ok = {model_id: False for model_id, _ in AVAILABLE_MODELS}
     if ollama_ok:
         try:
             out = subprocess.check_output(
                 ["ollama", "list"], stderr=subprocess.DEVNULL, text=True
             )
-            model_ok = MODEL.split(":")[0] in out
+            for model_id in models_ok:
+                models_ok[model_id] = model_id.split(":")[0] in out
         except Exception:
             pass
 
+    any_model_ok = any(models_ok.values())
+
     return {
-        "ollama":  ollama_ok,
-        "docker":  docker_ok,
-        "model":   model_ok,
-        "webui":   webui_ok,
-        "all_ok":  ollama_ok and docker_ok and model_ok and webui_ok,
+        "ollama":         ollama_ok,
+        "docker":         docker_ok,
+        "models":         models_ok,
+        "webui":          webui_ok,
+        "gpu_nvidia":     is_nvidia_gpu_present(),
+        "nvidia_driver":  is_nvidia_driver_installed(),
+        "ram_gb":         detect_ram_gb(),
+        "all_ok":         ollama_ok and docker_ok and any_model_ok and webui_ok,
     }
 
 
@@ -274,6 +337,57 @@ class ViewInicio(Gtk.Box):
             lbl.set_xalign(0)
             req_box.append(lbl)
 
+        # Selector de modelo
+        model_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=4)
+        model_box.add_css_class("ia-req-box")
+
+        model_title = Gtk.Label(label="MODELO A INSTALAR")
+        model_title.add_css_class("ia-req-title")
+        model_title.set_xalign(0)
+        model_box.append(model_title)
+
+        recommended = recommended_model()
+        self._model_radios = {}
+        first_radio = None
+        for model_id, desc in AVAILABLE_MODELS:
+            radio = Gtk.CheckButton(label=f"{model_id}  —  {desc}")
+            if first_radio is None:
+                first_radio = radio
+            else:
+                radio.set_group(first_radio)
+            radio.set_active(model_id == recommended)
+            radio.add_css_class("ia-req-item")
+            self._model_radios[model_id] = radio
+            model_box.append(radio)
+
+        both_radio = Gtk.CheckButton(label="Ambos modelos")
+        both_radio.set_group(first_radio)
+        both_radio.add_css_class("ia-req-item")
+        self._model_radios["__both__"] = both_radio
+        model_box.append(both_radio)
+
+        ram_lbl = Gtk.Label(label=f"RAM detectada: {state.get('ram_gb', 0.0):.1f} GB")
+        ram_lbl.add_css_class("ia-req-item")
+        ram_lbl.set_xalign(0)
+        model_box.append(ram_lbl)
+
+        # Chequeo GPU NVIDIA (solo si hay GPU y el driver no está instalado)
+        nvidia_box = None
+        self._nvidia_check = None
+        if state.get("gpu_nvidia") and not state.get("nvidia_driver"):
+            nvidia_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=4)
+            nvidia_box.add_css_class("ia-req-box")
+            nvidia_title = Gtk.Label(label="GPU NVIDIA DETECTADA")
+            nvidia_title.add_css_class("ia-req-title")
+            nvidia_title.set_xalign(0)
+            nvidia_box.append(nvidia_title)
+            self._nvidia_check = Gtk.CheckButton(
+                label="Instalar driver propietario NVIDIA (recomendado para mejor rendimiento)"
+            )
+            self._nvidia_check.set_active(False)
+            self._nvidia_check.add_css_class("ia-req-item")
+            nvidia_box.append(self._nvidia_check)
+
         # Estado de componentes
         state_box = self._build_state_box(state)
 
@@ -286,27 +400,43 @@ class ViewInicio(Gtk.Box):
             btn = Gtk.Button(label="⬇  Instalar Rising IA")
             btn.add_css_class("btn-next")
             btn.set_sensitive(has_internet)
-            btn.connect("clicked", lambda _: on_install())
+            btn.connect("clicked", lambda _: on_install(
+                self._get_selected_models(),
+                self._nvidia_check.get_active() if self._nvidia_check else False,
+            ))
 
-        lp = left_panel(
+        panel_widgets = [
             make_logo(72),
             make_tag("RISING IA"),
             make_title("Tu asistente de IA\nlocal para RisingOS."),
             make_body(
                 "Rising IA instala y configura automáticamente "
-                "Ollama, el modelo Qwen 2.5 y Open WebUI. "
+                "Ollama, el modelo que elijas y Open WebUI. "
                 "Todo corre en tu máquina, sin internet, "
                 "sin suscripciones."
             ),
             conn,
             req_box,
-            state_box,
-            btn,
-        )
+            model_box,
+        ]
+        if nvidia_box is not None:
+            panel_widgets.append(nvidia_box)
+        panel_widgets.append(state_box)
+        panel_widgets.append(btn)
+
+        lp = left_panel(*panel_widgets)
 
         # Panel derecho: ilustración de componentes
         self.append(lp)
         self.append(right_panel(self._build_stack_illustration()))
+
+    def _get_selected_models(self) -> list:
+        if self._model_radios["__both__"].get_active():
+            return [model_id for model_id, _ in AVAILABLE_MODELS]
+        for model_id, radio in self._model_radios.items():
+            if model_id != "__both__" and radio.get_active():
+                return [model_id]
+        return [recommended_model()]
 
     def _build_state_box(self, state: dict) -> Gtk.Box:
         box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
@@ -314,11 +444,13 @@ class ViewInicio(Gtk.Box):
         box.set_margin_top(4)
 
         items = [
-            ("Ollama",      state["ollama"]),
-            ("Docker",      state["docker"]),
-            (MODEL,         state["model"]),
-            ("Open WebUI",  state["webui"]),
+            ("Ollama", state["ollama"]),
+            ("Docker", state["docker"]),
         ]
+        for model_id, _ in AVAILABLE_MODELS:
+            items.append((model_id, state["models"].get(model_id, False)))
+        items.append(("Open WebUI", state["webui"]))
+
         for label, ok in items:
             row = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=10)
             icon = Gtk.Label(label="✓" if ok else "○")
@@ -341,10 +473,10 @@ class ViewInicio(Gtk.Box):
         outer.append(title)
 
         layers = [
-            ("Open WebUI",  "Interfaz de chat",        "layer-top"),
-            ("Ollama",      "Motor de inferencia",      "layer-mid"),
-            (MODEL,         "Modelo de lenguaje",       "layer-mid"),
-            ("Docker",      "Contenedor Open WebUI",    "layer-bot"),
+            ("Open WebUI",     "Interfaz de chat",        "layer-top"),
+            ("Ollama",         "Motor de inferencia",      "layer-mid"),
+            ("Modelo elegido", "Modelo de lenguaje",       "layer-mid"),
+            ("Docker",         "Contenedor Open WebUI",    "layer-bot"),
         ]
         for name, desc, css in layers:
             card = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=2)
@@ -365,7 +497,7 @@ class ViewInicio(Gtk.Box):
 # ── Vista 2 — Progreso ────────────────────────────────────────────────────────
 
 class ViewProgreso(Gtk.Box):
-    def __init__(self):
+    def __init__(self, steps: list):
         super().__init__(orientation=Gtk.Orientation.HORIZONTAL, spacing=0)
         self.add_css_class("screen")
 
@@ -374,7 +506,7 @@ class ViewProgreso(Gtk.Box):
         steps_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
         steps_box.add_css_class("steps-box")
 
-        for label, _, _ in INSTALL_STEPS:
+        for label, _, _ in steps:
             row = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=12)
             icon = Gtk.Label(label="○")
             icon.add_css_class("step-icon-pending")
@@ -479,15 +611,16 @@ class ViewProgreso(Gtk.Box):
 # ── Vista 3 — Listo ───────────────────────────────────────────────────────────
 
 class ViewListo(Gtk.Box):
-    def __init__(self, on_launch, on_close, success: bool = True):
+    def __init__(self, on_launch, on_close, success: bool = True, selected_models: list = None, install_nvidia: bool = False):
         super().__init__(orientation=Gtk.Orientation.HORIZONTAL, spacing=0)
         self.add_css_class("screen")
 
+        models_txt = ", ".join(selected_models) if selected_models else "el modelo elegido"
         if success:
             tag_txt   = "INSTALACIÓN COMPLETA"
             title_txt = "¡Rising IA está\nlista para usar!"
             body_txt  = (
-                "Ollama, Qwen 2.5 y Open WebUI están instalados "
+                f"Ollama, {models_txt} y Open WebUI están instalados "
                 "y corriendo en tu máquina. "
                 "Hacé clic para abrir la interfaz de chat en tu navegador."
             )
@@ -510,14 +643,30 @@ class ViewListo(Gtk.Box):
         btn_close.add_css_class("btn-prev")
         btn_close.connect("clicked", lambda _: on_close())
 
-        lp = left_panel(
+        panel_widgets = [
             make_logo(72),
             make_tag(tag_txt),
             make_title(title_txt),
             make_body(body_txt),
             btn_launch,
-            btn_close,
-        )
+        ]
+
+        if success and install_nvidia:
+            reboot_note = make_body(
+                "Instalaste el driver NVIDIA — hace falta reiniciar "
+                "para que se active."
+            )
+            btn_reboot = Gtk.Button(label="⟳  Reiniciar ahora")
+            btn_reboot.add_css_class("btn-action")
+            btn_reboot.connect("clicked", lambda _: subprocess.Popen(
+                ["pkexec", "systemctl", "reboot"]
+            ))
+            panel_widgets.append(reboot_note)
+            panel_widgets.append(btn_reboot)
+
+        panel_widgets.append(btn_close)
+
+        lp = left_panel(*panel_widgets)
 
         # Panel derecho: logo grande + info
         right_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=16)
@@ -532,7 +681,7 @@ class ViewListo(Gtk.Box):
         logo_big.set_halign(Gtk.Align.CENTER)
 
         if success:
-            sub = Gtk.Label(label="Open WebUI · Ollama · Qwen 2.5:3b")
+            sub = Gtk.Label(label=f"Open WebUI · Ollama · {models_txt}")
             sub.add_css_class("final-version")
             sub.set_halign(Gtk.Align.CENTER)
             url_lbl = Gtk.Label(label=WEBUI_URL)
@@ -597,8 +746,12 @@ class IAWindow(Gtk.ApplicationWindow):
         self._stack.add_named(self._view_inicio, "inicio")
         self._stack.set_visible_child_name("inicio")
 
-    def _start_install(self):
-        self._view_progreso = ViewProgreso()
+    def _start_install(self, selected_models: list, install_nvidia: bool):
+        self._selected_models = selected_models
+        self._install_nvidia = install_nvidia
+        self._steps = build_install_steps(selected_models, install_nvidia)
+
+        self._view_progreso = ViewProgreso(self._steps)
         self._stack.add_named(self._view_progreso, "progreso")
         self._stack.set_visible_child_name("progreso")
         threading.Thread(target=self._run_install, daemon=True).start()
@@ -612,8 +765,8 @@ class IAWindow(Gtk.ApplicationWindow):
         return False
 
     def _run_install(self):
-        total = len(INSTALL_STEPS)
-        for idx, (label, cmd, needs_root) in enumerate(INSTALL_STEPS):
+        total = len(self._steps)
+        for idx, (label, cmd, needs_root) in enumerate(self._steps):
             GLib.idle_add(self._view_progreso.set_step_active, idx)
             GLib.idle_add(self._view_progreso.set_status, f"Ejecutando: {label}...")
             GLib.idle_add(self._view_progreso.append_log, f"\n▶ {label}\n{'─'*48}\n")
@@ -655,9 +808,11 @@ class IAWindow(Gtk.ApplicationWindow):
 
     def _finish_install(self, success: bool):
         view = ViewListo(
-            on_launch = self._launch_webui if success else self._retry,
-            on_close  = self.get_application().quit,
-            success   = success,
+            on_launch       = self._launch_webui if success else self._retry,
+            on_close        = self.get_application().quit,
+            success         = success,
+            selected_models = self._selected_models,
+            install_nvidia  = self._install_nvidia,
         )
         self._stack.add_named(view, "listo")
         self._stack.set_visible_child_name("listo")
