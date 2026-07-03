@@ -23,3 +23,15 @@ RisingOS-amd64.*
 *.changes
 *.bak*
 __pycache__/
+
+# Staging de dpkg-buildpackage (se regenera en cada build, no es fuente)
+**/debian/.debhelper/
+**/debian/files
+**/debian/*.substvars
+**/debian/*/DEBIAN/
+**/debian/*/usr/
+**/debian/*.dch
+
+# Artefactos .deb sueltos en la raíz del build (los .deb versionados
+# a propósito viven en config/packages.chroot/, no acá)
+/*.deb
