@@ -176,26 +176,37 @@ class ScreenBienvenida(Gtk.Box):
             "todo lo que tenés disponible."
         )
 
-        conn = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
-        conn.add_css_class("conn-indicator")
-        if has_internet:
-            conn.add_css_class("conn-ok")
-            icon = Gtk.Label(label="✓"); icon.add_css_class("conn-icon-ok")
-            lbl  = Gtk.Label(label="Conectado a internet")
-        else:
-            conn.add_css_class("conn-fail")
-            icon = Gtk.Label(label="✕"); icon.add_css_class("conn-icon-fail")
-            lbl  = Gtk.Label(label="Sin conexión — algunas funciones no estarán disponibles")
-        lbl.add_css_class("conn-label")
-        lbl.set_xalign(0)
-        lbl.set_wrap(True)
-        conn.append(icon)
-        conn.append(lbl)
+        self._conn = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
+        self._conn.add_css_class("conn-indicator")
+        self._conn_icon = Gtk.Label()
+        self._conn_lbl  = Gtk.Label()
+        self._conn_lbl.add_css_class("conn-label")
+        self._conn_lbl.set_xalign(0)
+        self._conn_lbl.set_wrap(True)
+        self._conn.append(self._conn_icon)
+        self._conn.append(self._conn_lbl)
+        self.update_connectivity(has_internet)
 
-        lp = left_panel(logo_img, logo_title, logo_sub, logo_credit, body_txt, conn)
+        lp = left_panel(logo_img, logo_title, logo_sub, logo_credit, body_txt, self._conn)
         rp = right_panel(make_monitor("escritorio"))
         self.append(lp)
         self.append(rp)
+
+    def update_connectivity(self, has_internet: bool):
+        self._conn.remove_css_class("conn-ok")
+        self._conn.remove_css_class("conn-fail")
+        self._conn_icon.remove_css_class("conn-icon-ok")
+        self._conn_icon.remove_css_class("conn-icon-fail")
+        if has_internet:
+            self._conn.add_css_class("conn-ok")
+            self._conn_icon.set_label("✓")
+            self._conn_icon.add_css_class("conn-icon-ok")
+            self._conn_lbl.set_label("Conectado a internet")
+        else:
+            self._conn.add_css_class("conn-fail")
+            self._conn_icon.set_label("✕")
+            self._conn_icon.add_css_class("conn-icon-fail")
+            self._conn_lbl.set_label("Sin conexión — algunas funciones no estarán disponibles")
 
 
 class ScreenActualizaciones(Gtk.Box):
@@ -283,6 +294,14 @@ class ScreenActualizaciones(Gtk.Box):
 
         self.append(lp)
         self.append(self._right_stack)
+
+    def update_connectivity(self, has_internet: bool):
+        if not has_internet or self._updating:
+            return
+        self._status.remove_css_class("status-warn")
+        self._status.set_label("")
+        self._btn.set_sensitive(True)
+        self._btn.set_label("↓  Actualizar ahora")
 
     def _build_terminal_widget(self) -> Gtk.Widget:
         outer = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=0)
@@ -805,6 +824,10 @@ class WelcomeWindow(Gtk.ApplicationWindow):
         self.set_child(root)
         self._refresh()
 
+        self._has_internet = has_internet
+        if not has_internet:
+            self._start_connectivity_poll()
+
     def _refresh(self):
         i, n = self._cur, self._total
         self._btn_prev.set_sensitive(i > 0)
@@ -837,8 +860,29 @@ class WelcomeWindow(Gtk.ApplicationWindow):
             self.get_application().quit()
 
 
-# ── App ───────────────────────────────────────────────────────────────────────
 
+    def _start_connectivity_poll(self):
+        GLib.timeout_add_seconds(3, self._poll_connectivity)
+
+    def _poll_connectivity(self):
+        threading.Thread(target=self._check_connectivity_async, daemon=True).start()
+        return False  # el thread se encarga de reprogramar si hace falta
+
+    def _check_connectivity_async(self):
+        connected = check_internet()
+        GLib.idle_add(self._on_connectivity_result, connected)
+
+    def _on_connectivity_result(self, connected: bool):
+        if connected:
+            self._has_internet = True
+            self._screens[0].update_connectivity(True)
+            self._screens[1].update_connectivity(True)
+        else:
+            self._start_connectivity_poll()
+        return False
+
+
+# ── App ───────────────────────────────────────────────────────────────────────
 class WelcomeApp(Gtk.Application):
     def __init__(self):
         super().__init__(application_id="ar.risingarrow.risingos.welcome")
