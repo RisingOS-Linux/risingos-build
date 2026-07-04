@@ -21,16 +21,16 @@ Description: Instalador de IA local para RisingOS
  mostrando el progreso en tiempo real y lanzando Open WebUI al finalizar.
 
 Package: rising-welcome
-Version: 1.0.1
+Version: 1.0.2
 Architecture: all
 Maintainer: Francisco Galaso <franciscogalaso@rising-arrow.com>
-Installed-Size: 3667
+Installed-Size: 3668
 Depends: python3 (>= 3.11), python3-gi, gir1.2-gtk-4.0, polkitd, pkexec
-Filename: pool/main/rising-welcome_1.0.1_all.deb
-Size: 3663600
-MD5sum: ecb0a419dc141fe0ce8b7023365a2467
-SHA1: 30762622eda6734a2a8d71cea00068b5affb8b17
-SHA256: 50861d0c1dcce145e9039e50fc9199389c8a98b64f8db77046e987aea0e75c95
+Filename: pool/main/rising-welcome_1.0.2_all.deb
+Size: 3663844
+MD5sum: c1bc2bcfd0b104efa7cffd484f3cb298
+SHA1: 597fea11219a796490e7fe024b73a48862d6d2d9
+SHA256: d313aae3ad086832227fb7d9a11769699d3921d5b2b1e2527b4bccd59a933e45
 Section: utils
 Priority: optional
 Homepage: https://github.com/RisingOS-Linux/rising-welcome

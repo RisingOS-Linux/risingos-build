@@ -1,3 +1,13 @@
+rising-welcome (1.0.2) trixie; urgency=medium
+
+  * Actualizado el copy de la Pantalla 6 (IA local) para reflejar el
+    selector de modelo y la detección de GPU NVIDIA con oferta de
+    driver propietario, agregados en rising-ia 1.1.0
+  * Requisito de GPU actualizado de "No necesaria" a "Opcional
+    (NVIDIA mejora rendimiento)"
+
+ -- Francisco Galaso <franciscogalaso@rising-arrow.com>  Sat, 04 Jul 2026 00:00:00 -0300
+
 rising-welcome (1.0.1) trixie; urgency=medium
 
   * Fix: re-detección dinámica de conectividad en Pantallas 1 y 2

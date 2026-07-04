@@ -609,7 +609,7 @@ class ScreenIA(Gtk.Box):
             "CPU    4 núcleos",
             "RAM    8 GB",
             "Disco  10 GB libres",
-            "GPU    No necesaria",
+            "GPU    Opcional (NVIDIA mejora rendimiento)",
         ]
         for r in reqs:
             lbl = Gtk.Label(label=f"· {r}")
@@ -630,8 +630,10 @@ class ScreenIA(Gtk.Box):
                 "Rising IA es tu asistente para instalar de forma automatizada "
                 "tu propia IA local. Funciona sin internet, sin suscripciones "
                 "y con privacidad total.\n\n"
-                "Rising IA se encarga de instalar y configurar Ollama + Qwen + "
-                "Open WebUI a un solo clic de distancia."
+                "Rising IA instala y configura Ollama + Open WebUI, dejándote "
+                "elegir el modelo que mejor se adapte a tu equipo. Si detecta "
+                "una GPU NVIDIA, te ofrece instalar el driver propietario "
+                "para un mejor rendimiento."
             ),
             req_box,
             btn,
