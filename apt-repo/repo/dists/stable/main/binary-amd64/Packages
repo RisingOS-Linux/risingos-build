@@ -25,13 +25,13 @@ Version: 1.0.0
 Architecture: all
 Maintainer: Francisco Galaso <franciscogalaso@rising-arrow.com>
 Installed-Size: 41
-Depends: python3, python3-gi, gir1.2-gtk-4.0, policykit-1, apt
+Depends: python3, python3-gi, gir1.2-gtk-4.0, polkitd, pkexec, apt
 Recommends: flatpak
 Filename: pool/main/rising-update_1.0.0_all.deb
-Size: 8676
-MD5sum: 40f0add3ed1224ef4c2dfcb719129912
-SHA1: ab27def2efb34436eb30145089eb2b0a45419157
-SHA256: b04f59b63ada54bae9eb9fc13c42afb296087295ae8ca0181794c50b640949e2
+Size: 8680
+MD5sum: 00a7821ad4c04c1831ec991503ad0f74
+SHA1: a468febd9c36b2ea14f5708823c0d65bf12d6f9b
+SHA256: 7be67d0b60f8cf90aa30ae30b5336ab85467ff36d4cc72a7c28e79b7aea79196
 Section: admin
 Priority: optional
 Description: Notificador y actualizador de sistema para RisingOS

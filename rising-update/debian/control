@@ -12,7 +12,8 @@ Depends: ${misc:Depends},
          python3,
          python3-gi,
          gir1.2-gtk-4.0,
-         policykit-1,
+         polkitd,
+         pkexec,
          apt,
 Recommends: flatpak
 Description: Notificador y actualizador de sistema para RisingOS
