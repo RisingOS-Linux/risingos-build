@@ -1,0 +1,17 @@
+rising-update (1.0.0) unstable; urgency=medium
+
+  * Versión inicial: ícono en la bandeja de XFCE implementado a mano vía
+    D-Bus (protocolo StatusNotifierItem), sin depender de GTK3 ni
+    libayatana-appindicator3 — todo en un solo proceso GTK4.
+  * Chequeo automático de actualizaciones cada 24hs (apt-get update de
+    todos los repos configurados), con notificación si hay novedades.
+  * Ventana de actualización con botón único que corre apt upgrade y
+    flatpak update (si está instalado), reutilizando el patrón de log en
+    vivo y progress bar de la pantalla de actualizaciones de
+    rising-welcome.
+  * Regla sudoers acotada (NOPASSWD solo para "apt-get -y update") para
+    que el chequeo automático en background no dispare un diálogo
+    gráfico de contraseña; el upgrade real sigue pidiendo confirmación
+    vía pkexec.
+
+ -- Francisco Galaso <franciscogalaso@rising-arrow.com>  Sun, 05 Jul 2026 12:00:00 -0300

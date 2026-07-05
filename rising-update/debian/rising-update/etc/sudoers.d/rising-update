@@ -1,0 +1,11 @@
+# /etc/sudoers.d/rising-update
+# Permite correr SOLO "apt-get update" sin contraseña, para que el chequeo
+# automático de rising-update (cada 24hs, en background) no dispare un
+# diálogo gráfico. El "apt-get upgrade" real sigue pidiendo confirmación
+# vía pkexec cuando el usuario aprieta el botón en la ventana — ese sí
+# es una acción explícita y consciente, no se toca este esquema.
+#
+# Mismo criterio que /etc/sudoers.d/calamares: NOPASSWD acotado a un
+# comando exacto, no a sudo en general.
+
+%sudo ALL=(root) NOPASSWD: /usr/bin/apt-get -y update

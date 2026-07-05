@@ -1,0 +1,23 @@
+Source: rising-update
+Section: admin
+Priority: optional
+Maintainer: Francisco Galaso <franciscogalaso@rising-arrow.com>
+Build-Depends: debhelper-compat (= 13)
+Standards-Version: 4.6.2
+Rules-Requires-Root: no
+
+Package: rising-update
+Architecture: all
+Depends: ${misc:Depends},
+         python3,
+         python3-gi,
+         gir1.2-gtk-4.0,
+         policykit-1,
+         apt,
+Recommends: flatpak
+Description: Notificador y actualizador de sistema para RisingOS
+ Rising Update vive en la bandeja de XFCE y chequea cada 24 horas si hay
+ actualizaciones disponibles (repos de Debian y el repo propio de
+ RisingOS). Si encuentra novedades, avisa con una notificación y permite
+ aplicar la actualización (apt upgrade + flatpak update) desde una
+ ventana simple, con un solo click y confirmación de contraseña.

@@ -1,0 +1,18 @@
+#!/bin/sh
+set -e
+
+SUDOERS_FILE="/etc/sudoers.d/rising-update"
+
+if [ -f "$SUDOERS_FILE" ]; then
+    if ! visudo -c -f "$SUDOERS_FILE" >/dev/null 2>&1; then
+        echo "rising-update: ADVERTENCIA — $SUDOERS_FILE no pasó la validación de visudo." >&2
+        echo "rising-update: se lo deshabilita (rename a .disabled) para no dejar sudo en mal estado." >&2
+        mv "$SUDOERS_FILE" "${SUDOERS_FILE}.disabled"
+        echo "rising-update: el chequeo automático de actualizaciones va a pedir contraseña" >&2
+        echo "rising-update: hasta que se revise manualmente ${SUDOERS_FILE}.disabled" >&2
+    fi
+fi
+
+#DEBHELPER#
+
+exit 0

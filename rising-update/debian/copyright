@@ -1,0 +1,9 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: rising-update
+Source: https://github.com/RisingOS-Linux
+
+Files: *
+Copyright: 2026 Francisco Galaso / Rising Arrow
+License: proprietary
+ Todos los derechos reservados. Distribución únicamente como parte de
+ RisingOS y su repositorio APT oficial.

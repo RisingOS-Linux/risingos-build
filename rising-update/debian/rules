@@ -1,0 +1,22 @@
+#!/usr/bin/make -f
+
+%:
+	dh $@
+
+override_dh_auto_build:
+	# Nada que compilar — Python puro.
+
+override_dh_auto_test:
+	# Sin tests automatizados por ahora.
+
+override_dh_auto_install:
+	install -D -m 0755 src/rising-update \
+		debian/rising-update/usr/bin/rising-update
+	install -D -m 0644 assets/rising-update.desktop \
+		debian/rising-update/etc/xdg/autostart/rising-update.desktop
+	install -D -m 0440 assets/rising-update.sudoers \
+		debian/rising-update/etc/sudoers.d/rising-update
+	install -D -m 0644 assets/icons/rising-update.svg \
+		debian/rising-update/usr/share/icons/hicolor/scalable/status/rising-update.svg
+	install -D -m 0644 assets/icons/rising-update-attention.svg \
+		debian/rising-update/usr/share/icons/hicolor/scalable/status/rising-update-attention.svg

@@ -1,0 +1,419 @@
+#!/usr/bin/python3
+# rising-update — Notificador y actualizador de RisingOS
+# Rising Arrow / Francisco Galaso
+#
+# Un solo proceso GTK4. El ícono de bandeja NO usa libayatana-appindicator3
+# (que exige GTK3 y no puede convivir con GTK4 en el mismo proceso).
+# En cambio, habla directamente el protocolo StatusNotifierItem por D-Bus
+# vía Gio.DBusConnection — sin dependencia de GTK3.
+#
+# v1: sin menú contextual (click derecho). Click izquierdo = Activate = abre/oculta ventana.
+
+import gi
+gi.require_version("Gtk", "4.0")
+from gi.repository import Gtk, GLib, Gio
+
+import os, sys, subprocess, threading, shutil, socket
+
+APP_ID = "ar.risingarrow.risingos.update"
+CHECK_INTERVAL_SECONDS = 24 * 60 * 60  # 24 horas
+
+# Íconos propios de RisingOS, resueltos por nombre a través del icon theme
+# hicolor una vez instalados (ver assets/icons/ y debian/install). El .deb
+# los coloca en /usr/share/icons/hicolor/scalable/status/, y dh_icons
+# actualiza el cache del theme automáticamente al instalar/desinstalar.
+ICON_NORMAL  = "rising-update"
+ICON_UPDATES = "rising-update-attention"
+
+APT_UPGRADABLE_MARKER = os.path.expanduser("~/.cache/rising-update/last-upgradable.txt")
+
+
+# ── Utilidades ────────────────────────────────────────────────────────────────
+
+def check_internet(timeout=2.5) -> bool:
+    try:
+        socket.setdefaulttimeout(timeout)
+        socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect(("8.8.8.8", 53))
+        return True
+    except OSError:
+        return False
+
+
+def get_upgradable_set() -> set:
+    """Devuelve el set de líneas de 'apt list --upgradable' (post apt update)."""
+    try:
+        out = subprocess.run(
+            ["apt", "list", "--upgradable"],
+            capture_output=True, text=True, timeout=60
+        ).stdout
+        lines = [l.strip() for l in out.splitlines() if "/" in l]
+        return set(lines)
+    except Exception as e:
+        print(f"[rising-update] Error leyendo upgradable: {e}", file=sys.stderr)
+        return set()
+
+
+# ── StatusNotifierItem hablado a mano por D-Bus (sin GTK3) ────────────────────
+
+SNI_XML = """
+<node>
+  <interface name="org.kde.StatusNotifierItem">
+    <property name="Category" type="s" access="read"/>
+    <property name="Id" type="s" access="read"/>
+    <property name="Title" type="s" access="read"/>
+    <property name="Status" type="s" access="read"/>
+    <property name="WindowId" type="u" access="read"/>
+    <property name="IconName" type="s" access="read"/>
+    <property name="IconThemePath" type="s" access="read"/>
+    <property name="OverlayIconName" type="s" access="read"/>
+    <property name="AttentionIconName" type="s" access="read"/>
+    <property name="ItemIsMenu" type="b" access="read"/>
+    <property name="ToolTip" type="(sa(iiay)ss)" access="read"/>
+    <method name="Activate">
+      <arg type="i" name="x" direction="in"/>
+      <arg type="i" name="y" direction="in"/>
+    </method>
+    <method name="SecondaryActivate">
+      <arg type="i" name="x" direction="in"/>
+      <arg type="i" name="y" direction="in"/>
+    </method>
+    <method name="ContextMenu">
+      <arg type="i" name="x" direction="in"/>
+      <arg type="i" name="y" direction="in"/>
+    </method>
+    <method name="Scroll">
+      <arg type="i" name="delta" direction="in"/>
+      <arg type="s" name="orientation" direction="in"/>
+    </method>
+    <signal name="NewTitle"/>
+    <signal name="NewIcon"/>
+    <signal name="NewAttentionIcon"/>
+    <signal name="NewOverlayIcon"/>
+    <signal name="NewStatus">
+      <arg type="s" name="status"/>
+    </signal>
+    <signal name="NewToolTip"/>
+  </interface>
+</node>
+"""
+
+# En la práctica, la mayoría de los hosts (incluido lo que usa XFCE panel para
+# nm-applet vía --indicator) resuelven contra el nombre "org.kde.*" del watcher,
+# aunque el spec original hable de "org.freedesktop.*". Probamos ambos.
+WATCHER_NAMES = ["org.kde.StatusNotifierWatcher", "org.freedesktop.StatusNotifierWatcher"]
+
+
+class StatusNotifierItem:
+    """Implementación mínima (sin menú) del protocolo StatusNotifierItem."""
+
+    def __init__(self, on_activate):
+        self._on_activate = on_activate
+        self._status = "Active"
+        self._icon_name = ICON_NORMAL
+        self._title = "Rising Update"
+        self._connection = None
+        self._owner_id = None
+
+    def start(self):
+        self._owner_id = Gio.bus_own_name(
+            Gio.BusType.SESSION,
+            f"org.freedesktop.StatusNotifierItem-{os.getpid()}-1",
+            Gio.BusNameOwnerFlags.NONE,
+            self._on_bus_acquired,
+            self._on_name_acquired,
+            self._on_name_lost,
+        )
+
+    def _on_bus_acquired(self, connection, name):
+        self._connection = connection
+        node_info = Gio.DBusNodeInfo.new_for_xml(SNI_XML)
+        iface_info = node_info.interfaces[0]
+        try:
+            connection.register_object(
+                "/StatusNotifierItem",
+                iface_info,
+                self._handle_method_call,
+                self._handle_get_property,
+                None,
+            )
+        except GLib.Error as e:
+            print(f"[rising-update] No se pudo registrar el objeto D-Bus: {e}", file=sys.stderr)
+
+    def _on_name_acquired(self, connection, name):
+        self._register_with_watcher(connection, name)
+
+    def _on_name_lost(self, connection, name):
+        print(f"[rising-update] No se pudo obtener el nombre D-Bus {name} "
+              f"(¿otra instancia corriendo?)", file=sys.stderr)
+
+    def _register_with_watcher(self, connection, name):
+        for watcher in WATCHER_NAMES:
+            try:
+                connection.call_sync(
+                    watcher, "/StatusNotifierWatcher", watcher,
+                    "RegisterStatusNotifierItem",
+                    GLib.Variant("(s)", (name,)),
+                    None, Gio.DBusCallFlags.NONE, -1, None,
+                )
+                print(f"[rising-update] Registrado contra {watcher}")
+                return
+            except GLib.Error:
+                continue
+        print("[rising-update] ADVERTENCIA: no se encontró ningún "
+              "StatusNotifierWatcher activo en el bus de sesión. El ícono "
+              "no va a aparecer en el panel. Verificar con: "
+              "busctl --user list | grep -i statusnotifier", file=sys.stderr)
+
+    def _handle_method_call(self, connection, sender, object_path, interface_name,
+                             method_name, parameters, invocation):
+        if method_name in ("Activate", "SecondaryActivate"):
+            GLib.idle_add(self._on_activate)
+        # ContextMenu y Scroll: no-op en v1 (sin menú contextual)
+        invocation.return_value(None)
+
+    def _handle_get_property(self, connection, sender, object_path, interface_name, property_name):
+        values = {
+            "Category":         GLib.Variant("s", "ApplicationStatus"),
+            "Id":                GLib.Variant("s", "rising-update"),
+            "Title":             GLib.Variant("s", self._title),
+            "Status":            GLib.Variant("s", self._status),
+            "WindowId":          GLib.Variant("u", 0),
+            "IconName":          GLib.Variant("s", self._icon_name),
+            "IconThemePath":     GLib.Variant("s", ""),
+            "OverlayIconName":   GLib.Variant("s", ""),
+            "AttentionIconName": GLib.Variant("s", ICON_UPDATES),
+            "ItemIsMenu":        GLib.Variant("b", False),
+            "ToolTip":           GLib.Variant("(sa(iiay)ss)", ("", [], self._title, "")),
+        }
+        return values.get(property_name)
+
+    def set_updates_available(self, available: bool):
+        self._status = "NeedsAttention" if available else "Active"
+        self._icon_name = ICON_UPDATES if available else ICON_NORMAL
+
+        if not self._connection:
+            return
+        try:
+            self._connection.emit_signal(
+                None, "/StatusNotifierItem", "org.kde.StatusNotifierItem",
+                "NewStatus", GLib.Variant("(s)", (self._status,)),
+            )
+            self._connection.emit_signal(
+                None, "/StatusNotifierItem", "org.kde.StatusNotifierItem",
+                "NewIcon", None,
+            )
+        except GLib.Error as e:
+            print(f"[rising-update] Error emitiendo señal D-Bus: {e}", file=sys.stderr)
+
+
+# ── Ventana de actualización (reutiliza el patrón de rising-welcome) ──────────
+
+class UpdateWindow(Gtk.ApplicationWindow):
+    def __init__(self, app):
+        super().__init__(application=app, title="Rising Update")
+        self.set_default_size(560, 420)
+        self._updating = False
+
+        root = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=16)
+        root.set_margin_top(24); root.set_margin_bottom(24)
+        root.set_margin_start(24); root.set_margin_end(24)
+
+        title = Gtk.Label(label="Actualizaciones de RisingOS")
+        title.add_css_class("title-2")
+        title.set_xalign(0)
+
+        self._status_lbl = Gtk.Label(label="Hay actualizaciones disponibles para tu sistema.")
+        self._status_lbl.set_xalign(0)
+        self._status_lbl.set_wrap(True)
+
+        self._btn = Gtk.Button(label="↓  Actualiza tu sistema")
+        self._btn.add_css_class("suggested-action")
+        self._btn.connect("clicked", self._on_click)
+
+        self._progress = Gtk.ProgressBar()
+        self._progress.set_visible(False)
+
+        self._log_buf = Gtk.TextBuffer()
+        self._log_view = Gtk.TextView(buffer=self._log_buf)
+        self._log_view.set_editable(False)
+        self._log_view.set_cursor_visible(False)
+        self._log_view.set_monospace(True)
+        self._log_view.set_vexpand(True)
+
+        scroll = Gtk.ScrolledWindow()
+        scroll.set_child(self._log_view)
+        scroll.set_vexpand(True)
+
+        root.append(title)
+        root.append(self._status_lbl)
+        root.append(self._btn)
+        root.append(self._progress)
+        root.append(scroll)
+        self.set_child(root)
+
+        # No destruir la ventana al cerrar — solo ocultarla, porque el proceso
+        # sigue vivo en la bandeja y la reabrimos con Activate().
+        self.connect("close-request", self._on_close_request)
+
+    def _on_close_request(self, *_):
+        self.set_visible(False)
+        return True
+
+    def _append_log(self, text: str):
+        self._log_buf.insert(self._log_buf.get_end_iter(), text)
+        return False
+
+    def _on_click(self, btn):
+        if self._updating:
+            return
+        self._updating = True
+        btn.set_sensitive(False)
+        btn.set_label("Actualizando...")
+        self._progress.set_visible(True)
+        self._log_buf.set_text("")
+        GLib.timeout_add(120, self._pulse)
+        threading.Thread(target=self._run_update, daemon=True).start()
+
+    def _pulse(self):
+        self._progress.pulse()
+        return self._updating
+
+    def _run_update(self):
+        ok = True
+        cmds = [["pkexec", "apt-get", "-y", "upgrade"]]
+        if shutil.which("flatpak"):
+            cmds.append(["flatpak", "update", "-y"])
+        else:
+            GLib.idle_add(self._append_log, "[flatpak no está instalado — se omite ese paso]\n")
+
+        for cmd in cmds:
+            try:
+                proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                                         text=True, bufsize=1)
+                for line in proc.stdout:
+                    GLib.idle_add(self._append_log, line)
+                proc.wait(timeout=1800)
+                if proc.returncode not in (0, None):
+                    ok = False
+                    break
+            except Exception as e:
+                GLib.idle_add(self._append_log, f"Error: {e}\n")
+                ok = False
+                break
+        GLib.idle_add(self._finish, ok)
+
+    def _finish(self, ok: bool):
+        self._updating = False
+        self._progress.set_visible(False)
+        self._btn.set_sensitive(True)
+        self._btn.set_label("↓  Actualiza tu sistema")
+
+        dialog = Gtk.AlertDialog()
+        if ok:
+            dialog.set_message("Tu sistema se ha actualizado correctamente")
+            self._status_lbl.set_label("Tu sistema está al día.")
+        else:
+            dialog.set_message("El sistema no se pudo actualizar")
+            dialog.set_detail("Revisá tu conexión a internet e intentá de nuevo.")
+        dialog.show(self)
+
+        self.get_application().set_updates_available(False)
+
+
+# ── Aplicación ─────────────────────────────────────────────────────────────────
+
+class RisingUpdateApp(Gtk.Application):
+    def __init__(self):
+        super().__init__(application_id=APP_ID,
+                          flags=Gio.ApplicationFlags.IS_SERVICE if False else Gio.ApplicationFlags.DEFAULT_FLAGS)
+        # Mantiene el proceso vivo aunque no haya ventanas visibles
+        self.hold()
+        self._window = None
+        self._sni = StatusNotifierItem(self._toggle_window)
+
+    def do_activate(self):
+        if self._window is None:
+            self._window = UpdateWindow(self)
+        self._sni.start()
+        self._start_background_check()
+
+    def _toggle_window(self):
+        if self._window is None:
+            self._window = UpdateWindow(self)
+        if self._window.get_visible():
+            self._window.set_visible(False)
+        else:
+            self._window.present()
+        return False
+
+    def set_updates_available(self, available: bool):
+        self._sni.set_updates_available(available)
+
+    # ── Chequeo periódico (cada 24hs) ──────────────────────────────────────
+    def _start_background_check(self):
+        # Primer chequeo a los pocos segundos de arrancar — UNA SOLA VEZ.
+        GLib.timeout_add_seconds(30, self._run_initial_check)
+        # Chequeo periódico real, cada CHECK_INTERVAL_SECONDS.
+        GLib.timeout_add_seconds(CHECK_INTERVAL_SECONDS, self._run_check_once)
+
+    def _run_initial_check(self):
+        threading.Thread(target=self._check_updates_thread, daemon=True).start()
+        return False  # one-shot: NO reprogramar este timer
+
+    def _run_check_once(self):
+        threading.Thread(target=self._check_updates_thread, daemon=True).start()
+        return True  # reprogramar el timeout periódico
+
+    def _check_updates_thread(self):
+        if not check_internet():
+            return
+        try:
+            # sudoers restringido: NOPASSWD solo para 'apt-get update', para que
+            # este chequeo automático no dispare un diálogo gráfico de contraseña.
+            result = subprocess.run(["sudo", "-n", "apt-get", "-y", "update"],
+                                     capture_output=True, text=True, timeout=180)
+        except Exception as e:
+            print(f"[rising-update] Error en apt update de background: {e}", file=sys.stderr)
+            return
+
+        if result.returncode != 0:
+            # No confiamos en el estado de "hay actualizaciones" si el propio
+            # 'apt-get update' falló (repo caído, firma vencida, reloj
+            # desfasado, sin red, etc.) — nunca sobreescribimos el marker con
+            # una lista potencialmente parcial/vieja. Se reintenta solo en
+            # el próximo ciclo de 24hs, sin necesidad de más lógica que esta.
+            print(f"[rising-update] 'apt-get update' devolvió código {result.returncode}, "
+                  f"se descarta este chequeo:\n{result.stderr.strip()}", file=sys.stderr)
+            return
+
+        current = get_upgradable_set()
+        previous = set()
+        if os.path.exists(APT_UPGRADABLE_MARKER):
+            with open(APT_UPGRADABLE_MARKER) as f:
+                previous = set(l.strip() for l in f if l.strip())
+
+        os.makedirs(os.path.dirname(APT_UPGRADABLE_MARKER), exist_ok=True)
+        with open(APT_UPGRADABLE_MARKER, "w") as f:
+            f.write("\n".join(sorted(current)))
+
+        GLib.idle_add(self._on_check_success, current, current != previous)
+
+    def _on_check_success(self, current: set, is_new: bool):
+        if current:
+            self.set_updates_available(True)
+            if is_new:
+                n = Gio.Notification.new("Actualizaciones disponibles")
+                n.set_body(f"Hay {len(current)} paquete(s) para actualizar en tu sistema.")
+                self.send_notification("rising-update-available", n)
+        else:
+            self.set_updates_available(False)
+        return False
+
+
+def main():
+    app = RisingUpdateApp()
+    app.run(sys.argv)
+
+
+if __name__ == "__main__":
+    main()

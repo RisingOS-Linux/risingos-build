@@ -20,6 +20,27 @@ Description: Instalador de IA local para RisingOS
  Provee una interfaz gráfica GTK4 que guía al usuario paso a paso,
  mostrando el progreso en tiempo real y lanzando Open WebUI al finalizar.
 
+Package: rising-update
+Version: 1.0.0
+Architecture: all
+Maintainer: Francisco Galaso <franciscogalaso@rising-arrow.com>
+Installed-Size: 40
+Depends: python3, python3-gi, gir1.2-gtk-4.0, policykit-1, apt
+Recommends: flatpak
+Filename: pool/main/rising-update_1.0.0_all.deb
+Size: 8276
+MD5sum: 01cd521ecf3a66ed909e28320e8356bc
+SHA1: 5da0f3ddfc4a9c7ff13d98a4cf5a11e20cc51cd3
+SHA256: 5e18876074e5b327c24e5df97949ff30eab43e494b70798c25a9a70e22a87f77
+Section: admin
+Priority: optional
+Description: Notificador y actualizador de sistema para RisingOS
+ Rising Update vive en la bandeja de XFCE y chequea cada 24 horas si hay
+ actualizaciones disponibles (repos de Debian y el repo propio de
+ RisingOS). Si encuentra novedades, avisa con una notificación y permite
+ aplicar la actualización (apt upgrade + flatpak update) desde una
+ ventana simple, con un solo click y confirmación de contraseña.
+
 Package: rising-welcome
 Version: 1.0.2
 Architecture: all
