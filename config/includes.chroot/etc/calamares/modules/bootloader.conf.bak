@@ -1,8 +1,0 @@
-# bootloader.conf
-efiBootLoader: "grub"
-grubInstall: "grub-install"
-grubMkconfig: "grub-mkconfig"
-grubCfg: "/boot/grub/grub.cfg"
-grubProbe: "grub-probe"
-efiBootloaderId: "RisingOS"
-installEFIFallback: true
