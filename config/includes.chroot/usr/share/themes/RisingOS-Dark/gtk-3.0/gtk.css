@@ -3532,7 +3532,7 @@ scale {
     min-width: 16px;
     margin: -7px;
     border: none;
-    border-radius: 50%;
+    border-radius: 0px;
     background-color: #cc5522;
     box-shadow: none; }
   scale.horizontal.marks-before:not(.marks-after).fine-tune slider {
@@ -3542,7 +3542,7 @@ scale {
     min-width: 16px;
     margin: -7px;
     border: none;
-    border-radius: 50%;
+    border-radius: 0px;
     background-color: #cc5522;
     box-shadow: none; }
   scale.horizontal.marks-before:not(.marks-after).fine-tune slider {
@@ -3552,7 +3552,7 @@ scale {
     min-width: 16px;
     margin: -7px;
     border: none;
-    border-radius: 50%;
+    border-radius: 0px;
     background-color: #cc5522;
     box-shadow: none; }
   scale.horizontal.marks-before:not(.marks-after).fine-tune slider {
@@ -3562,7 +3562,7 @@ scale {
     min-width: 16px;
     margin: -7px;
     border: none;
-    border-radius: 50%;
+    border-radius: 0px;
     background-color: #cc5522;
     box-shadow: none; }
   scale.horizontal.marks-before:not(.marks-after).fine-tune slider {
@@ -3572,7 +3572,7 @@ scale {
     min-width: 16px;
     margin: -7px;
     border: none;
-    border-radius: 50%;
+    border-radius: 0px;
     background-color: #cc5522;
     box-shadow: none; }
   scale.horizontal.marks-before:not(.marks-after).fine-tune slider {
@@ -3582,7 +3582,7 @@ scale {
     min-width: 16px;
     margin: -7px;
     border: none;
-    border-radius: 50%;
+    border-radius: 0px;
     background-color: #cc5522;
     box-shadow: none; }
   scale.horizontal.marks-before:not(.marks-after).fine-tune slider {
@@ -3592,7 +3592,7 @@ scale {
     min-width: 16px;
     margin: -7px;
     border: none;
-    border-radius: 50%;
+    border-radius: 0px;
     background-color: #cc5522;
     box-shadow: none; }
   scale.horizontal.marks-after:not(.marks-before).fine-tune slider {
@@ -3602,7 +3602,7 @@ scale {
     min-width: 16px;
     margin: -7px;
     border: none;
-    border-radius: 50%;
+    border-radius: 0px;
     background-color: #cc5522;
     box-shadow: none; }
   scale.horizontal.marks-after:not(.marks-before).fine-tune slider {
@@ -3612,7 +3612,7 @@ scale {
     min-width: 16px;
     margin: -7px;
     border: none;
-    border-radius: 50%;
+    border-radius: 0px;
     background-color: #cc5522;
     box-shadow: none; }
   scale.horizontal.marks-after:not(.marks-before).fine-tune slider {
@@ -3622,7 +3622,7 @@ scale {
     min-width: 16px;
     margin: -7px;
     border: none;
-    border-radius: 50%;
+    border-radius: 0px;
     background-color: #cc5522;
     box-shadow: none; }
   scale.horizontal.marks-after:not(.marks-before).fine-tune slider {
@@ -3632,7 +3632,7 @@ scale {
     min-width: 16px;
     margin: -7px;
     border: none;
-    border-radius: 50%;
+    border-radius: 0px;
     background-color: #cc5522;
     box-shadow: none; }
   scale.horizontal.marks-after:not(.marks-before).fine-tune slider {
@@ -3642,7 +3642,7 @@ scale {
     min-width: 16px;
     margin: -7px;
     border: none;
-    border-radius: 50%;
+    border-radius: 0px;
     background-color: #cc5522;
     box-shadow: none; }
   scale.horizontal.marks-after:not(.marks-before).fine-tune slider {
@@ -3652,7 +3652,7 @@ scale {
     min-width: 16px;
     margin: -7px;
     border: none;
-    border-radius: 50%;
+    border-radius: 0px;
     background-color: #cc5522;
     box-shadow: none; }
   scale.vertical.marks-before:not(.marks-after).fine-tune slider {
@@ -3662,7 +3662,7 @@ scale {
     min-width: 16px;
     margin: -7px;
     border: none;
-    border-radius: 50%;
+    border-radius: 0px;
     background-color: #cc5522;
     box-shadow: none; }
   scale.vertical.marks-before:not(.marks-after).fine-tune slider {
@@ -3672,7 +3672,7 @@ scale {
     min-width: 16px;
     margin: -7px;
     border: none;
-    border-radius: 50%;
+    border-radius: 0px;
     background-color: #cc5522;
     box-shadow: none; }
   scale.vertical.marks-before:not(.marks-after).fine-tune slider {
@@ -3682,7 +3682,7 @@ scale {
     min-width: 16px;
     margin: -7px;
     border: none;
-    border-radius: 50%;
+    border-radius: 0px;
     background-color: #cc5522;
     box-shadow: none; }
   scale.vertical.marks-before:not(.marks-after).fine-tune slider {
@@ -3692,7 +3692,7 @@ scale {
     min-width: 16px;
     margin: -7px;
     border: none;
-    border-radius: 50%;
+    border-radius: 0px;
     background-color: #cc5522;
     box-shadow: none; }
   scale.vertical.marks-before:not(.marks-after).fine-tune slider {
@@ -3702,7 +3702,7 @@ scale {
     min-width: 16px;
     margin: -7px;
     border: none;
-    border-radius: 50%;
+    border-radius: 0px;
     background-color: #cc5522;
     box-shadow: none; }
   scale.vertical.marks-before:not(.marks-after).fine-tune slider {
@@ -3712,7 +3712,7 @@ scale {
     min-width: 16px;
     margin: -7px;
     border: none;
-    border-radius: 50%;
+    border-radius: 0px;
     background-color: #cc5522;
     box-shadow: none; }
   scale.vertical.marks-after:not(.marks-before).fine-tune slider {
@@ -3722,7 +3722,7 @@ scale {
     min-width: 16px;
     margin: -7px;
     border: none;
-    border-radius: 50%;
+    border-radius: 0px;
     background-color: #cc5522;
     box-shadow: none; }
   scale.vertical.marks-after:not(.marks-before).fine-tune slider {
@@ -3732,7 +3732,7 @@ scale {
     min-width: 16px;
     margin: -7px;
     border: none;
-    border-radius: 50%;
+    border-radius: 0px;
     background-color: #cc5522;
     box-shadow: none; }
   scale.vertical.marks-after:not(.marks-before).fine-tune slider {
@@ -3742,7 +3742,7 @@ scale {
     min-width: 16px;
     margin: -7px;
     border: none;
-    border-radius: 50%;
+    border-radius: 0px;
     background-color: #cc5522;
     box-shadow: none; }
   scale.vertical.marks-after:not(.marks-before).fine-tune slider {
@@ -3752,7 +3752,7 @@ scale {
     min-width: 16px;
     margin: -7px;
     border: none;
-    border-radius: 50%;
+    border-radius: 0px;
     background-color: #cc5522;
     box-shadow: none; }
   scale.vertical.marks-after:not(.marks-before).fine-tune slider {
@@ -3762,7 +3762,7 @@ scale {
     min-width: 16px;
     margin: -7px;
     border: none;
-    border-radius: 50%;
+    border-radius: 0px;
     background-color: #cc5522;
     box-shadow: none; }
   scale.vertical.marks-after:not(.marks-before).fine-tune slider {
