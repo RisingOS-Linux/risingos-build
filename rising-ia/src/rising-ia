@@ -6,7 +6,7 @@ import gi
 gi.require_version("Gtk", "4.0")
 from gi.repository import Gtk, GLib, Gdk
 
-import os, sys, subprocess, threading, socket, shutil, urllib.request
+import os, sys, subprocess, threading, socket, shutil, urllib.request, gettext, locale
 
 # ── Rutas ─────────────────────────────────────────────────────────────────────
 _here      = os.path.dirname(os.path.realpath(__file__))
@@ -16,23 +16,38 @@ ASSETS_DIR = os.path.join(_root, "assets")
 ICONS_DIR  = os.path.join(ASSETS_DIR, "icons")
 CSS_FILE   = os.path.join(ASSETS_DIR, "style.css")
 LOGO_256   = os.path.join(ICONS_DIR, "logo-256.png")
+LOCALE_DIR = os.path.join(_root, "locale")
 
 if os.path.exists("/usr/lib/rising-ia/assets"):
     ASSETS_DIR = "/usr/lib/rising-ia/assets"
     ICONS_DIR  = f"{ASSETS_DIR}/icons"
     CSS_FILE   = f"{ASSETS_DIR}/style.css"
     LOGO_256   = f"{ICONS_DIR}/logo-256.png"
+    LOCALE_DIR = "/usr/share/locale"
+
+# ── i18n ──────────────────────────────────────────────────────────────────────
+# Mismo criterio que rising-welcome: el idioma nativo del código es español
+# (es el msgid). Si gettext no encuentra catálogo para el locale activo,
+# devuelve el msgid tal cual — español. Por eso alcanza con un catálogo "en".
+DOMAIN = "rising-ia"
+try:
+    locale.setlocale(locale.LC_ALL, "")
+except locale.Error:
+    pass
+gettext.bindtextdomain(DOMAIN, LOCALE_DIR)
+gettext.textdomain(DOMAIN)
+_ = gettext.gettext
 
 WEBUI_URL  = "http://localhost:3000"
 
 AVAILABLE_MODELS = [
-    ("deepseek-r1:latest", "5.2 GB — recomendado con 16 GB+ de RAM"),
-    ("qwen2.5-coder:3b",   "1.9 GB — recomendado con menos de 16 GB de RAM"),
+    ("deepseek-r1:latest", _("5.2 GB — recomendado con 16 GB+ de RAM")),
+    ("qwen2.5-coder:3b",   _("1.9 GB — recomendado con menos de 16 GB de RAM")),
 ]
 RAM_THRESHOLD_GB = 15.0  # margen bajo 16 GB real, compensa memoria reservada por el hardware
 
 NVIDIA_DRIVER_STEP = (
-    "Instalar driver NVIDIA propietario",
+    _("Instalar driver NVIDIA propietario"),
     'apt-get install -y nvidia-driver firmware-misc-nonfree',
     True,
 )
@@ -52,17 +67,17 @@ def build_install_steps(selected_models: list, install_nvidia: bool) -> list:
 
     steps += [
         (
-            "Instalar Ollama",
+            _("Instalar Ollama"),
             'curl -fsSL https://ollama.ai/install.sh | sh',
             True,
         ),
         (
-            "Activar servicio Ollama",
+            _("Activar servicio Ollama"),
             'systemctl enable --now ollama',
             True,
         ),
         (
-            "Configurar Ollama (escucha en red)",
+            _("Configurar Ollama (escucha en red)"),
             (
                 'mkdir -p /etc/systemd/system/ollama.service.d && '
                 "echo '[Service]' > /etc/systemd/system/ollama.service.d/override.conf && "
@@ -72,12 +87,12 @@ def build_install_steps(selected_models: list, install_nvidia: bool) -> list:
             True,
         ),
         (
-            "Instalar Docker",
+            _("Instalar Docker"),
             'apt-get install -y docker.io',
             True,
         ),
         (
-            "Activar servicio Docker",
+            _("Activar servicio Docker"),
             'systemctl enable --now docker',
             True,
         ),
@@ -85,13 +100,13 @@ def build_install_steps(selected_models: list, install_nvidia: bool) -> list:
 
     for model in selected_models:
         steps.append((
-            f"Descargar modelo {model}",
+            _("Descargar modelo {model}").format(model=model),
             f'ollama pull {model}',
             False,
         ))
 
     steps.append((
-        "Lanzar Open WebUI",
+        _("Lanzar Open WebUI"),
         (
             'docker run -d --restart always '
             '-p 3000:8080 '
@@ -103,8 +118,9 @@ def build_install_steps(selected_models: list, install_nvidia: bool) -> list:
         ),
         True,
     ))
+    webui_comment = _("Interfaz web para IA local")
     steps.append((
-        "Crear acceso directo Open WebUI",
+        _("Crear acceso directo Open WebUI"),
         (
             'REAL_HOME=$(getent passwd ${PKEXEC_UID:-$UID} | cut -d: -f6) && '
             'REAL_USER=$(getent passwd ${PKEXEC_UID:-$UID} | cut -d: -f1) && '
@@ -114,7 +130,7 @@ def build_install_steps(selected_models: list, install_nvidia: bool) -> list:
             "echo 'Version=1.0' >> \"$D\" && "
             "echo 'Type=Application' >> \"$D\" && "
             "echo 'Name=Open WebUI' >> \"$D\" && "
-            "echo 'Comment=Interfaz web para IA local' >> \"$D\" && "
+            f"echo 'Comment={webui_comment}' >> \"$D\" && "
             "echo 'Exec=xdg-open http://localhost:3000' >> \"$D\" && "
             "echo 'Icon=web-browser' >> \"$D\" && "
             "echo 'Terminal=false' >> \"$D\" && "
@@ -309,11 +325,11 @@ class ViewInicio(Gtk.Box):
         if has_internet:
             conn.add_css_class("conn-ok")
             icon = Gtk.Label(label="✓"); icon.add_css_class("conn-icon-ok")
-            lbl  = Gtk.Label(label="Conectado a internet")
+            lbl  = Gtk.Label(label=_("Conectado a internet"))
         else:
             conn.add_css_class("conn-fail")
             icon = Gtk.Label(label="✕"); icon.add_css_class("conn-icon-fail")
-            lbl  = Gtk.Label(label="Sin conexión — la instalación requiere internet")
+            lbl  = Gtk.Label(label=_("Sin conexión — la instalación requiere internet"))
         lbl.add_css_class("conn-label"); lbl.set_xalign(0); lbl.set_wrap(True)
         conn.append(icon); conn.append(lbl)
 
@@ -321,16 +337,16 @@ class ViewInicio(Gtk.Box):
         req_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=4)
         req_box.add_css_class("ia-req-box")
 
-        req_title = Gtk.Label(label="REQUISITOS MÍNIMOS")
+        req_title = Gtk.Label(label=_("REQUISITOS MÍNIMOS"))
         req_title.add_css_class("ia-req-title")
         req_title.set_xalign(0)
         req_box.append(req_title)
 
         for r in [
-            "CPU    4 núcleos",
-            "RAM    8 GB",
-            "Disco  10 GB libres",
-            "GPU    No necesaria",
+            _("CPU    4 núcleos"),
+            _("RAM    8 GB"),
+            _("Disco  10 GB libres"),
+            _("GPU    No necesaria"),
         ]:
             lbl = Gtk.Label(label=f"· {r}")
             lbl.add_css_class("ia-req-item")
@@ -341,7 +357,7 @@ class ViewInicio(Gtk.Box):
         model_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=4)
         model_box.add_css_class("ia-req-box")
 
-        model_title = Gtk.Label(label="MODELO A INSTALAR")
+        model_title = Gtk.Label(label=_("MODELO A INSTALAR"))
         model_title.add_css_class("ia-req-title")
         model_title.set_xalign(0)
         model_box.append(model_title)
@@ -360,13 +376,13 @@ class ViewInicio(Gtk.Box):
             self._model_radios[model_id] = radio
             model_box.append(radio)
 
-        both_radio = Gtk.CheckButton(label="Ambos modelos")
+        both_radio = Gtk.CheckButton(label=_("Ambos modelos"))
         both_radio.set_group(first_radio)
         both_radio.add_css_class("ia-req-item")
         self._model_radios["__both__"] = both_radio
         model_box.append(both_radio)
 
-        ram_lbl = Gtk.Label(label=f"RAM detectada: {state.get('ram_gb', 0.0):.1f} GB")
+        ram_lbl = Gtk.Label(label=_("RAM detectada: {ram:.1f} GB").format(ram=state.get('ram_gb', 0.0)))
         ram_lbl.add_css_class("ia-req-item")
         ram_lbl.set_xalign(0)
         model_box.append(ram_lbl)
@@ -377,12 +393,12 @@ class ViewInicio(Gtk.Box):
         if state.get("gpu_nvidia") and not state.get("nvidia_driver"):
             nvidia_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=4)
             nvidia_box.add_css_class("ia-req-box")
-            nvidia_title = Gtk.Label(label="GPU NVIDIA DETECTADA")
+            nvidia_title = Gtk.Label(label=_("GPU NVIDIA DETECTADA"))
             nvidia_title.add_css_class("ia-req-title")
             nvidia_title.set_xalign(0)
             nvidia_box.append(nvidia_title)
             self._nvidia_check = Gtk.CheckButton(
-                label="Instalar driver propietario NVIDIA (recomendado para mejor rendimiento)"
+                label=_("Instalar driver propietario NVIDIA (recomendado para mejor rendimiento)")
             )
             self._nvidia_check.set_active(False)
             self._nvidia_check.add_css_class("ia-req-item")
@@ -393,27 +409,27 @@ class ViewInicio(Gtk.Box):
 
         # Botón principal
         if state["all_ok"]:
-            btn = Gtk.Button(label="✦  Abrir Open WebUI")
+            btn = Gtk.Button(label=_("✦  Abrir Open WebUI"))
             btn.add_css_class("btn-action")
-            btn.connect("clicked", lambda _: on_launch())
+            btn.connect("clicked", lambda _w: on_launch())
         else:
-            btn = Gtk.Button(label="⬇  Instalar Rising IA")
+            btn = Gtk.Button(label=_("⬇  Instalar Rising IA"))
             btn.add_css_class("btn-next")
             btn.set_sensitive(has_internet)
-            btn.connect("clicked", lambda _: on_install(
+            btn.connect("clicked", lambda _w: on_install(
                 self._get_selected_models(),
                 self._nvidia_check.get_active() if self._nvidia_check else False,
             ))
 
         panel_widgets = [
             make_logo(72),
-            make_tag("RISING IA"),
-            make_title("Tu asistente de IA\nlocal para RisingOS."),
+            make_tag(_("RISING IA")),
+            make_title(_("Tu asistente de IA\nlocal para RisingOS.")),
             make_body(
-                "Rising IA instala y configura automáticamente "
+                _("Rising IA instala y configura automáticamente "
                 "Ollama, el modelo que elijas y Open WebUI. "
                 "Todo corre en tu máquina, sin internet, "
-                "sin suscripciones."
+                "sin suscripciones.")
             ),
             conn,
             req_box,
@@ -447,7 +463,7 @@ class ViewInicio(Gtk.Box):
             ("Ollama", state["ollama"]),
             ("Docker", state["docker"]),
         ]
-        for model_id, _ in AVAILABLE_MODELS:
+        for model_id, _desc in AVAILABLE_MODELS:
             items.append((model_id, state["models"].get(model_id, False)))
         items.append(("Open WebUI", state["webui"]))
 
@@ -468,15 +484,15 @@ class ViewInicio(Gtk.Box):
         outer.set_halign(Gtk.Align.CENTER)
         outer.set_valign(Gtk.Align.CENTER)
 
-        title = Gtk.Label(label="Stack de Rising IA")
+        title = Gtk.Label(label=_("Stack de Rising IA"))
         title.add_css_class("stack-illus-title")
         outer.append(title)
 
         layers = [
-            ("Open WebUI",     "Interfaz de chat",        "layer-top"),
-            ("Ollama",         "Motor de inferencia",      "layer-mid"),
-            ("Modelo elegido", "Modelo de lenguaje",       "layer-mid"),
-            ("Docker",         "Contenedor Open WebUI",    "layer-bot"),
+            ("Open WebUI",     _("Interfaz de chat"),        "layer-top"),
+            ("Ollama",         _("Motor de inferencia"),      "layer-mid"),
+            (_("Modelo elegido"), _("Modelo de lenguaje"),       "layer-mid"),
+            ("Docker",         _("Contenedor Open WebUI"),    "layer-bot"),
         ]
         for name, desc, css in layers:
             card = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=2)
@@ -506,7 +522,7 @@ class ViewProgreso(Gtk.Box):
         steps_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
         steps_box.add_css_class("steps-box")
 
-        for label, _, _ in steps:
+        for label, _cmd, _needs_root in steps:
             row = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=12)
             icon = Gtk.Label(label="○")
             icon.add_css_class("step-icon-pending")
@@ -522,16 +538,16 @@ class ViewProgreso(Gtk.Box):
         self._progress.add_css_class("update-progress")
         self._progress.set_visible(True)
 
-        self._status_lbl = Gtk.Label(label="Preparando instalación...")
+        self._status_lbl = Gtk.Label(label=_("Preparando instalación..."))
         self._status_lbl.add_css_class("update-status")
         self._status_lbl.set_xalign(0)
         self._status_lbl.set_wrap(True)
 
         lp = left_panel(
-            make_tag("INSTALANDO"),
-            make_title("Instalando\nRising IA..."),
-            make_body("Esto puede tardar varios minutos dependiendo "
-                      "de tu conexión. No cierres esta ventana."),
+            make_tag(_("INSTALANDO")),
+            make_title(_("Instalando\nRising IA...")),
+            make_body(_("Esto puede tardar varios minutos dependiendo "
+                      "de tu conexión. No cierres esta ventana.")),
             steps_box,
             self._progress,
             self._status_lbl,
@@ -558,7 +574,7 @@ class ViewProgreso(Gtk.Box):
         log_box.set_hexpand(True)
         log_box.set_vexpand(True)
 
-        log_header = Gtk.Label(label="● Salida en tiempo real")
+        log_header = Gtk.Label(label=_("● Salida en tiempo real"))
         log_header.add_css_class("log-header")
         log_header.set_xalign(0)
 
@@ -574,7 +590,7 @@ class ViewProgreso(Gtk.Box):
         GLib.idle_add(adj.set_value, adj.get_upper())
 
     def set_step_active(self, idx: int):
-        _, icon, lbl = self._step_rows[idx]
+        _row, icon, lbl = self._step_rows[idx]
         icon.set_label("▶")
         icon.remove_css_class("step-icon-pending")
         icon.remove_css_class("step-icon-ok")
@@ -583,7 +599,7 @@ class ViewProgreso(Gtk.Box):
         lbl.add_css_class("step-label-active")
 
     def set_step_ok(self, idx: int):
-        _, icon, lbl = self._step_rows[idx]
+        _row, icon, lbl = self._step_rows[idx]
         icon.set_label("✓")
         icon.remove_css_class("step-icon-active")
         icon.add_css_class("step-icon-ok")
@@ -591,7 +607,7 @@ class ViewProgreso(Gtk.Box):
         lbl.add_css_class("step-label-ok")
 
     def set_step_fail(self, idx: int):
-        _, icon, lbl = self._step_rows[idx]
+        _row, icon, lbl = self._step_rows[idx]
         icon.set_label("✕")
         icon.remove_css_class("step-icon-active")
         icon.add_css_class("step-icon-fail")
@@ -615,33 +631,34 @@ class ViewListo(Gtk.Box):
         super().__init__(orientation=Gtk.Orientation.HORIZONTAL, spacing=0)
         self.add_css_class("screen")
 
-        models_txt = ", ".join(selected_models) if selected_models else "el modelo elegido"
-        if success:
-            tag_txt   = "INSTALACIÓN COMPLETA"
-            title_txt = "¡Rising IA está\nlista para usar!"
-            body_txt  = (
-                f"Ollama, {models_txt} y Open WebUI están instalados "
-                "y corriendo en tu máquina. "
-                "Hacé clic para abrir la interfaz de chat en tu navegador."
-            )
-            btn_launch = Gtk.Button(label="✦  Abrir Open WebUI en el navegador")
-            btn_launch.add_css_class("btn-next")
-            btn_launch.connect("clicked", lambda _: on_launch())
-        else:
-            tag_txt   = "ERROR DE INSTALACIÓN"
-            title_txt = "Algo salió\nmal."
-            body_txt  = (
-                "Ocurrió un error durante la instalación. "
-                "Revisá el log para más detalles. "
-                "Podés intentarlo de nuevo cuando quieras."
-            )
-            btn_launch = Gtk.Button(label="Reintentar")
-            btn_launch.add_css_class("btn-action")
-            btn_launch.connect("clicked", lambda _: on_launch())
+        models_txt = ", ".join(selected_models) if selected_models else _("el modelo elegido")
 
-        btn_close = Gtk.Button(label="Cerrar")
+        if success:
+            tag_txt   = _("INSTALACIÓN COMPLETA")
+            title_txt = _("¡Rising IA está\nlista para usar!")
+            body_txt  = (
+                _("Ollama, {models} y Open WebUI están instalados "
+                "y corriendo en tu máquina. "
+                "Hacé clic para abrir la interfaz de chat en tu navegador.").format(models=models_txt)
+            )
+            btn_launch = Gtk.Button(label=_("✦  Abrir Open WebUI en el navegador"))
+            btn_launch.add_css_class("btn-next")
+            btn_launch.connect("clicked", lambda _w: on_launch())
+        else:
+            tag_txt   = _("ERROR DE INSTALACIÓN")
+            title_txt = _("Algo salió\nmal.")
+            body_txt  = (
+                _("Ocurrió un error durante la instalación. "
+                "Revisá el log para más detalles. "
+                "Podés intentarlo de nuevo cuando quieras.")
+            )
+            btn_launch = Gtk.Button(label=_("Reintentar"))
+            btn_launch.add_css_class("btn-action")
+            btn_launch.connect("clicked", lambda _w: on_launch())
+
+        btn_close = Gtk.Button(label=_("Cerrar"))
         btn_close.add_css_class("btn-prev")
-        btn_close.connect("clicked", lambda _: on_close())
+        btn_close.connect("clicked", lambda _w: on_close())
 
         panel_widgets = [
             make_logo(72),
@@ -653,12 +670,12 @@ class ViewListo(Gtk.Box):
 
         if success and install_nvidia:
             reboot_note = make_body(
-                "Instalaste el driver NVIDIA — hace falta reiniciar "
-                "para que se active."
+                _("Instalaste el driver NVIDIA — hace falta reiniciar "
+                "para que se active.")
             )
-            btn_reboot = Gtk.Button(label="⟳  Reiniciar ahora")
+            btn_reboot = Gtk.Button(label=_("⟳  Reiniciar ahora"))
             btn_reboot.add_css_class("btn-action")
-            btn_reboot.connect("clicked", lambda _: subprocess.Popen(
+            btn_reboot.connect("clicked", lambda _w: subprocess.Popen(
                 ["pkexec", "systemctl", "reboot"]
             ))
             panel_widgets.append(reboot_note)
@@ -705,7 +722,7 @@ class ViewListo(Gtk.Box):
 
 class IAWindow(Gtk.ApplicationWindow):
     def __init__(self, app):
-        super().__init__(application=app, title="Rising IA")
+        super().__init__(application=app, title=_("Rising IA"))
         self.add_css_class("main-window")
 
         sw, sh = get_screen_size()
@@ -768,8 +785,8 @@ class IAWindow(Gtk.ApplicationWindow):
         total = len(self._steps)
         for idx, (label, cmd, needs_root) in enumerate(self._steps):
             GLib.idle_add(self._view_progreso.set_step_active, idx)
-            GLib.idle_add(self._view_progreso.set_status, f"Ejecutando: {label}...")
-            GLib.idle_add(self._view_progreso.append_log, f"\n▶ {label}\n{'─'*48}\n")
+            GLib.idle_add(self._view_progreso.set_status, _("Ejecutando: {label}...").format(label=label))
+            GLib.idle_add(self._view_progreso.append_log, "\n▶ {label}\n{sep}\n".format(label=label, sep='─'*48))
 
             if needs_root:
                 full_cmd = ["pkexec", "bash", "-c", cmd]
@@ -791,12 +808,12 @@ class IAWindow(Gtk.ApplicationWindow):
                 if proc.returncode not in (0, None):
                     GLib.idle_add(self._view_progreso.set_step_fail, idx)
                     GLib.idle_add(self._view_progreso.set_status,
-                                  f"Error en: {label} (código {proc.returncode})")
+                                  _("Error en: {label} (código {code})").format(label=label, code=proc.returncode))
                     GLib.idle_add(self._finish_install, False)
                     return
 
             except Exception as e:
-                GLib.idle_add(self._view_progreso.append_log, f"Excepción: {e}\n")
+                GLib.idle_add(self._view_progreso.append_log, _("Excepción: {error}\n").format(error=e))
                 GLib.idle_add(self._view_progreso.set_step_fail, idx)
                 GLib.idle_add(self._finish_install, False)
                 return

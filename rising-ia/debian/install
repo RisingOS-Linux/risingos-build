@@ -1,3 +1,4 @@
 src/rising-ia              usr/bin/
 assets/style.css           usr/lib/rising-ia/assets/
 assets/icons/logo-256.png  usr/lib/rising-ia/assets/icons/
+locale/en/LC_MESSAGES/rising-ia.mo   usr/share/locale/en/LC_MESSAGES/

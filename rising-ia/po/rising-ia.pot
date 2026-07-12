@@ -1,0 +1,264 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-07-12 20:44+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: src/rising-ia:44
+msgid "5.2 GB — recomendado con 16 GB+ de RAM"
+msgstr ""
+
+#: src/rising-ia:45
+msgid "1.9 GB — recomendado con menos de 16 GB de RAM"
+msgstr ""
+
+#: src/rising-ia:50
+msgid "Instalar driver NVIDIA propietario"
+msgstr ""
+
+#: src/rising-ia:70
+msgid "Instalar Ollama"
+msgstr ""
+
+#: src/rising-ia:75
+msgid "Activar servicio Ollama"
+msgstr ""
+
+#: src/rising-ia:80
+msgid "Configurar Ollama (escucha en red)"
+msgstr ""
+
+#: src/rising-ia:90
+msgid "Instalar Docker"
+msgstr ""
+
+#: src/rising-ia:95
+msgid "Activar servicio Docker"
+msgstr ""
+
+#: src/rising-ia:103
+#, python-brace-format
+msgid "Descargar modelo {model}"
+msgstr ""
+
+#: src/rising-ia:109
+msgid "Lanzar Open WebUI"
+msgstr ""
+
+#: src/rising-ia:121
+msgid "Interfaz web para IA local"
+msgstr ""
+
+#: src/rising-ia:123
+msgid "Crear acceso directo Open WebUI"
+msgstr ""
+
+#: src/rising-ia:328
+msgid "Conectado a internet"
+msgstr ""
+
+#: src/rising-ia:332
+msgid "Sin conexión — la instalación requiere internet"
+msgstr ""
+
+#: src/rising-ia:340
+msgid "REQUISITOS MÍNIMOS"
+msgstr ""
+
+#: src/rising-ia:346
+msgid "CPU    4 núcleos"
+msgstr ""
+
+#: src/rising-ia:347
+msgid "RAM    8 GB"
+msgstr ""
+
+#: src/rising-ia:348
+msgid "Disco  10 GB libres"
+msgstr ""
+
+#: src/rising-ia:349
+msgid "GPU    No necesaria"
+msgstr ""
+
+#: src/rising-ia:360
+msgid "MODELO A INSTALAR"
+msgstr ""
+
+#: src/rising-ia:379
+msgid "Ambos modelos"
+msgstr ""
+
+#: src/rising-ia:385
+#, python-brace-format
+msgid "RAM detectada: {ram:.1f} GB"
+msgstr ""
+
+#: src/rising-ia:396
+msgid "GPU NVIDIA DETECTADA"
+msgstr ""
+
+#: src/rising-ia:401
+msgid "Instalar driver propietario NVIDIA (recomendado para mejor rendimiento)"
+msgstr ""
+
+#: src/rising-ia:412
+msgid "✦  Abrir Open WebUI"
+msgstr ""
+
+#: src/rising-ia:416
+msgid "⬇  Instalar Rising IA"
+msgstr ""
+
+#: src/rising-ia:426
+msgid "RISING IA"
+msgstr ""
+
+#: src/rising-ia:427
+msgid ""
+"Tu asistente de IA\n"
+"local para RisingOS."
+msgstr ""
+
+#: src/rising-ia:429
+msgid ""
+"Rising IA instala y configura automáticamente Ollama, el modelo que elijas y "
+"Open WebUI. Todo corre en tu máquina, sin internet, sin suscripciones."
+msgstr ""
+
+#: src/rising-ia:487
+msgid "Stack de Rising IA"
+msgstr ""
+
+#: src/rising-ia:492
+msgid "Interfaz de chat"
+msgstr ""
+
+#: src/rising-ia:493
+msgid "Motor de inferencia"
+msgstr ""
+
+#: src/rising-ia:494
+msgid "Modelo elegido"
+msgstr ""
+
+#: src/rising-ia:494
+msgid "Modelo de lenguaje"
+msgstr ""
+
+#: src/rising-ia:495
+msgid "Contenedor Open WebUI"
+msgstr ""
+
+#: src/rising-ia:541
+msgid "Preparando instalación..."
+msgstr ""
+
+#: src/rising-ia:547
+msgid "INSTALANDO"
+msgstr ""
+
+#: src/rising-ia:548
+msgid ""
+"Instalando\n"
+"Rising IA..."
+msgstr ""
+
+#: src/rising-ia:549
+msgid ""
+"Esto puede tardar varios minutos dependiendo de tu conexión. No cierres esta "
+"ventana."
+msgstr ""
+
+#: src/rising-ia:577
+msgid "● Salida en tiempo real"
+msgstr ""
+
+#: src/rising-ia:634
+msgid "el modelo elegido"
+msgstr ""
+
+#: src/rising-ia:637
+msgid "INSTALACIÓN COMPLETA"
+msgstr ""
+
+#: src/rising-ia:638
+msgid ""
+"¡Rising IA está\n"
+"lista para usar!"
+msgstr ""
+
+#: src/rising-ia:640
+#, python-brace-format
+msgid ""
+"Ollama, {models} y Open WebUI están instalados y corriendo en tu máquina. "
+"Hacé clic para abrir la interfaz de chat en tu navegador."
+msgstr ""
+
+#: src/rising-ia:644
+msgid "✦  Abrir Open WebUI en el navegador"
+msgstr ""
+
+#: src/rising-ia:648
+msgid "ERROR DE INSTALACIÓN"
+msgstr ""
+
+#: src/rising-ia:649
+msgid ""
+"Algo salió\n"
+"mal."
+msgstr ""
+
+#: src/rising-ia:651
+msgid ""
+"Ocurrió un error durante la instalación. Revisá el log para más detalles. "
+"Podés intentarlo de nuevo cuando quieras."
+msgstr ""
+
+#: src/rising-ia:655
+msgid "Reintentar"
+msgstr ""
+
+#: src/rising-ia:659
+msgid "Cerrar"
+msgstr ""
+
+#: src/rising-ia:673
+msgid "Instalaste el driver NVIDIA — hace falta reiniciar para que se active."
+msgstr ""
+
+#: src/rising-ia:676
+msgid "⟳  Reiniciar ahora"
+msgstr ""
+
+#: src/rising-ia:725
+msgid "Rising IA"
+msgstr ""
+
+#: src/rising-ia:788
+#, python-brace-format
+msgid "Ejecutando: {label}..."
+msgstr ""
+
+#: src/rising-ia:811
+#, python-brace-format
+msgid "Error en: {label} (código {code})"
+msgstr ""
+
+#: src/rising-ia:816
+#, python-brace-format
+msgid "Excepción: {error}\n"
+msgstr ""

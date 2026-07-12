@@ -1,0 +1,224 @@
+# English translation for rising-ia.
+# Copyright (C) 2026 Rising Arrow
+# This file is distributed under the same license as the rising-ia package.
+# Francisco Galaso <franciscogalaso@rising-arrow.com>, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: rising-ia 1.1.0\n"
+"Report-Msgid-Bugs-To: franciscogalaso@rising-arrow.com\n"
+"POT-Creation-Date: 2026-07-12 20:43+0000\n"
+"PO-Revision-Date: 2026-07-12 20:43+0000\n"
+"Last-Translator: Francisco Galaso <franciscogalaso@rising-arrow.com>\n"
+"Language-Team: English\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "5.2 GB — recomendado con 16 GB+ de RAM"
+msgstr "5.2 GB — recommended with 16 GB+ of RAM"
+
+msgid "1.9 GB — recomendado con menos de 16 GB de RAM"
+msgstr "1.9 GB — recommended with less than 16 GB of RAM"
+
+msgid "Instalar driver NVIDIA propietario"
+msgstr "Install proprietary NVIDIA driver"
+
+msgid "Instalar Ollama"
+msgstr "Install Ollama"
+
+msgid "Activar servicio Ollama"
+msgstr "Enable Ollama service"
+
+msgid "Configurar Ollama (escucha en red)"
+msgstr "Configure Ollama (listen on network)"
+
+msgid "Instalar Docker"
+msgstr "Install Docker"
+
+msgid "Activar servicio Docker"
+msgstr "Enable Docker service"
+
+#, python-brace-format
+msgid "Descargar modelo {model}"
+msgstr "Download model {model}"
+
+msgid "Lanzar Open WebUI"
+msgstr "Launch Open WebUI"
+
+msgid "Crear acceso directo Open WebUI"
+msgstr "Create Open WebUI shortcut"
+
+msgid "Conectado a internet"
+msgstr "Connected to the internet"
+
+msgid "Sin conexión — la instalación requiere internet"
+msgstr "No connection — installation requires internet"
+
+msgid "REQUISITOS MÍNIMOS"
+msgstr "MINIMUM REQUIREMENTS"
+
+msgid "CPU    4 núcleos"
+msgstr "CPU    4 cores"
+
+msgid "RAM    8 GB"
+msgstr "RAM    8 GB"
+
+msgid "Disco  10 GB libres"
+msgstr "Disk   10 GB free"
+
+msgid "GPU    No necesaria"
+msgstr "GPU    Not required"
+
+msgid "MODELO A INSTALAR"
+msgstr "MODEL TO INSTALL"
+
+msgid "Ambos modelos"
+msgstr "Both models"
+
+#, python-brace-format
+msgid "RAM detectada: {ram:.1f} GB"
+msgstr "RAM detected: {ram:.1f} GB"
+
+msgid "GPU NVIDIA DETECTADA"
+msgstr "NVIDIA GPU DETECTED"
+
+msgid "Instalar driver propietario NVIDIA (recomendado para mejor rendimiento)"
+msgstr "Install proprietary NVIDIA driver (recommended for better performance)"
+
+msgid "✦  Abrir Open WebUI"
+msgstr "✦  Open Open WebUI"
+
+msgid "⬇  Instalar Rising IA"
+msgstr "⬇  Install Rising IA"
+
+msgid "RISING IA"
+msgstr "RISING IA"
+
+msgid ""
+"Tu asistente de IA\n"
+"local para RisingOS."
+msgstr ""
+"Your local AI\n"
+"assistant for RisingOS."
+
+msgid ""
+"Rising IA instala y configura automáticamente Ollama, el modelo que elijas y "
+"Open WebUI. Todo corre en tu máquina, sin internet, sin suscripciones."
+msgstr ""
+"Rising IA automatically installs and configures Ollama, the model you "
+"choose, and Open WebUI. Everything runs on your machine, without internet, "
+"without subscriptions."
+
+msgid "Stack de Rising IA"
+msgstr "Rising IA stack"
+
+msgid "Interfaz de chat"
+msgstr "Chat interface"
+
+msgid "Motor de inferencia"
+msgstr "Inference engine"
+
+msgid "Modelo elegido"
+msgstr "Chosen model"
+
+msgid "Modelo de lenguaje"
+msgstr "Language model"
+
+msgid "Contenedor Open WebUI"
+msgstr "Open WebUI container"
+
+msgid "Preparando instalación..."
+msgstr "Preparing installation..."
+
+msgid "INSTALANDO"
+msgstr "INSTALLING"
+
+msgid ""
+"Instalando\n"
+"Rising IA..."
+msgstr ""
+"Installing\n"
+"Rising IA..."
+
+msgid ""
+"Esto puede tardar varios minutos dependiendo de tu conexión. No cierres esta "
+"ventana."
+msgstr ""
+"This can take several minutes depending on your connection. Don't close "
+"this window."
+
+msgid "● Salida en tiempo real"
+msgstr "● Live output"
+
+msgid "el modelo elegido"
+msgstr "the chosen model"
+
+msgid "INSTALACIÓN COMPLETA"
+msgstr "INSTALLATION COMPLETE"
+
+msgid ""
+"¡Rising IA está\n"
+"lista para usar!"
+msgstr ""
+"Rising IA is\n"
+"ready to use!"
+
+#, python-brace-format
+msgid ""
+"Ollama, {models} y Open WebUI están instalados y corriendo en tu máquina. "
+"Hacé clic para abrir la interfaz de chat en tu navegador."
+msgstr ""
+"Ollama, {models}, and Open WebUI are installed and running on your machine. "
+"Click to open the chat interface in your browser."
+
+msgid "✦  Abrir Open WebUI en el navegador"
+msgstr "✦  Open Open WebUI in the browser"
+
+msgid "ERROR DE INSTALACIÓN"
+msgstr "INSTALLATION ERROR"
+
+msgid ""
+"Algo salió\n"
+"mal."
+msgstr ""
+"Something went\n"
+"wrong."
+
+msgid ""
+"Ocurrió un error durante la instalación. Revisá el log para más detalles. "
+"Podés intentarlo de nuevo cuando quieras."
+msgstr ""
+"An error occurred during installation. Check the log for details. You can "
+"try again whenever you want."
+
+msgid "Reintentar"
+msgstr "Retry"
+
+msgid "Cerrar"
+msgstr "Close"
+
+msgid "Instalaste el driver NVIDIA — hace falta reiniciar para que se active."
+msgstr "You installed the NVIDIA driver — a restart is needed to activate it."
+
+msgid "⟳  Reiniciar ahora"
+msgstr "⟳  Restart now"
+
+msgid "Rising IA"
+msgstr "Rising IA"
+
+#, python-brace-format
+msgid "Ejecutando: {label}..."
+msgstr "Running: {label}..."
+
+#, python-brace-format
+msgid "Error en: {label} (código {code})"
+msgstr "Error in: {label} (code {code})"
+
+#, python-brace-format
+msgid "Excepción: {error}\n"
+msgstr "Exception: {error}\n"
+
+msgid "Interfaz web para IA local"
+msgstr "Web interface for local AI"

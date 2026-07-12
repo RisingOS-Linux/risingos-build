@@ -1,3 +1,10 @@
+rising-ia (1.2.0) trixie; urgency=medium
+
+  * Agregado soporte de idioma inglés (gettext), detección automática
+    de locale con fallback a español.
+
+ -- Francisco Galaso <franciscogalaso@rising-arrow.com>  Sun, 12 Jul 2026 00:00:00 -0300
+
 rising-ia (1.1.0) trixie; urgency=medium
 
   * Nuevo: detección de GPU NVIDIA (lspci) con oferta opcional de
