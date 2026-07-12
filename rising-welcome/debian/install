@@ -5,3 +5,4 @@ assets/screenshots/escritorio.png         usr/lib/rising-welcome/assets/screensh
 assets/screenshots/personalizacion.png    usr/lib/rising-welcome/assets/screenshots/
 assets/screenshots/software-center.png   usr/lib/rising-welcome/assets/screenshots/
 assets/screenshots/rising-ia.png         usr/lib/rising-welcome/assets/screenshots/
+locale/en/LC_MESSAGES/rising-welcome.mo   usr/share/locale/en/LC_MESSAGES/

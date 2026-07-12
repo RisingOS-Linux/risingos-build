@@ -6,7 +6,7 @@ import gi
 gi.require_version("Gtk", "4.0")
 from gi.repository import Gtk, GLib, Gdk
 
-import os, sys, subprocess, threading, socket
+import os, sys, subprocess, threading, socket, gettext, locale
 
 # ── Rutas ─────────────────────────────────────────────────────────────────────
 _here        = os.path.dirname(os.path.realpath(__file__))
@@ -17,6 +17,7 @@ SCREENS_DIR  = os.path.join(ASSETS_DIR, "screenshots")
 ICONS_DIR    = os.path.join(ASSETS_DIR, "icons")
 CSS_FILE     = os.path.join(ASSETS_DIR, "style.css")
 LOGO_256     = os.path.join(ICONS_DIR, "logo-256.png")
+LOCALE_DIR   = os.path.join(_root, "locale")
 DISMISS_FLAG = os.path.expanduser("~/.config/risingos/welcome-dismissed")
 
 if os.path.exists("/usr/lib/rising-welcome/assets"):
@@ -25,6 +26,21 @@ if os.path.exists("/usr/lib/rising-welcome/assets"):
     ICONS_DIR   = f"{ASSETS_DIR}/icons"
     CSS_FILE    = f"{ASSETS_DIR}/style.css"
     LOGO_256    = f"{ICONS_DIR}/logo-256.png"
+    LOCALE_DIR  = "/usr/share/locale"
+
+# ── i18n ──────────────────────────────────────────────────────────────────────
+# El idioma nativo de los strings del código fuente es español (es el msgid).
+# gettext, si no encuentra catálogo .mo para el locale activo, devuelve el
+# msgid tal cual — es decir, español. Por eso solo hace falta empaquetar un
+# catálogo "en" (inglés); no se necesita un catálogo "es" propio.
+DOMAIN = "rising-welcome"
+try:
+    locale.setlocale(locale.LC_ALL, "")
+except locale.Error:
+    pass
+gettext.bindtextdomain(DOMAIN, LOCALE_DIR)
+gettext.textdomain(DOMAIN)
+_ = gettext.gettext
 
 
 # ── Utilidades ────────────────────────────────────────────────────────────────
@@ -92,7 +108,7 @@ def make_monitor(screenshot_name: str) -> Gtk.Widget:
         picture.add_css_class("monitor-screen")
         frame.append(picture)
     else:
-        ph = Gtk.Label(label=f"[ {screenshot_name} ]")
+        ph = Gtk.Label(label=_("[ {name} ]").format(name=screenshot_name))
         ph.add_css_class("monitor-screen")
         ph.add_css_class("screenshot-placeholder")
         ph.set_halign(Gtk.Align.CENTER)
@@ -161,7 +177,7 @@ class ScreenBienvenida(Gtk.Box):
         logo_title = Gtk.Label(label="RisingOS")
         logo_title.add_css_class("logo-title")
         logo_title.set_xalign(0)
-        logo_sub = Gtk.Label(label="Rendimiento puro. Libertad total. Powered by Debian")
+        logo_sub = Gtk.Label(label=_("Rendimiento puro. Libertad total. Powered by Debian"))
         logo_sub.add_css_class("logo-subtitle")
         logo_sub.set_xalign(0)
         logo_sub.set_wrap(True)
@@ -171,9 +187,9 @@ class ScreenBienvenida(Gtk.Box):
         logo_credit.set_xalign(0)
 
         body_txt = make_body(
-            "Gracias por instalar RisingOS. Esperamos que disfrutes esta experiencia "
-            "y para eso este es un tour guiado por tu nuevo sistema, para mostrarte "
-            "todo lo que tenés disponible."
+            _("Gracias por instalar RisingOS. Esperamos que disfrutes esta experiencia "
+              "y para eso este es un tour guiado por tu nuevo sistema, para mostrarte "
+              "todo lo que tenés disponible.")
         )
 
         self._conn = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
@@ -201,12 +217,12 @@ class ScreenBienvenida(Gtk.Box):
             self._conn.add_css_class("conn-ok")
             self._conn_icon.set_label("✓")
             self._conn_icon.add_css_class("conn-icon-ok")
-            self._conn_lbl.set_label("Conectado a internet")
+            self._conn_lbl.set_label(_("Conectado a internet"))
         else:
             self._conn.add_css_class("conn-fail")
             self._conn_icon.set_label("✕")
             self._conn_icon.add_css_class("conn-icon-fail")
-            self._conn_lbl.set_label("Sin conexión — algunas funciones no estarán disponibles")
+            self._conn_lbl.set_label(_("Sin conexión — algunas funciones no estarán disponibles"))
 
 
 class ScreenActualizaciones(Gtk.Box):
@@ -229,19 +245,19 @@ class ScreenActualizaciones(Gtk.Box):
         self._progress.set_visible(False)
 
         if has_internet:
-            self._btn.set_label("↓  Actualizar ahora")
+            self._btn.set_label(_("↓  Actualizar ahora"))
         else:
-            self._btn.set_label("Sin conexión — no disponible")
+            self._btn.set_label(_("Sin conexión — no disponible"))
             self._btn.set_sensitive(False)
-            self._status.set_label("Conectate a internet para actualizar el sistema.")
+            self._status.set_label(_("Conectate a internet para actualizar el sistema."))
             self._status.add_css_class("status-warn")
 
         lp = left_panel(
-            make_tag("PASO 2 — SISTEMA"),
-            make_title("Actualizaciones\ndel sistema"),
-            make_body("Antes de empezar, asegurate de tener el sistema al día. "
+            make_tag(_("PASO 2 — SISTEMA")),
+            make_title(_("Actualizaciones\ndel sistema")),
+            make_body(_("Antes de empezar, asegurate de tener el sistema al día. "
                       "Un sistema actualizado es más seguro, más estable "
-                      "y aprovecha mejor tu hardware."),
+                      "y aprovecha mejor tu hardware.")),
             self._btn,
             self._progress,
             self._status,
@@ -283,7 +299,7 @@ class ScreenActualizaciones(Gtk.Box):
         log_box.set_hexpand(True)
         log_box.set_vexpand(True)
 
-        log_header = Gtk.Label(label="● Salida del sistema en tiempo real")
+        log_header = Gtk.Label(label=_("● Salida del sistema en tiempo real"))
         log_header.add_css_class("log-header")
         log_header.set_xalign(0)
 
@@ -301,7 +317,7 @@ class ScreenActualizaciones(Gtk.Box):
         self._status.remove_css_class("status-warn")
         self._status.set_label("")
         self._btn.set_sensitive(True)
-        self._btn.set_label("↓  Actualizar ahora")
+        self._btn.set_label(_("↓  Actualizar ahora"))
 
     def _build_terminal_widget(self) -> Gtk.Widget:
         outer = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=0)
@@ -310,7 +326,7 @@ class ScreenActualizaciones(Gtk.Box):
 
         titlebar = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
         titlebar.add_css_class("fake-terminal-bar")
-        for _ in ["#ff5f56", "#ffbd2e", "#27c93f"]:
+        for _color in ["#ff5f56", "#ffbd2e", "#27c93f"]:
             dot = Gtk.Box()
             dot.add_css_class("terminal-dot")
             dot.set_size_request(10, 10)
@@ -369,7 +385,7 @@ class ScreenActualizaciones(Gtk.Box):
         if self._updating: return
         self._updating = True
         btn.set_sensitive(False)
-        btn.set_label("Actualizando...")
+        btn.set_label(_("Actualizando..."))
         self._progress.set_visible(True)
         self._log_buf.set_text("")
         self._right_stack.set_visible_child_name("log")
@@ -391,7 +407,7 @@ class ScreenActualizaciones(Gtk.Box):
                 if proc.returncode not in (0, None):
                     ok = False; break
             except Exception as e:
-                GLib.idle_add(self._append_log, f"Error: {e}\n")
+                GLib.idle_add(self._append_log, _("Error: {error}\n").format(error=e))
                 ok = False; break
         GLib.idle_add(self._finish, ok)
 
@@ -399,15 +415,15 @@ class ScreenActualizaciones(Gtk.Box):
         self._updating = False
         self._progress.set_visible(False)
         if ok:
-            self._btn.set_label("✓  Sistema actualizado")
+            self._btn.set_label(_("✓  Sistema actualizado"))
             self._btn.remove_css_class("btn-action")
             self._btn.add_css_class("btn-action-ok")
-            self._status.set_label("Tu sistema está al día.")
+            self._status.set_label(_("Tu sistema está al día."))
             self._status.add_css_class("status-ok")
         else:
-            self._btn.set_label("Reintentar")
+            self._btn.set_label(_("Reintentar"))
             self._btn.set_sensitive(True)
-            self._status.set_label("Ocurrió un error. Podés intentarlo más tarde.")
+            self._status.set_label(_("Ocurrió un error. Podés intentarlo más tarde."))
             self._status.add_css_class("status-fail")
 
 
@@ -425,15 +441,15 @@ class ScreenTour(Gtk.Box):
 
         # Puntos del tour con ícono de bullet acento
         items = [
-            ("Menú de aplicaciones",
-             "Hacé clic en el logo de RisingOS abajo a la izquierda "
-             "para buscar y abrir cualquier programa."),
-            ("Barra de tareas",
-             "Cada ventana abierta aparece en la barra inferior. "
-             "Hacé clic para cambiar entre ellas."),
-            ("Área de notificaciones",
-             "En la esquina inferior derecha encontrás el reloj, "
-             "el volumen, la red y las notificaciones del sistema."),
+            (_("Menú de aplicaciones"),
+             _("Hacé clic en el logo de RisingOS abajo a la izquierda "
+             "para buscar y abrir cualquier programa.")),
+            (_("Barra de tareas"),
+             _("Cada ventana abierta aparece en la barra inferior. "
+             "Hacé clic para cambiar entre ellas.")),
+            (_("Área de notificaciones"),
+             _("En la esquina inferior derecha encontrás el reloj, "
+             "el volumen, la red y las notificaciones del sistema.")),
         ]
 
         items_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=14)
@@ -462,16 +478,16 @@ class ScreenTour(Gtk.Box):
             items_box.append(row)
 
         # Botón: abrir gestor de archivos como acción concreta
-        btn_fm = Gtk.Button(label="Abrir gestor de archivos")
+        btn_fm = Gtk.Button(label=_("Abrir gestor de archivos"))
         btn_fm.add_css_class("btn-action")
         btn_fm.connect("clicked", self._open_fm)
 
         lp = left_panel(
-            make_tag("PASO 3 — TOUR"),
-            make_title("Tu nuevo\nescritorio"),
+            make_tag(_("PASO 3 — TOUR")),
+            make_title(_("Tu nuevo\nescritorio")),
             make_body(
-                "RisingOS usa el entorno XFCE: rápido, liviano y "
-                "completamente configurable. En 30 segundos lo conocés."
+                _("RisingOS usa el entorno XFCE: rápido, liviano y "
+                "completamente configurable. En 30 segundos lo conocés.")
             ),
             items_box,
             btn_fm,
@@ -495,14 +511,14 @@ class ScreenPersonalizacion(Gtk.Box):
         super().__init__(orientation=Gtk.Orientation.HORIZONTAL, spacing=0)
         self.add_css_class("screen")
 
-        btn_cfg = Gtk.Button(label="⚙  Abrir configuración del sistema")
+        btn_cfg = Gtk.Button(label=_("⚙  Abrir configuración del sistema"))
         btn_cfg.add_css_class("btn-action")
-        btn_cfg.connect("clicked", lambda _: self._launch("xfce4-settings-manager"))
+        btn_cfg.connect("clicked", lambda _w: self._launch("xfce4-settings-manager"))
 
         # Tip
         tip = Gtk.Label(
-            label="💡  También podés hacer clic derecho sobre el escritorio "
-                  "para cambiar el fondo de pantalla."
+            label=_("💡  También podés hacer clic derecho sobre el escritorio "
+                  "para cambiar el fondo de pantalla.")
         )
         tip.add_css_class("tip-label")
         tip.set_xalign(0)
@@ -510,13 +526,13 @@ class ScreenPersonalizacion(Gtk.Box):
         tip.set_max_width_chars(38)
 
         lp = left_panel(
-            make_tag("PASO 4 — PERSONALIZACIÓN"),
-            make_title("Hacelo tuyo"),
+            make_tag(_("PASO 4 — PERSONALIZACIÓN")),
+            make_title(_("Hacelo tuyo")),
             make_body(
-                "Cambiá el tema de escritorio, los íconos, los colores de las "
+                _("Cambiá el tema de escritorio, los íconos, los colores de las "
                 "ventanas y los fondos de pantalla. Configurá el panel a tu gusto: "
                 "podés ajustar su posición y agregar o quitar widgets. "
-                "El control es total."
+                "El control es total.")
             ),
             btn_cfg,
             tip,
@@ -536,11 +552,11 @@ class ScreenPersonalizacion(Gtk.Box):
 class ScreenAplicaciones(Gtk.Box):
 
     _APPS = [
-        "Navegador web Firefox",
-        "Gestor de correo electrónico Thunderbird",
-        "Explorador de archivos Thunar",
-        "Suite de oficina LibreOffice completa",
-        "Reproductor multimedia VLC",
+        _("Navegador web Firefox"),
+        _("Gestor de correo electrónico Thunderbird"),
+        _("Explorador de archivos Thunar"),
+        _("Suite de oficina LibreOffice completa"),
+        _("Reproductor multimedia VLC"),
     ]
 
     def __init__(self):
@@ -562,20 +578,20 @@ class ScreenAplicaciones(Gtk.Box):
             row.append(lbl)
             apps_box.append(row)
 
-        btn = Gtk.Button(label="Abrir Centro de Software")
+        btn = Gtk.Button(label=_("Abrir Centro de Software"))
         btn.add_css_class("btn-action")
         btn.connect("clicked", self._open_software)
 
         lp = left_panel(
-            make_tag("PASO 5 — APLICACIONES"),
-            make_title("Ya tenés todo\npara trabajar"),
+            make_tag(_("PASO 5 — APLICACIONES")),
+            make_title(_("Ya tenés todo\npara trabajar")),
             make_body(
-                "RisingOS viene con software básico listo para usar:"
+                _("RisingOS viene con software básico listo para usar:")
             ),
             apps_box,
             make_body(
-                "Y si necesitás más, desde el Centro de Software podés "
-                "instalar miles de programas."
+                _("Y si necesitás más, desde el Centro de Software podés "
+                "instalar miles de programas.")
             ),
             btn,
         )
@@ -600,16 +616,16 @@ class ScreenIA(Gtk.Box):
         req_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=4)
         req_box.add_css_class("ia-req-box")
 
-        req_title = Gtk.Label(label="Requisitos mínimos recomendados:")
+        req_title = Gtk.Label(label=_("Requisitos mínimos recomendados:"))
         req_title.add_css_class("ia-req-title")
         req_title.set_xalign(0)
         req_box.append(req_title)
 
         reqs = [
-            "CPU    4 núcleos",
-            "RAM    8 GB",
-            "Disco  10 GB libres",
-            "GPU    Opcional (NVIDIA mejora rendimiento)",
+            _("CPU    4 núcleos"),
+            _("RAM    8 GB"),
+            _("Disco  10 GB libres"),
+            _("GPU    Opcional (NVIDIA mejora rendimiento)"),
         ]
         for r in reqs:
             lbl = Gtk.Label(label=f"· {r}")
@@ -619,21 +635,21 @@ class ScreenIA(Gtk.Box):
             lbl.set_max_width_chars(38)
             req_box.append(lbl)
 
-        btn = Gtk.Button(label="✦  Abrir Rising IA")
+        btn = Gtk.Button(label=_("✦  Abrir Rising IA"))
         btn.add_css_class("btn-action")
         btn.connect("clicked", self._open_ia)
 
         lp = left_panel(
-            make_tag("PASO 6 — INTELIGENCIA ARTIFICIAL"),
-            make_title("IA local,\nen tu máquina."),
+            make_tag(_("PASO 6 — INTELIGENCIA ARTIFICIAL")),
+            make_title(_("IA local,\nen tu máquina.")),
             make_body(
-                "Rising IA es tu asistente para instalar de forma automatizada "
+                _("Rising IA es tu asistente para instalar de forma automatizada "
                 "tu propia IA local. Funciona sin internet, sin suscripciones "
                 "y con privacidad total.\n\n"
                 "Rising IA instala y configura Ollama + Open WebUI, dejándote "
                 "elegir el modelo que mejor se adapte a tu equipo. Si detecta "
                 "una GPU NVIDIA, te ofrece instalar el driver propietario "
-                "para un mejor rendimiento."
+                "para un mejor rendimiento.")
             ),
             req_box,
             btn,
@@ -661,7 +677,7 @@ class ScreenFinal(Gtk.Box):
         logo_title.add_css_class("logo-title")
         logo_title.set_xalign(0)
 
-        logo_sub = Gtk.Label(label="Rendimiento puro. Libertad total.")
+        logo_sub = Gtk.Label(label=_("Rendimiento puro. Libertad total."))
         logo_sub.add_css_class("logo-subtitle")
         logo_sub.set_xalign(0)
 
@@ -670,7 +686,7 @@ class ScreenFinal(Gtk.Box):
         links_box.add_css_class("final-links-box")
         links_data = [
             ("github.com/RisingOS-Linux",  "https://github.com/RisingOS-Linux"),
-            ("Comunidad · Foro de soporte", "https://github.com/RisingOS-Linux/discussions"),
+            (_("Comunidad · Foro de soporte"), "https://github.com/RisingOS-Linux/discussions"),
             ("rising-arrow.com",        "https://rising-arrow.com"),
         ]
         for label, url in links_data:
@@ -679,14 +695,14 @@ class ScreenFinal(Gtk.Box):
             links_box.append(btn)
 
         self._check = Gtk.CheckButton(
-            label="No mostrar esta guía al iniciar sesión"
+            label=_("No mostrar esta guía al iniciar sesión")
         )
         self._check.add_css_class("dismiss-check")
 
         # Botón instalar — solo en sesión live
         btn_install = None
         if is_live_session():
-            btn_install = Gtk.Button(label="💿  Instalar RisingOS")
+            btn_install = Gtk.Button(label=_("💿  Instalar RisingOS"))
             btn_install.add_css_class("btn-install")
             btn_install.connect("clicked", self._launch_installer)
 
@@ -694,11 +710,11 @@ class ScreenFinal(Gtk.Box):
             logo_img,
             logo_title,
             logo_sub,
-            make_title("¡Todo listo\npara empezar!"),
+            make_title(_("¡Todo listo\npara empezar!")),
             make_body(
-                "Tu sistema está configurado y listo para usar. "
+                _("Tu sistema está configurado y listo para usar. "
                 "Podés volver a esta guía cuando quieras desde "
-                "el menú de inicio → Bienvenida a RisingOS."
+                "el menú de inicio → Bienvenida a RisingOS.")
             ),
             links_box,
             self._check,
@@ -723,7 +739,7 @@ class ScreenFinal(Gtk.Box):
         logo_big = make_logo(148)
         logo_big.set_halign(Gtk.Align.CENTER)
 
-        credit = Gtk.Label(label="Hecho con ❤ en Salta, Argentina\nRising Arrow · Francisco Galaso")
+        credit = Gtk.Label(label=_("Hecho con ❤ en Salta, Argentina\nRising Arrow · Francisco Galaso"))
         credit.add_css_class("final-credit")
         credit.set_halign(Gtk.Align.CENTER)
         credit.set_justify(Gtk.Justification.CENTER)
@@ -754,7 +770,7 @@ class ScreenFinal(Gtk.Box):
 
 class WelcomeWindow(Gtk.ApplicationWindow):
     def __init__(self, app, has_internet: bool):
-        super().__init__(application=app, title="Bienvenido a RisingOS")
+        super().__init__(application=app, title=_("Bienvenido a RisingOS"))
         self.add_css_class("main-window")
 
         sw, sh = get_screen_size()
@@ -789,7 +805,7 @@ class WelcomeWindow(Gtk.ApplicationWindow):
         bottom = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=0)
         bottom.add_css_class("bottom-bar")
 
-        self._btn_prev = Gtk.Button(label="← Anterior")
+        self._btn_prev = Gtk.Button(label=_("← Anterior"))
         self._btn_prev.add_css_class("btn-prev")
         self._btn_prev.set_sensitive(False)
         self._btn_prev.connect("clicked", self._prev)
@@ -802,7 +818,7 @@ class WelcomeWindow(Gtk.ApplicationWindow):
         self._dots_row = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=7)
         self._dots_row.set_halign(Gtk.Align.CENTER)
         self._dots = []
-        for _ in range(self._total):
+        for _i in range(self._total):
             d = Gtk.Box()
             d.add_css_class("progress-dot")
             self._dots.append(d)
@@ -813,7 +829,7 @@ class WelcomeWindow(Gtk.ApplicationWindow):
         center.append(self._dots_row)
         center.append(self._step_lbl)
 
-        self._btn_next = Gtk.Button(label="Siguiente →")
+        self._btn_next = Gtk.Button(label=_("Siguiente →"))
         self._btn_next.add_css_class("btn-next")
         self._btn_next.connect("clicked", self._next)
 
@@ -833,22 +849,22 @@ class WelcomeWindow(Gtk.ApplicationWindow):
     def _refresh(self):
         i, n = self._cur, self._total
         self._btn_prev.set_sensitive(i > 0)
-        self._btn_next.set_label("Cerrar  ✓" if i == n - 1 else "Siguiente →")
-        self._step_lbl.set_label(f"{i+1} / {n}")
+        self._btn_next.set_label(_("Cerrar  ✓") if i == n - 1 else _("Siguiente →"))
+        self._step_lbl.set_label(_("{current} / {total}").format(current=i + 1, total=n))
         for j, d in enumerate(self._dots):
             d.remove_css_class("dot-active")
             d.remove_css_class("dot-visited")
             if j == i:   d.add_css_class("dot-active")
             elif j < i:  d.add_css_class("dot-visited")
 
-    def _prev(self, *_):
+    def _prev(self, *_args):
         if self._cur > 0:
             self._cur -= 1
             self._stack.set_transition_type(Gtk.StackTransitionType.OVER_RIGHT_LEFT)
             self._stack.set_visible_child_name(f"s{self._cur}")
             self._refresh()
 
-    def _next(self, *_):
+    def _next(self, *_args):
         if self._cur < self._total - 1:
             self._cur += 1
             self._stack.set_transition_type(Gtk.StackTransitionType.OVER_LEFT_RIGHT)
