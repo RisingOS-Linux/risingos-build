@@ -1,0 +1,68 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-07-12 21:10+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: src/rising-update:244
+msgid "Actualizaciones de RisingOS"
+msgstr ""
+
+#: src/rising-update:248
+msgid "Hay actualizaciones disponibles para tu sistema."
+msgstr ""
+
+#: src/rising-update:252 src/rising-update:332
+msgid "↓  Actualiza tu sistema"
+msgstr ""
+
+#: src/rising-update:294
+msgid "Actualizando..."
+msgstr ""
+
+#: src/rising-update:310
+msgid "[flatpak no está instalado — se omite ese paso]\n"
+msgstr ""
+
+#: src/rising-update:323
+#, python-brace-format
+msgid "Error: {error}\n"
+msgstr ""
+
+#: src/rising-update:336
+msgid "Tu sistema se ha actualizado correctamente"
+msgstr ""
+
+#: src/rising-update:337
+msgid "Tu sistema está al día."
+msgstr ""
+
+#: src/rising-update:339
+msgid "El sistema no se pudo actualizar"
+msgstr ""
+
+#: src/rising-update:340
+msgid "Revisá tu conexión a internet e intentá de nuevo."
+msgstr ""
+
+#: src/rising-update:428
+msgid "Actualizaciones disponibles"
+msgstr ""
+
+#: src/rising-update:429
+#, python-brace-format
+msgid "Hay {count} paquete(s) para actualizar en tu sistema."
+msgstr ""

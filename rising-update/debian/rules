@@ -20,3 +20,5 @@ override_dh_auto_install:
 		debian/rising-update/usr/share/icons/hicolor/scalable/status/rising-update.svg
 	install -D -m 0644 assets/icons/rising-update-attention.svg \
 		debian/rising-update/usr/share/icons/hicolor/scalable/status/rising-update-attention.svg
+	install -D -m 0644 locale/en/LC_MESSAGES/rising-update.mo \
+		debian/rising-update/usr/share/locale/en/LC_MESSAGES/rising-update.mo

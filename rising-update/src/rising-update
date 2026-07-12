@@ -13,10 +13,33 @@ import gi
 gi.require_version("Gtk", "4.0")
 from gi.repository import Gtk, GLib, Gio
 
-import os, sys, subprocess, threading, shutil, socket
+import os, sys, subprocess, threading, shutil, socket, gettext, locale
 
 APP_ID = "ar.risingarrow.risingos.update"
 CHECK_INTERVAL_SECONDS = 24 * 60 * 60  # 24 horas
+
+# ── i18n ──────────────────────────────────────────────────────────────────────
+# Este archivo no maneja assets propios (los íconos se resuelven por nombre
+# vía icon theme, ver ICON_NORMAL/ICON_UPDATES más abajo), así que a diferencia
+# de rising-welcome/rising-ia no hay una carpeta ASSETS_DIR que sirva de marcador
+# de "estoy instalado". Se usa en cambio la ruta real del propio script.
+_here      = os.path.dirname(os.path.realpath(__file__))
+_root      = os.path.normpath(os.path.join(_here, ".."))
+LOCALE_DIR = os.path.join(_root, "locale")
+if os.path.realpath(__file__) == "/usr/bin/rising-update":
+    LOCALE_DIR = "/usr/share/locale"
+
+# Mismo criterio que rising-welcome/rising-ia: el idioma nativo del código es
+# español (es el msgid). Si gettext no encuentra catálogo, devuelve el msgid
+# tal cual — español. Por eso alcanza con un catálogo "en".
+DOMAIN = "rising-update"
+try:
+    locale.setlocale(locale.LC_ALL, "")
+except locale.Error:
+    pass
+gettext.bindtextdomain(DOMAIN, LOCALE_DIR)
+gettext.textdomain(DOMAIN)
+_ = gettext.gettext
 
 # Íconos propios de RisingOS, resueltos por nombre a través del icon theme
 # hicolor una vez instalados (ver assets/icons/ y debian/install). El .deb
@@ -218,15 +241,15 @@ class UpdateWindow(Gtk.ApplicationWindow):
         root.set_margin_top(24); root.set_margin_bottom(24)
         root.set_margin_start(24); root.set_margin_end(24)
 
-        title = Gtk.Label(label="Actualizaciones de RisingOS")
+        title = Gtk.Label(label=_("Actualizaciones de RisingOS"))
         title.add_css_class("title-2")
         title.set_xalign(0)
 
-        self._status_lbl = Gtk.Label(label="Hay actualizaciones disponibles para tu sistema.")
+        self._status_lbl = Gtk.Label(label=_("Hay actualizaciones disponibles para tu sistema."))
         self._status_lbl.set_xalign(0)
         self._status_lbl.set_wrap(True)
 
-        self._btn = Gtk.Button(label="↓  Actualiza tu sistema")
+        self._btn = Gtk.Button(label=_("↓  Actualiza tu sistema"))
         self._btn.add_css_class("suggested-action")
         self._btn.connect("clicked", self._on_click)
 
@@ -255,7 +278,7 @@ class UpdateWindow(Gtk.ApplicationWindow):
         # sigue vivo en la bandeja y la reabrimos con Activate().
         self.connect("close-request", self._on_close_request)
 
-    def _on_close_request(self, *_):
+    def _on_close_request(self, *_args):
         self.set_visible(False)
         return True
 
@@ -268,7 +291,7 @@ class UpdateWindow(Gtk.ApplicationWindow):
             return
         self._updating = True
         btn.set_sensitive(False)
-        btn.set_label("Actualizando...")
+        btn.set_label(_("Actualizando..."))
         self._progress.set_visible(True)
         self._log_buf.set_text("")
         GLib.timeout_add(120, self._pulse)
@@ -284,7 +307,7 @@ class UpdateWindow(Gtk.ApplicationWindow):
         if shutil.which("flatpak"):
             cmds.append(["flatpak", "update", "-y"])
         else:
-            GLib.idle_add(self._append_log, "[flatpak no está instalado — se omite ese paso]\n")
+            GLib.idle_add(self._append_log, _("[flatpak no está instalado — se omite ese paso]\n"))
 
         for cmd in cmds:
             try:
@@ -297,7 +320,7 @@ class UpdateWindow(Gtk.ApplicationWindow):
                     ok = False
                     break
             except Exception as e:
-                GLib.idle_add(self._append_log, f"Error: {e}\n")
+                GLib.idle_add(self._append_log, _("Error: {error}\n").format(error=e))
                 ok = False
                 break
         GLib.idle_add(self._finish, ok)
@@ -306,15 +329,15 @@ class UpdateWindow(Gtk.ApplicationWindow):
         self._updating = False
         self._progress.set_visible(False)
         self._btn.set_sensitive(True)
-        self._btn.set_label("↓  Actualiza tu sistema")
+        self._btn.set_label(_("↓  Actualiza tu sistema"))
 
         dialog = Gtk.AlertDialog()
         if ok:
-            dialog.set_message("Tu sistema se ha actualizado correctamente")
-            self._status_lbl.set_label("Tu sistema está al día.")
+            dialog.set_message(_("Tu sistema se ha actualizado correctamente"))
+            self._status_lbl.set_label(_("Tu sistema está al día."))
         else:
-            dialog.set_message("El sistema no se pudo actualizar")
-            dialog.set_detail("Revisá tu conexión a internet e intentá de nuevo.")
+            dialog.set_message(_("El sistema no se pudo actualizar"))
+            dialog.set_detail(_("Revisá tu conexión a internet e intentá de nuevo."))
         dialog.show(self)
 
         self.get_application().set_updates_available(False)
@@ -402,8 +425,8 @@ class RisingUpdateApp(Gtk.Application):
         if current:
             self.set_updates_available(True)
             if is_new:
-                n = Gio.Notification.new("Actualizaciones disponibles")
-                n.set_body(f"Hay {len(current)} paquete(s) para actualizar en tu sistema.")
+                n = Gio.Notification.new(_("Actualizaciones disponibles"))
+                n.set_body(_("Hay {count} paquete(s) para actualizar en tu sistema.").format(count=len(current)))
                 self.send_notification("rising-update-available", n)
         else:
             self.set_updates_available(False)
