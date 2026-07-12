@@ -42,16 +42,16 @@ Description: Notificador y actualizador de sistema para RisingOS
  ventana simple, con un solo click y confirmación de contraseña.
 
 Package: rising-welcome
-Version: 1.0.2
+Version: 1.1.0
 Architecture: all
 Maintainer: Francisco Galaso <franciscogalaso@rising-arrow.com>
-Installed-Size: 3668
+Installed-Size: 3680
 Depends: python3 (>= 3.11), python3-gi, gir1.2-gtk-4.0, polkitd, pkexec
-Filename: pool/main/rising-welcome_1.0.2_all.deb
-Size: 3663844
-MD5sum: c1bc2bcfd0b104efa7cffd484f3cb298
-SHA1: 597fea11219a796490e7fe024b73a48862d6d2d9
-SHA256: d313aae3ad086832227fb7d9a11769699d3921d5b2b1e2527b4bccd59a933e45
+Filename: pool/main/rising-welcome_1.1.0_all.deb
+Size: 3666524
+MD5sum: fdaf157155cc0dff1dafd06788a123a2
+SHA1: 4b8ce31d1d80e1d5d3d610ffbcc0e703c1b1116e
+SHA256: 8961a6f650ed27e1ffcd3416fa4615ecfcbb7668f114836d7f633a02ad38be33
 Section: utils
 Priority: optional
 Homepage: https://github.com/RisingOS-Linux/rising-welcome
