@@ -1,19 +1,25 @@
 #!/bin/bash
 set -e
 
-# Asegurar que locales está instalado
+# Asegurar que locales esté instalado
 apt-get install -y locales
 
-# Generar locale
-echo "es_AR.UTF-8 UTF-8" > /etc/locale.gen
-echo "es_ES.UTF-8 UTF-8" >> /etc/locale.gen
+# Habilitar los locales que generamos por defecto en la ISO — SIN destruir
+# la lista completa que trae el paquete `locales` (todos los locales
+# soportados por Debian, comentados). Así Calamares puede generar
+# CUALQUIER locale que el usuario elija en el instalador (localeGenPath:
+# /etc/locale.gen), no solo los que hardcodeamos acá para el live/default.
+for loc in "es_AR.UTF-8 UTF-8" "es_ES.UTF-8 UTF-8" "en_US.UTF-8 UTF-8"; do
+    sed -i "s/^# *${loc}\$/${loc}/" /etc/locale.gen
+done
 locale-gen
 
-# Configurar locale por defecto
+# Configurar locale por defecto del sistema (live / pre-instalación).
+# Solo LANG + LANGUAGE — sin LC_ALL, que pisa cualquier ajuste posterior
+# de categoría (fecha, moneda, etc.) sin dejar margen para personalizarlo.
 cat > /etc/default/locale << 'LOCALE'
 LANG=es_AR.UTF-8
 LANGUAGE=es_AR:es
-LC_ALL=es_AR.UTF-8
 LOCALE
 
 # Timezone
@@ -31,6 +37,8 @@ BACKSPACE="guess"
 KEYBOARD
 dpkg-reconfigure -f noninteractive keyboard-configuration
 
-# Variables de entorno globales
-echo "LANG=es_AR.UTF-8" >> /etc/environment
-echo "LC_ALL=es_AR.UTF-8" >> /etc/environment
+# NOTA: ya no se escriben LANG/LC_ALL en /etc/environment. Esa práctica es
+# de versiones de Debian anteriores a Lenny (obsoleta, la propia wiki de
+# Debian recomienda comentarlas si aparecen) y pisaba, en cada sesión,
+# cualquier locale que Calamares configurara después durante la
+# instalación real — mismo patrón de bug ya identificado con GTK_THEME.
