@@ -1,14 +1,14 @@
 Package: rising-ia
-Version: 1.1.0
+Version: 1.2.0
 Architecture: all
 Maintainer: Francisco Galaso <franciscogalaso@rising-arrow.com>
-Installed-Size: 64
+Installed-Size: 73
 Depends: python3 (>= 3.11), python3-gi, gir1.2-gtk-4.0, polkitd, pkexec, curl, docker.io
-Filename: pool/main/rising-ia_1.1.0_all.deb
-Size: 22232
-MD5sum: b9cf96e55533a52fcb453a0701e219d6
-SHA1: ac0dc41ffad5292697192256df89969e730c1919
-SHA256: c35b616a8c5a7250baff058804503934649a4edac5a9f744fe3acccd14579ea9
+Filename: pool/main/rising-ia_1.2.0_all.deb
+Size: 24156
+MD5sum: bab5e4e6a28792a732cd910faf237401
+SHA1: 14ad099a81d46ea7ad420cdff94cd98a73f1aab4
+SHA256: c643f717d48a1a47b8acaa50a11ceb5d49b769e48c78b0e45bf4c9085140d16a
 Section: utils
 Priority: optional
 Homepage: https://github.com/RisingOS-Linux/rising-ia
@@ -21,17 +21,17 @@ Description: Instalador de IA local para RisingOS
  mostrando el progreso en tiempo real y lanzando Open WebUI al finalizar.
 
 Package: rising-update
-Version: 1.0.0
+Version: 1.1.0
 Architecture: all
 Maintainer: Francisco Galaso <franciscogalaso@rising-arrow.com>
-Installed-Size: 41
+Installed-Size: 47
 Depends: python3, python3-gi, gir1.2-gtk-4.0, polkitd, pkexec, apt
 Recommends: flatpak
-Filename: pool/main/rising-update_1.0.0_all.deb
-Size: 8680
-MD5sum: 00a7821ad4c04c1831ec991503ad0f74
-SHA1: a468febd9c36b2ea14f5708823c0d65bf12d6f9b
-SHA256: 7be67d0b60f8cf90aa30ae30b5336ab85467ff36d4cc72a7c28e79b7aea79196
+Filename: pool/main/rising-update_1.1.0_all.deb
+Size: 9788
+MD5sum: e2a50d2479500cda4bf9c6f4d8d443fa
+SHA1: 270bbe13c05bc6cc109b3965229a429de6616661
+SHA256: 104d577d826cf6014de3958b70d1b39737816a7601e5fb3997159616d077e62a
 Section: admin
 Priority: optional
 Description: Notificador y actualizador de sistema para RisingOS
