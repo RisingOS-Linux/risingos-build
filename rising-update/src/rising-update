@@ -355,8 +355,10 @@ class RisingUpdateApp(Gtk.Application):
         self._sni = StatusNotifierItem(self._toggle_window)
 
     def do_activate(self):
-        if self._window is None:
-            self._window = UpdateWindow(self)
+        # La ventana NO se crea acá: se construye de forma perezosa en
+        # _toggle_window, solo cuando el usuario efectivamente la abre.
+        # Evita instanciar Gtk.TextView/ScrolledWindow (motor de texto
+        # completo) en cada arranque de sesión sin necesidad real.
         self._sni.start()
         self._start_background_check()
 

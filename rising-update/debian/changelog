@@ -1,3 +1,14 @@
+rising-update (1.1.1) trixie; urgency=medium
+
+  * Corregido consumo excesivo de RAM (~146-149 MB) en reposo: do_activate
+    construía UpdateWindow completa (incluyendo Gtk.TextView/ScrolledWindow)
+    en cada arranque de sesión, aunque no hubiera actualizaciones ni el
+    usuario la fuera a abrir. La ventana ahora se crea de forma perezosa,
+    únicamente cuando el usuario hace click en el ícono de bandeja
+    (_toggle_window ya implementaba ese patrón correctamente).
+
+ -- Francisco Galaso <franciscogalaso@rising-arrow.com>  Wed, 15 Jul 2026 15:35:00 -0300
+
 rising-update (1.1.0) unstable; urgency=medium
 
   * Agregado soporte de idioma inglés (gettext), detección automática
