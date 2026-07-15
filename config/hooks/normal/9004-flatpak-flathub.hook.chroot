@@ -52,20 +52,6 @@ user-installations=true
 system-installations=true
 EOF
 
-# ── Configurar autostart de gnome-software en modo background ─────────────────
-# Para que actualice los metadatos de Flathub en el primer arranque
-mkdir -p /etc/skel/.config/autostart
-cat > /etc/skel/.config/autostart/gnome-software-service.desktop << 'EOF'
-[Desktop Entry]
-Type=Application
-Name=GNOME Software Service
-Comment=Servicio de actualización de aplicaciones
-Exec=/usr/bin/gnome-software --gapplication-service
-X-GNOME-Autostart-enabled=true
-X-GNOME-AutoRestart=false
-NoDisplay=true
-EOF
-
 # ── Integración con XFCE (lanzador en menú) ──────────────────────────────────
 # gnome-software ya tiene su propio .desktop; asegurar que aparezca en XFCE
 GSOFTWARE_DESKTOP="/usr/share/applications/org.gnome.Software.desktop"
