@@ -1,14 +1,14 @@
 Package: rising-ia
-Version: 1.2.0
+Version: 1.2.1
 Architecture: all
 Maintainer: Francisco Galaso <franciscogalaso@rising-arrow.com>
-Installed-Size: 73
-Depends: python3 (>= 3.11), python3-gi, gir1.2-gtk-4.0, polkitd, pkexec, curl, docker.io
-Filename: pool/main/rising-ia_1.2.0_all.deb
-Size: 24156
-MD5sum: bab5e4e6a28792a732cd910faf237401
-SHA1: 14ad099a81d46ea7ad420cdff94cd98a73f1aab4
-SHA256: c643f717d48a1a47b8acaa50a11ceb5d49b769e48c78b0e45bf4c9085140d16a
+Installed-Size: 74
+Depends: python3 (>= 3.11), python3-gi, gir1.2-gtk-4.0, polkitd, pkexec, curl
+Filename: pool/main/rising-ia_1.2.1_all.deb
+Size: 24664
+MD5sum: c05d96a04166e516afccf9f9bebc105a
+SHA1: f79165e8ee2fa64219e0328634c969e00470857a
+SHA256: b26692c413df29412c619aa0be92c736b04254c7a66c7d7b87b9b6c9b876a995
 Section: utils
 Priority: optional
 Homepage: https://github.com/RisingOS-Linux/rising-ia
