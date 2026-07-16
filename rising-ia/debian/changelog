@@ -1,3 +1,26 @@
+rising-ia (1.2.1) trixie; urgency=medium
+
+  * Eliminada dependencia dura de docker.io en debian/control. El propio
+    asistente de Rising IA ya instala Docker bajo demanda
+    ('apt-get install -y docker.io' + 'systemctl enable --now docker'
+    como parte de su flujo, gatillado únicamente cuando el usuario
+    ejecuta el instalador).
+
+    La dependencia declarada en el paquete forzaba la instalación y
+    activación de Docker+containerd (~130 MB de RAM en reposo) desde
+    el momento en que se instalaba rising-ia en el build de la ISO,
+    sin importar si el usuario corría el asistente o no. Esto hacía
+    que sacar docker.io de rising.list.chroot (fix anterior) no
+    tuviera efecto real, ya que apt lo reinstalaba como dependencia
+    transitiva de rising-ia.
+
+    Nota: sistemas con rising-ia 1.2.0 ya instalado no se ven afectados
+    retroactivamente por este cambio (apt no remueve dependencias
+    antiguas al actualizar). Aceptado como no crítico: la ISO todavía
+    no es pública.
+
+ -- Francisco Galaso <franciscogalaso@rising-arrow.com>  Wed, 15 Jul 2026 22:25:00 -0300
+
 rising-ia (1.2.0) trixie; urgency=medium
 
   * Agregado soporte de idioma inglés (gettext), detección automática
