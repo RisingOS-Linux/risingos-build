@@ -274,13 +274,29 @@ class UpdateWindow(Gtk.ApplicationWindow):
         root.append(scroll)
         self.set_child(root)
 
-        # No destruir la ventana al cerrar — solo ocultarla, porque el proceso
-        # sigue vivo en la bandeja y la reabrimos con Activate().
+        # La ventana se destruye al cerrar (si no hay actualización en
+        # curso), liberando la memoria de Gtk.TextView/ScrolledWindow.
+        # _on_destroy avisa a la app para que la reconstruya la próxima
+        # vez que el usuario la abra desde el ícono de bandeja.
         self.connect("close-request", self._on_close_request)
+        self.connect("destroy", self._on_destroy)
 
     def _on_close_request(self, *_args):
-        self.set_visible(False)
-        return True
+        if self._updating:
+            # No destruir mientras hay una actualización en curso: el
+            # thread de _run_update sigue escribiendo al log vía
+            # GLib.idle_add, y destruir la ventana en ese momento
+            # rompería esas referencias.
+            self.set_visible(False)
+            return True
+        # Sin actualización en curso: dejar que GTK cierre y destruya
+        # la ventana normalmente.
+        return False
+
+    def _on_destroy(self, *_args):
+        app = self.get_application()
+        if app is not None:
+            app._window = None
 
     def _append_log(self, text: str):
         self._log_buf.insert(self._log_buf.get_end_iter(), text)

@@ -1,3 +1,18 @@
+rising-update (1.1.2) trixie; urgency=medium
+
+  * La ventana de actualizaciones ahora se destruye al cerrarse (en vez
+    de solo ocultarse), liberando ~130 MB de RAM que quedaban retenidos
+    en background después del primer uso. Se reconstruye de forma
+    perezosa la próxima vez que el usuario la abre desde el ícono de
+    bandeja (mismo patrón lazy de la 1.1.1, aplicado también al cierre).
+
+    Protección agregada: si hay una actualización en curso, la ventana
+    solo se oculta (no se destruye), ya que el thread de _run_update
+    sigue escribiendo al log en vivo y destruirla rompería esas
+    referencias.
+
+ -- Francisco Galaso <franciscogalaso@rising-arrow.com>  Wed, 15 Jul 2026 22:40:00 -0300
+
 rising-update (1.1.1) trixie; urgency=medium
 
   * Corregido consumo excesivo de RAM (~146-149 MB) en reposo: do_activate
