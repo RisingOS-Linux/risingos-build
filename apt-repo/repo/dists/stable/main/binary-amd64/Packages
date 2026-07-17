@@ -21,17 +21,17 @@ Description: Instalador de IA local para RisingOS
  mostrando el progreso en tiempo real y lanzando Open WebUI al finalizar.
 
 Package: rising-update
-Version: 1.1.2
+Version: 1.2.0
 Architecture: all
 Maintainer: Francisco Galaso <franciscogalaso@rising-arrow.com>
-Installed-Size: 49
+Installed-Size: 54
 Depends: python3, python3-gi, gir1.2-gtk-4.0, polkitd, pkexec, apt
 Recommends: flatpak
-Filename: pool/main/rising-update_1.1.2_all.deb
-Size: 10612
-MD5sum: 9616e31e42f2f99ba69be4033147df56
-SHA1: f91ca1fc3cc99b7e9cce76f95e2e529db001291d
-SHA256: b75d25d47669adffba148788f63962ab63c243759fe520bb46d48e38ebe8faf2
+Filename: pool/main/rising-update_1.2.0_all.deb
+Size: 12684
+MD5sum: 894a5aeff2f79f6c1d1ddc963a3ab93a
+SHA1: 0ddfb6d292a47f2feb5675d225ac31a55003600f
+SHA256: 74e1944fd5284d73b510e00c14808e069613a583bcf16c83085529515181e084
 Section: admin
 Priority: optional
 Description: Notificador y actualizador de sistema para RisingOS
