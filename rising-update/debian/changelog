@@ -1,3 +1,55 @@
+rising-update (1.2.0) trixie; urgency=medium
+
+  * Rediseño completo en arquitectura de dos procesos para eliminar el
+    consumo persistente de RAM del daemon en reposo:
+
+    - El daemon (autostart) ya NO importa GTK4 en absoluto — pasa de
+      Gtk.Application a Gio.Application. Solo usa Gio/GLib para el ícono
+      de bandeja (StatusNotifierItem, sin cambios en su lógica D-Bus) y
+      el chequeo periódico de actualizaciones cada 24hs.
+
+    - La ventana de actualizaciones ahora corre en un PROCESO APARTE,
+      lanzado por el daemon vía subprocess (mismo binario, flag
+      --window) únicamente cuando el usuario hace click en el ícono.
+      GTK4 se importa recién ahí, nunca en el daemon.
+
+    - Al cerrar la ventana, el proceso hijo termina por completo
+      (sys.exit natural al no usar self.hold() en esa sub-aplicación).
+      El sistema operativo recupera el 100% de su memoria de forma
+      garantizada, eliminando de raíz el problema de la v1.1.2: el
+      allocator de GLib no garantiza devolver memoria liberada al SO
+      tras destroy(), lo cual hacía que la ventana retuviera ~130 MB
+      de forma indefinida pese a estar correctamente destruida a nivel
+      de objetos internos.
+
+    Comunicación daemon <-> ventana: mínima y deliberada (PID + señal
+    SIGUSR1). La ventana, al completar una actualización con éxito,
+    notifica al daemon para refrescar el ícono sin esperar el próximo
+    ciclo de 24hs — refresco 100% local (no requiere internet).
+
+    Manejo de errores reforzado:
+    - Timeout de 'apt-get update' en el chequeo periódico ahora se
+      captura explícitamente (antes caía en el catch genérico sin
+      distinción).
+    - Comandos de actualización (pkexec/apt-get/flatpak) ausentes:
+      catch específico de FileNotFoundError con mensaje claro al
+      usuario, en vez de un error genérico.
+    - Actualización colgada más de 30 minutos: el proceso ahora se
+      mata explícitamente (proc.kill()) en vez de quedar huérfano
+      corriendo en segundo plano.
+    - Escritura de pidfile/marcador de caché: errores de OSError
+      (permisos, disco lleno) se registran sin crashear el daemon.
+    - Notificación daemon<->ventana: fallos (daemon caído, pidfile
+      obsoleto, permisos) se degradan silenciosamente sin romper el
+      cierre de la ventana — no es una operación crítica.
+
+    Impacto esperado: el daemon en reposo debería pasar de ~120-130 MB
+    (con GTK4 cargado sin usarlo) a un consumo mucho menor, cercano al
+    de un proceso Python simple con Gio/GLib. La ventana, al cerrarse,
+    ahora libera el 100% de su memoria en vez de quedar retenida.
+
+ -- Francisco Galaso <franciscogalaso@rising-arrow.com>  Fri, 17 Jul 2026 00:20:00 -0300
+
 rising-update (1.1.2) trixie; urgency=medium
 
   * La ventana de actualizaciones ahora se destruye al cerrarse (en vez

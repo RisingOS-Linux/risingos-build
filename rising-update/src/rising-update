@@ -2,36 +2,53 @@
 # rising-update — Notificador y actualizador de RisingOS
 # Rising Arrow / Francisco Galaso
 #
-# Un solo proceso GTK4. El ícono de bandeja NO usa libayatana-appindicator3
-# (que exige GTK3 y no puede convivir con GTK4 en el mismo proceso).
-# En cambio, habla directamente el protocolo StatusNotifierItem por D-Bus
-# vía Gio.DBusConnection — sin dependencia de GTK3.
+# ARQUITECTURA DE DOS PROCESOS (v2) para minimizar RAM en reposo:
 #
-# v1: sin menú contextual (click derecho). Click izquierdo = Activate = abre/oculta ventana.
+#   - DAEMON (modo por defecto, el que vive en autostart 24/7): NO importa
+#     GTK4 en absoluto. Solo usa Gio/GLib para el ícono de bandeja
+#     (StatusNotifierItem hablado a mano por D-Bus) y el chequeo periódico
+#     de actualizaciones. Esto evita pagar el costo de memoria del runtime
+#     completo de GTK4 (~100+ MB) durante toda la sesión, cuando en el 99%
+#     del tiempo no hay ninguna ventana abierta.
+#
+#   - VENTANA (se invoca con el flag --window): proceso APARTE, lanzado por
+#     el daemon vía subprocess SOLO cuando el usuario hace click en el
+#     ícono. Recién ahí se importa GTK4. Al cerrar la ventana, el proceso
+#     termina (sys.exit) y el sistema operativo recupera el 100% de su
+#     memoria de forma garantizada — sin depender de destroy() ni de que
+#     el allocator de GLib decida devolver páginas al SO (que no es
+#     determinístico y fue la causa de un bug de memoria irresoluble en
+#     la v1 de un solo proceso).
+#
+# Comunicación daemon <-> ventana: deliberadamente mínima (PID + señal
+# SIGUSR1), para no sumar complejidad innecesaria. La ventana, al terminar
+# una actualización con éxito, avisa al daemon para que refresque el ícono
+# de inmediato en vez de esperar el próximo ciclo de 24hs. Ese refresco es
+# 100% local (no requiere internet): usa 'apt list --upgradable' contra el
+# caché que el propio 'apt-get upgrade' que acaba de correr ya dejó al día.
 
 import gi
-gi.require_version("Gtk", "4.0")
-from gi.repository import Gtk, GLib, Gio
+from gi.repository import GLib, Gio
 
-import os, sys, subprocess, threading, shutil, socket, gettext, locale
+import os, sys, subprocess, threading, shutil, socket, signal, gettext, locale
 
 APP_ID = "ar.risingarrow.risingos.update"
 CHECK_INTERVAL_SECONDS = 24 * 60 * 60  # 24 horas
 
+CACHE_DIR = os.path.expanduser("~/.cache/rising-update")
+APT_UPGRADABLE_MARKER = os.path.join(CACHE_DIR, "last-upgradable.txt")
+PIDFILE = os.path.join(CACHE_DIR, "daemon.pid")
+
+
 # ── i18n ──────────────────────────────────────────────────────────────────────
-# Este archivo no maneja assets propios (los íconos se resuelven por nombre
-# vía icon theme, ver ICON_NORMAL/ICON_UPDATES más abajo), así que a diferencia
-# de rising-welcome/rising-ia no hay una carpeta ASSETS_DIR que sirva de marcador
-# de "estoy instalado". Se usa en cambio la ruta real del propio script.
+# Igual que rising-welcome/rising-ia: el idioma nativo del código es español
+# (es el msgid). Si gettext no encuentra catálogo, devuelve el msgid tal cual.
 _here      = os.path.dirname(os.path.realpath(__file__))
 _root      = os.path.normpath(os.path.join(_here, ".."))
 LOCALE_DIR = os.path.join(_root, "locale")
 if os.path.realpath(__file__) == "/usr/bin/rising-update":
     LOCALE_DIR = "/usr/share/locale"
 
-# Mismo criterio que rising-welcome/rising-ia: el idioma nativo del código es
-# español (es el msgid). Si gettext no encuentra catálogo, devuelve el msgid
-# tal cual — español. Por eso alcanza con un catálogo "en".
 DOMAIN = "rising-update"
 try:
     locale.setlocale(locale.LC_ALL, "")
@@ -41,17 +58,11 @@ gettext.bindtextdomain(DOMAIN, LOCALE_DIR)
 gettext.textdomain(DOMAIN)
 _ = gettext.gettext
 
-# Íconos propios de RisingOS, resueltos por nombre a través del icon theme
-# hicolor una vez instalados (ver assets/icons/ y debian/install). El .deb
-# los coloca en /usr/share/icons/hicolor/scalable/status/, y dh_icons
-# actualiza el cache del theme automáticamente al instalar/desinstalar.
 ICON_NORMAL  = "rising-update"
 ICON_UPDATES = "rising-update-attention"
 
-APT_UPGRADABLE_MARKER = os.path.expanduser("~/.cache/rising-update/last-upgradable.txt")
 
-
-# ── Utilidades ────────────────────────────────────────────────────────────────
+# ── Utilidades compartidas ─────────────────────────────────────────────────────
 
 def check_internet(timeout=2.5) -> bool:
     try:
@@ -63,7 +74,9 @@ def check_internet(timeout=2.5) -> bool:
 
 
 def get_upgradable_set() -> set:
-    """Devuelve el set de líneas de 'apt list --upgradable' (post apt update)."""
+    """Devuelve el set de líneas de 'apt list --upgradable'. 100% local, no
+    requiere internet — lee del caché que 'apt-get update'/'apt-get upgrade'
+    ya hayan dejado en el sistema."""
     try:
         out = subprocess.run(
             ["apt", "list", "--upgradable"],
@@ -76,7 +89,21 @@ def get_upgradable_set() -> set:
         return set()
 
 
-# ── StatusNotifierItem hablado a mano por D-Bus (sin GTK3) ────────────────────
+def notify_daemon_refresh():
+    """Le pide al daemon (si está corriendo) que refresque el ícono de la
+    bandeja sin esperar el próximo ciclo de 24hs. Best-effort: cualquier
+    fallo acá (daemon caído, pidfile viejo, permisos) se ignora sin romper
+    el cierre de la ventana — no es una operación crítica."""
+    try:
+        with open(PIDFILE) as f:
+            pid = int(f.read().strip())
+        os.kill(pid, signal.SIGUSR1)
+    except (FileNotFoundError, ValueError, ProcessLookupError, PermissionError) as e:
+        print(f"[rising-update-window] No se pudo notificar al daemon "
+              f"(no crítico): {e}", file=sys.stderr)
+
+
+# ── StatusNotifierItem hablado a mano por D-Bus (sin GTK) ─────────────────────
 
 SNI_XML = """
 <node>
@@ -120,9 +147,6 @@ SNI_XML = """
 </node>
 """
 
-# En la práctica, la mayoría de los hosts (incluido lo que usa XFCE panel para
-# nm-applet vía --indicator) resuelven contra el nombre "org.kde.*" del watcher,
-# aunque el spec original hable de "org.freedesktop.*". Probamos ambos.
 WATCHER_NAMES = ["org.kde.StatusNotifierWatcher", "org.freedesktop.StatusNotifierWatcher"]
 
 
@@ -191,7 +215,6 @@ class StatusNotifierItem:
                              method_name, parameters, invocation):
         if method_name in ("Activate", "SecondaryActivate"):
             GLib.idle_add(self._on_activate)
-        # ContextMenu y Scroll: no-op en v1 (sin menú contextual)
         invocation.return_value(None)
 
     def _handle_get_property(self, connection, sender, object_path, interface_name, property_name):
@@ -229,200 +252,113 @@ class StatusNotifierItem:
             print(f"[rising-update] Error emitiendo señal D-Bus: {e}", file=sys.stderr)
 
 
-# ── Ventana de actualización (reutiliza el patrón de rising-welcome) ──────────
+# ── DAEMON (Gio.Application — sin GTK) ─────────────────────────────────────────
 
-class UpdateWindow(Gtk.ApplicationWindow):
-    def __init__(self, app):
-        super().__init__(application=app, title="Rising Update")
-        self.set_default_size(560, 420)
-        self._updating = False
-
-        root = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=16)
-        root.set_margin_top(24); root.set_margin_bottom(24)
-        root.set_margin_start(24); root.set_margin_end(24)
-
-        title = Gtk.Label(label=_("Actualizaciones de RisingOS"))
-        title.add_css_class("title-2")
-        title.set_xalign(0)
-
-        self._status_lbl = Gtk.Label(label=_("Hay actualizaciones disponibles para tu sistema."))
-        self._status_lbl.set_xalign(0)
-        self._status_lbl.set_wrap(True)
-
-        self._btn = Gtk.Button(label=_("↓  Actualiza tu sistema"))
-        self._btn.add_css_class("suggested-action")
-        self._btn.connect("clicked", self._on_click)
-
-        self._progress = Gtk.ProgressBar()
-        self._progress.set_visible(False)
-
-        self._log_buf = Gtk.TextBuffer()
-        self._log_view = Gtk.TextView(buffer=self._log_buf)
-        self._log_view.set_editable(False)
-        self._log_view.set_cursor_visible(False)
-        self._log_view.set_monospace(True)
-        self._log_view.set_vexpand(True)
-
-        scroll = Gtk.ScrolledWindow()
-        scroll.set_child(self._log_view)
-        scroll.set_vexpand(True)
-
-        root.append(title)
-        root.append(self._status_lbl)
-        root.append(self._btn)
-        root.append(self._progress)
-        root.append(scroll)
-        self.set_child(root)
-
-        # La ventana se destruye al cerrar (si no hay actualización en
-        # curso), liberando la memoria de Gtk.TextView/ScrolledWindow.
-        # _on_destroy avisa a la app para que la reconstruya la próxima
-        # vez que el usuario la abra desde el ícono de bandeja.
-        self.connect("close-request", self._on_close_request)
-        self.connect("destroy", self._on_destroy)
-
-    def _on_close_request(self, *_args):
-        if self._updating:
-            # No destruir mientras hay una actualización en curso: el
-            # thread de _run_update sigue escribiendo al log vía
-            # GLib.idle_add, y destruir la ventana en ese momento
-            # rompería esas referencias.
-            self.set_visible(False)
-            return True
-        # Sin actualización en curso: dejar que GTK cierre y destruya
-        # la ventana normalmente.
-        return False
-
-    def _on_destroy(self, *_args):
-        app = self.get_application()
-        if app is not None:
-            app._window = None
-
-    def _append_log(self, text: str):
-        self._log_buf.insert(self._log_buf.get_end_iter(), text)
-        return False
-
-    def _on_click(self, btn):
-        if self._updating:
-            return
-        self._updating = True
-        btn.set_sensitive(False)
-        btn.set_label(_("Actualizando..."))
-        self._progress.set_visible(True)
-        self._log_buf.set_text("")
-        GLib.timeout_add(120, self._pulse)
-        threading.Thread(target=self._run_update, daemon=True).start()
-
-    def _pulse(self):
-        self._progress.pulse()
-        return self._updating
-
-    def _run_update(self):
-        ok = True
-        cmds = [["pkexec", "apt-get", "-y", "upgrade"]]
-        if shutil.which("flatpak"):
-            cmds.append(["flatpak", "update", "-y"])
-        else:
-            GLib.idle_add(self._append_log, _("[flatpak no está instalado — se omite ese paso]\n"))
-
-        for cmd in cmds:
-            try:
-                proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                                         text=True, bufsize=1)
-                for line in proc.stdout:
-                    GLib.idle_add(self._append_log, line)
-                proc.wait(timeout=1800)
-                if proc.returncode not in (0, None):
-                    ok = False
-                    break
-            except Exception as e:
-                GLib.idle_add(self._append_log, _("Error: {error}\n").format(error=e))
-                ok = False
-                break
-        GLib.idle_add(self._finish, ok)
-
-    def _finish(self, ok: bool):
-        self._updating = False
-        self._progress.set_visible(False)
-        self._btn.set_sensitive(True)
-        self._btn.set_label(_("↓  Actualiza tu sistema"))
-
-        dialog = Gtk.AlertDialog()
-        if ok:
-            dialog.set_message(_("Tu sistema se ha actualizado correctamente"))
-            self._status_lbl.set_label(_("Tu sistema está al día."))
-        else:
-            dialog.set_message(_("El sistema no se pudo actualizar"))
-            dialog.set_detail(_("Revisá tu conexión a internet e intentá de nuevo."))
-        dialog.show(self)
-
-        self.get_application().set_updates_available(False)
-
-
-# ── Aplicación ─────────────────────────────────────────────────────────────────
-
-class RisingUpdateApp(Gtk.Application):
+class RisingUpdateDaemon(Gio.Application):
     def __init__(self):
-        super().__init__(application_id=APP_ID,
-                          flags=Gio.ApplicationFlags.IS_SERVICE if False else Gio.ApplicationFlags.DEFAULT_FLAGS)
-        # Mantiene el proceso vivo aunque no haya ventanas visibles
+        super().__init__(application_id=APP_ID, flags=Gio.ApplicationFlags.DEFAULT_FLAGS)
+        # Mantiene el proceso vivo aunque Gio.Application no tenga "ventanas"
+        # (concepto que ni siquiera aplica acá, pero hold() es igual de
+        # necesario para que no se cierre solo por inactividad).
         self.hold()
-        self._window = None
         self._sni = StatusNotifierItem(self._toggle_window)
+        self._window_proc = None
 
     def do_activate(self):
-        # La ventana NO se crea acá: se construye de forma perezosa en
-        # _toggle_window, solo cuando el usuario efectivamente la abre.
-        # Evita instanciar Gtk.TextView/ScrolledWindow (motor de texto
-        # completo) en cada arranque de sesión sin necesidad real.
+        self._write_pidfile()
         self._sni.start()
         self._start_background_check()
+        GLib.unix_signal_add(GLib.PRIORITY_DEFAULT, signal.SIGUSR1, self._on_usr1)
 
+    def _write_pidfile(self):
+        try:
+            os.makedirs(CACHE_DIR, exist_ok=True)
+            with open(PIDFILE, "w") as f:
+                f.write(str(os.getpid()))
+        except OSError as e:
+            print(f"[rising-update] No se pudo escribir el pidfile: {e}", file=sys.stderr)
+
+    # ── Lanzar la ventana como proceso aparte ──────────────────────────────
     def _toggle_window(self):
-        if self._window is None:
-            self._window = UpdateWindow(self)
-        if self._window.get_visible():
-            self._window.set_visible(False)
-        else:
-            self._window.present()
+        if self._window_proc is not None and self._window_proc.poll() is None:
+            # Ya hay una ventana abierta — no hacemos nada en v2 (sin
+            # traer el foco remoto; el usuario puede alt-tab). Evitar
+            # abrir una segunda instancia es lo importante acá.
+            return False
+        try:
+            self._window_proc = subprocess.Popen(
+                [sys.executable, os.path.realpath(__file__), "--window"]
+            )
+            GLib.child_watch_add(GLib.PRIORITY_DEFAULT, self._window_proc.pid, self._on_window_exited)
+        except Exception as e:
+            print(f"[rising-update] No se pudo abrir la ventana: {e}", file=sys.stderr)
+            n = Gio.Notification.new(_("Error"))
+            n.set_body(_("No se pudo abrir la ventana de actualizaciones."))
+            self.send_notification("rising-update-window-error", n)
         return False
+
+    def _on_window_exited(self, pid, status):
+        self._window_proc = None
+
+    # ── Refresco pedido por la ventana al terminar una actualización ──────
+    def _on_usr1(self, *_args):
+        GLib.idle_add(self._refresh_from_local_cache)
+        return True  # seguir escuchando la señal
+
+    def _refresh_from_local_cache(self):
+        current = get_upgradable_set()
+        self._write_marker(current)
+        self.set_updates_available(bool(current))
+        return False
+
+    def _write_marker(self, current: set):
+        try:
+            os.makedirs(CACHE_DIR, exist_ok=True)
+            with open(APT_UPGRADABLE_MARKER, "w") as f:
+                f.write("\n".join(sorted(current)))
+        except OSError as e:
+            print(f"[rising-update] No se pudo escribir el marcador: {e}", file=sys.stderr)
 
     def set_updates_available(self, available: bool):
         self._sni.set_updates_available(available)
 
     # ── Chequeo periódico (cada 24hs) ──────────────────────────────────────
     def _start_background_check(self):
-        # Primer chequeo a los pocos segundos de arrancar — UNA SOLA VEZ.
         GLib.timeout_add_seconds(30, self._run_initial_check)
-        # Chequeo periódico real, cada CHECK_INTERVAL_SECONDS.
         GLib.timeout_add_seconds(CHECK_INTERVAL_SECONDS, self._run_check_once)
 
     def _run_initial_check(self):
         threading.Thread(target=self._check_updates_thread, daemon=True).start()
-        return False  # one-shot: NO reprogramar este timer
+        return False
 
     def _run_check_once(self):
         threading.Thread(target=self._check_updates_thread, daemon=True).start()
-        return True  # reprogramar el timeout periódico
+        return True
 
     def _check_updates_thread(self):
         if not check_internet():
+            print("[rising-update] Sin conexión a internet, se pospone "
+                  "el chequeo al próximo ciclo", file=sys.stderr)
             return
         try:
-            # sudoers restringido: NOPASSWD solo para 'apt-get update', para que
-            # este chequeo automático no dispare un diálogo gráfico de contraseña.
+            # sudoers restringido: NOPASSWD solo para 'apt-get update', para
+            # que este chequeo automático no dispare un diálogo de contraseña.
             result = subprocess.run(["sudo", "-n", "apt-get", "-y", "update"],
                                      capture_output=True, text=True, timeout=180)
+        except subprocess.TimeoutExpired:
+            print("[rising-update] 'apt-get update' se colgó (timeout), "
+                  "se descarta este chequeo", file=sys.stderr)
+            return
         except Exception as e:
             print(f"[rising-update] Error en apt update de background: {e}", file=sys.stderr)
             return
 
         if result.returncode != 0:
-            # No confiamos en el estado de "hay actualizaciones" si el propio
-            # 'apt-get update' falló (repo caído, firma vencida, reloj
-            # desfasado, sin red, etc.) — nunca sobreescribimos el marker con
-            # una lista potencialmente parcial/vieja. Se reintenta solo en
-            # el próximo ciclo de 24hs, sin necesidad de más lógica que esta.
+            # Nunca sobreescribimos el marker con una lista potencialmente
+            # parcial/vieja si 'apt-get update' falló (repo caído, firma
+            # vencida, reloj desfasado, corte de internet a mitad de
+            # camino, etc.) — se reintenta solo, sin lógica extra, en el
+            # próximo ciclo de 24hs.
             print(f"[rising-update] 'apt-get update' devolvió código {result.returncode}, "
                   f"se descarta este chequeo:\n{result.stderr.strip()}", file=sys.stderr)
             return
@@ -430,13 +366,13 @@ class RisingUpdateApp(Gtk.Application):
         current = get_upgradable_set()
         previous = set()
         if os.path.exists(APT_UPGRADABLE_MARKER):
-            with open(APT_UPGRADABLE_MARKER) as f:
-                previous = set(l.strip() for l in f if l.strip())
+            try:
+                with open(APT_UPGRADABLE_MARKER) as f:
+                    previous = set(l.strip() for l in f if l.strip())
+            except OSError:
+                pass
 
-        os.makedirs(os.path.dirname(APT_UPGRADABLE_MARKER), exist_ok=True)
-        with open(APT_UPGRADABLE_MARKER, "w") as f:
-            f.write("\n".join(sorted(current)))
-
+        self._write_marker(current)
         GLib.idle_add(self._on_check_success, current, current != previous)
 
     def _on_check_success(self, current: set, is_new: bool):
@@ -451,9 +387,171 @@ class RisingUpdateApp(Gtk.Application):
         return False
 
 
+# ── VENTANA (proceso aparte, GTK4 se importa recién acá) ───────────────────────
+
+def run_window():
+    import gi
+    gi.require_version("Gtk", "4.0")
+    from gi.repository import Gtk
+
+    class UpdateWindow(Gtk.ApplicationWindow):
+        def __init__(self, app):
+            super().__init__(application=app, title="Rising Update")
+            self.set_default_size(560, 420)
+            self._updating = False
+
+            root = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=16)
+            root.set_margin_top(24); root.set_margin_bottom(24)
+            root.set_margin_start(24); root.set_margin_end(24)
+
+            title = Gtk.Label(label=_("Actualizaciones de RisingOS"))
+            title.add_css_class("title-2")
+            title.set_xalign(0)
+
+            self._status_lbl = Gtk.Label(label=_("Hay actualizaciones disponibles para tu sistema."))
+            self._status_lbl.set_xalign(0)
+            self._status_lbl.set_wrap(True)
+
+            self._btn = Gtk.Button(label=_("↓  Actualiza tu sistema"))
+            self._btn.add_css_class("suggested-action")
+            self._btn.connect("clicked", self._on_click)
+
+            self._progress = Gtk.ProgressBar()
+            self._progress.set_visible(False)
+
+            self._log_buf = Gtk.TextBuffer()
+            self._log_view = Gtk.TextView(buffer=self._log_buf)
+            self._log_view.set_editable(False)
+            self._log_view.set_cursor_visible(False)
+            self._log_view.set_monospace(True)
+            self._log_view.set_vexpand(True)
+
+            scroll = Gtk.ScrolledWindow()
+            scroll.set_child(self._log_view)
+            scroll.set_vexpand(True)
+
+            root.append(title)
+            root.append(self._status_lbl)
+            root.append(self._btn)
+            root.append(self._progress)
+            root.append(scroll)
+            self.set_child(root)
+
+            # Sin hold() en la app (ver WindowApp más abajo): cerrar esta
+            # ventana termina el proceso completo, liberando el 100% de su
+            # memoria de forma garantizada por el sistema operativo.
+            self.connect("close-request", self._on_close_request)
+
+        def _on_close_request(self, *_args):
+            if self._updating:
+                # No permitir cerrar mientras hay una actualización en
+                # curso: el thread de _run_update sigue escribiendo al log
+                # vía GLib.idle_add, y matar el proceso en ese momento
+                # dejaría 'pkexec apt-get upgrade' huérfano corriendo.
+                return True
+            return False  # dejar que GTK cierre; sin hold(), la app termina
+
+        def _append_log(self, text: str):
+            self._log_buf.insert(self._log_buf.get_end_iter(), text)
+            return False
+
+        def _on_click(self, btn):
+            if self._updating:
+                return
+            self._updating = True
+            btn.set_sensitive(False)
+            btn.set_label(_("Actualizando..."))
+            self._progress.set_visible(True)
+            self._log_buf.set_text("")
+            GLib.timeout_add(120, self._pulse)
+            threading.Thread(target=self._run_update, daemon=True).start()
+
+        def _pulse(self):
+            self._progress.pulse()
+            return self._updating
+
+        def _run_update(self):
+            ok = True
+            cmds = [["pkexec", "apt-get", "-y", "upgrade"]]
+            if shutil.which("flatpak"):
+                cmds.append(["flatpak", "update", "-y"])
+            else:
+                GLib.idle_add(self._append_log, _("[flatpak no está instalado — se omite ese paso]\n"))
+
+            for cmd in cmds:
+                try:
+                    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                                             text=True, bufsize=1)
+                except FileNotFoundError:
+                    GLib.idle_add(self._append_log,
+                                  _("No se encontró el comando '{cmd}'.\n").format(cmd=cmd[0]))
+                    ok = False
+                    break
+                except Exception as e:
+                    GLib.idle_add(self._append_log, _("Error: {error}\n").format(error=e))
+                    ok = False
+                    break
+
+                for line in proc.stdout:
+                    GLib.idle_add(self._append_log, line)
+
+                try:
+                    proc.wait(timeout=1800)
+                except subprocess.TimeoutExpired:
+                    proc.kill()
+                    GLib.idle_add(self._append_log,
+                                  _("Se agotó el tiempo de espera; el proceso fue cancelado.\n"))
+                    ok = False
+                    break
+
+                if proc.returncode not in (0, None):
+                    ok = False
+                    break
+
+            GLib.idle_add(self._finish, ok)
+
+        def _finish(self, ok: bool):
+            self._updating = False
+            self._progress.set_visible(False)
+            self._btn.set_sensitive(True)
+            self._btn.set_label(_("↓  Actualiza tu sistema"))
+
+            dialog = Gtk.AlertDialog()
+            if ok:
+                dialog.set_message(_("Tu sistema se ha actualizado correctamente"))
+                self._status_lbl.set_label(_("Tu sistema está al día."))
+                # Avisar al daemon para que refresque el ícono ya (sin
+                # esperar el próximo ciclo de 24hs). Best-effort: si falla,
+                # no rompe nada — el daemon igual lo va a notar solo en el
+                # próximo chequeo periódico.
+                notify_daemon_refresh()
+            else:
+                dialog.set_message(_("El sistema no se pudo actualizar"))
+                dialog.set_detail(_("Revisá tu conexión a internet e intentá de nuevo."))
+            dialog.show(self)
+
+    class WindowApp(Gtk.Application):
+        def __init__(self):
+            # OJO: sin self.hold() acá — es intencional. Queremos que la
+            # app termine sola en cuanto se cierre la única ventana que
+            # abre, para que el proceso completo salga y libere su memoria.
+            super().__init__(application_id=APP_ID + ".window",
+                              flags=Gio.ApplicationFlags.DEFAULT_FLAGS)
+
+        def do_activate(self):
+            win = UpdateWindow(self)
+            win.present()
+
+    app = WindowApp()
+    app.run([])
+
+
 def main():
-    app = RisingUpdateApp()
-    app.run(sys.argv)
+    if "--window" in sys.argv:
+        run_window()
+    else:
+        daemon = RisingUpdateDaemon()
+        daemon.run(sys.argv)
 
 
 if __name__ == "__main__":
