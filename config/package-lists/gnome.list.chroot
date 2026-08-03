@@ -1,0 +1,12 @@
+# === ESCRITORIO GNOME ===
+gnome-session
+gnome-shell
+gdm3
+gnome-control-center
+nautilus
+gnome-text-editor
+gnome-calculator
+loupe
+gnome-console
+gnome-shell-extension-appindicator
+file-roller
