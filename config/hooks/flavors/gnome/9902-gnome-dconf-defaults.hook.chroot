@@ -1,0 +1,53 @@
+#!/bin/bash
+# =============================================================================
+# RisingOS — Hook: Defaults de GNOME vía dconf (equivalente a xfconf en XFCE)
+# Theming: opción (c) — Adwaita vanilla + accent color naranja nativo
+# =============================================================================
+set -euo pipefail
+
+DCONF_DIR="/etc/dconf/db/local.d"
+DCONF_PROFILE="/etc/dconf/profile/user"
+
+echo "[gnome-dconf] === Configurando defaults de GNOME ==="
+
+mkdir -p "${DCONF_DIR}"
+mkdir -p "$(dirname "${DCONF_PROFILE}")"
+
+# Perfil de usuario: lee system-db 'local' además de la db de usuario
+cat > "${DCONF_PROFILE}" << 'PROFILE_EOF'
+user-db:user
+system-db:local
+PROFILE_EOF
+echo "[gnome-dconf] Perfil de usuario creado: ${DCONF_PROFILE}"
+
+# Defaults del sistema
+cat > "${DCONF_DIR}/01-risingos-gnome" << 'KEYFILE_EOF'
+[org/gnome/desktop/interface]
+icon-theme='RisingOS-orange'
+gtk-theme='Adwaita'
+color-scheme='prefer-dark'
+accent-color='orange'
+cursor-theme='Adwaita'
+
+[org/gnome/desktop/background]
+picture-uri='file:///usr/share/risingos/wallpapers/andes_icy_rising.png'
+picture-uri-dark='file:///usr/share/risingos/wallpapers/andes_icy_rising.png'
+picture-options='zoom'
+
+[org/gnome/shell]
+enabled-extensions=['appindicatorsupport@rgcjonas.gmail.com']
+
+[org/gnome/desktop/wm/preferences]
+button-layout='appmenu:minimize,maximize,close'
+KEYFILE_EOF
+echo "[gnome-dconf] Keyfile creado: ${DCONF_DIR}/01-risingos-gnome"
+
+# Compilar la base dconf (necesario dentro del chroot para que aplique en el live/instalado)
+if command -v dconf &>/dev/null; then
+    dconf update
+    echo "[gnome-dconf] dconf update ejecutado"
+else
+    echo "[gnome-dconf] WARN: comando dconf no encontrado — se compilará en primer boot"
+fi
+
+echo "[gnome-dconf] === Defaults de GNOME configurados ==="
