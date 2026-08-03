@@ -12,7 +12,7 @@ firefox-esr-l10n-es-ar
 thunderbird
 thunderbird-l10n-es-ar
 # === MULTIMEDIA ===
-vlc
+celluloid
 ffmpeg
 # === FUENTES Y CODECS ===
 fonts-liberation
@@ -71,3 +71,7 @@ systemd-timesyncd
 # === PLYMOUTH (boot splash) ===
 plymouth
 plymouth-themes
+# === LIBREOFFICE — INGLÉS ===
+libreoffice-help-en-us
+hunspell-en-us
+mythes-en-us
