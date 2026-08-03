@@ -16,7 +16,13 @@ echo "[build] === Flavor seleccionado: ${FLAVOR} ==="
 
 echo "[build] Limpiando symlinks/copias de builds previos..."
 find config/package-lists -maxdepth 1 -type l -delete 2>/dev/null || true
-find config/hooks/normal -maxdepth 1 -type l -delete 2>/dev/null || true
+for link in config/hooks/normal/*; do
+    [ -L "$link" ] || continue
+    target="$(readlink "$link")"
+    if [[ "$target" == ../flavors/* ]]; then
+        rm "$link"
+    fi
+done
 rm -rf config/includes.chroot/etc/skel/.config/xfce4 2>/dev/null || true
 
 ln -s "../package-lists-flavors/${FLAVOR}.list.chroot" "config/package-lists/${FLAVOR}.list.chroot"
