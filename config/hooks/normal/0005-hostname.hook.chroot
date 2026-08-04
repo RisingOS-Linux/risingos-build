@@ -1,0 +1,5 @@
+#!/bin/bash
+set -e
+
+echo "risingos" > /etc/hostname
+sed -i 's/debian/risingos/g' /etc/hosts 2>/dev/null || true
