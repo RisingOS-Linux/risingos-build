@@ -1,0 +1,35 @@
+#!/bin/bash
+# =============================================================================
+# RisingOS — Hook: settings.ini GTK3/4 para el flavor GNOME
+# Adwaita vanilla + accent naranja (nativo, vía dconf en 9902) + icon theme.
+# Necesario porque apps GTK3 legacy no leen accent-color de dconf, solo
+# gtk-application-prefer-dark-theme y gtk-theme-name.
+# =============================================================================
+set -euo pipefail
+
+echo "[gtk-theme-gnome] === Configurando GTK3/4 defaults para GNOME ==="
+
+SKEL_GTK3="/etc/skel/.config/gtk-3.0"
+SKEL_GTK4="/etc/skel/.config/gtk-4.0"
+
+mkdir -p "${SKEL_GTK3}" "${SKEL_GTK4}"
+
+cat > "${SKEL_GTK3}/settings.ini" << 'GTK3EOF'
+[Settings]
+gtk-theme-name = Adwaita
+gtk-icon-theme-name = RisingOS-orange
+gtk-cursor-theme-name = Adwaita
+gtk-cursor-theme-size = 24
+gtk-application-prefer-dark-theme = 1
+GTK3EOF
+
+cat > "${SKEL_GTK4}/settings.ini" << 'GTK4EOF'
+[Settings]
+gtk-theme-name = Adwaita
+gtk-icon-theme-name = RisingOS-orange
+gtk-cursor-theme-name = Adwaita
+gtk-cursor-theme-size = 24
+gtk-application-prefer-dark-theme = 1
+GTK4EOF
+
+echo "[gtk-theme-gnome] === GTK3/4 defaults configurados ==="
