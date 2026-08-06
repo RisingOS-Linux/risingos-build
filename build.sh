@@ -23,7 +23,19 @@ for link in config/hooks/normal/*; do
         rm "$link"
     fi
 done
-rm -rf config/includes.chroot/etc/skel/.config/xfce4 2>/dev/null || true
+# Limpiar CUALQUIER archivo que algún flavor pueda haber copiado antes,
+# sin importar cual estaba activo en el build anterior. Esto evita que
+# un archivo suelto (ej: .profile) quede pisando includes.chroot
+# compartido para siempre, ya que el cp -r de abajo solo agrega/sobreescribe,
+# nunca resta.
+for flavor_dir in config/hooks/flavors/*/includes.chroot; do
+    [ -d "$flavor_dir" ] || continue
+    while IFS= read -r relpath; do
+        rm -f "config/includes.chroot/${relpath#./}"
+    done < <(cd "$flavor_dir" && find . -type f)
+done
+# Limpiar directorios que hayan quedado vacíos tras el borrado de arriba
+find config/includes.chroot -type d -empty -delete 2>/dev/null || true
 
 ln -s "../package-lists-flavors/${FLAVOR}.list.chroot" "config/package-lists/${FLAVOR}.list.chroot"
 echo "[build] Symlink: package-lists/${FLAVOR}.list.chroot -> package-lists-flavors/${FLAVOR}.list.chroot"
