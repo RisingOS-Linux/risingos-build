@@ -1,3 +1,11 @@
+rising-welcome (1.1.1) trixie; urgency=medium
+
+  * Fix: propiedades CSS inválidas para GTK (max-height, flex-shrink)
+    en assets/style.css causaban warnings de parser y theming roto
+    en sesión GNOME (headerbar y botones sin colorear).
+
+ -- Francisco Galaso <franciscogalaso@rising-arrow.com>  Thu, 06 Aug 2026 00:00:00 -0300
+
 rising-welcome (1.1.0) trixie; urgency=medium
 
   * Agregado soporte de idioma inglés (gettext), detección automática
