@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE wallpapers SYSTEM "gnome-wp-list.dtd">
+<wallpapers>
+  <wallpaper deleted="false">
+    <name>RisingOS - Andes Icy</name>
+    <filename>/usr/share/risingos/wallpapers/andes_icy_rising.png</filename>
+    <options>zoom</options>
+  </wallpaper>
+  <wallpaper deleted="false">
+    <name>RisingOS - Andes Dark</name>
+    <filename>/usr/share/risingos/wallpapers/andes_dark_rising.png</filename>
+    <options>zoom</options>
+  </wallpaper>
+  <wallpaper deleted="false">
+    <name>RisingOS - Andes Golden</name>
+    <filename>/usr/share/risingos/wallpapers/andes_golden_rising.png</filename>
+    <options>zoom</options>
+  </wallpaper>
+  <wallpaper deleted="false">
+    <name>RisingOS - Dark Tech</name>
+    <filename>/usr/share/risingos/wallpapers/dark_tech_wallpaper.png</filename>
+    <options>zoom</options>
+  </wallpaper>
+  <wallpaper deleted="false">
+    <name>RisingOS - Light Tech</name>
+    <filename>/usr/share/risingos/wallpapers/light_tech_rising.png</filename>
+    <options>zoom</options>
+  </wallpaper>
+  <wallpaper deleted="false">
+    <name>RisingOS - Silent Peaks</name>
+    <filename>/usr/share/risingos/wallpapers/silent_peaks_rising.jpg</filename>
+    <options>zoom</options>
+  </wallpaper>
+  <wallpaper deleted="false">
+    <name>Cruce de Destinos — Lumane Sagoal</name>
+    <filename>/usr/share/risingos/wallpapers/CruceDeDestinos_LumaneSagoal_photo.jpg</filename>
+    <options>zoom</options>
+  </wallpaper>
+  <wallpaper deleted="false">
+    <name>Delicadeza Urbana — Lumane Sagoal</name>
+    <filename>/usr/share/risingos/wallpapers/DelicadezaUrbana_LumaneSagoal_photo.jpg</filename>
+    <options>zoom</options>
+  </wallpaper>
+  <wallpaper deleted="false">
+    <name>Calma que Oxida — Lumane Sagoal</name>
+    <filename>/usr/share/risingos/wallpapers/CalmaQueOxida_LumaneSagoal_photo.jpg</filename>
+    <options>zoom</options>
+  </wallpaper>
+</wallpapers>
