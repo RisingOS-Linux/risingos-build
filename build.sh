@@ -16,6 +16,7 @@ echo "[build] === Flavor seleccionado: ${FLAVOR} ==="
 
 echo "[build] Limpiando symlinks/copias de builds previos..."
 find config/package-lists -maxdepth 1 -type l -delete 2>/dev/null || true
+find config/packages.chroot -maxdepth 1 -type l -delete 2>/dev/null || true
 for link in config/hooks/normal/*; do
     [ -L "$link" ] || continue
     target="$(readlink "$link")"
@@ -39,6 +40,14 @@ find config/includes.chroot -type d -empty -delete 2>/dev/null || true
 
 ln -s "../package-lists-flavors/${FLAVOR}.list.chroot" "config/package-lists/${FLAVOR}.list.chroot"
 echo "[build] Symlink: package-lists/${FLAVOR}.list.chroot -> package-lists-flavors/${FLAVOR}.list.chroot"
+
+if [ -d "config/packages-chroot-flavors/${FLAVOR}" ]; then
+    for deb in config/packages-chroot-flavors/"${FLAVOR}"/*.deb; do
+        [ -e "$deb" ] || continue
+        ln -s "../packages-chroot-flavors/${FLAVOR}/$(basename "$deb")" "config/packages.chroot/$(basename "$deb")"
+        echo "[build] Symlink deb: $(basename "$deb")"
+    done
+fi
 
 if [ -d "config/hooks/flavors/${FLAVOR}" ]; then
     for f in config/hooks/flavors/"${FLAVOR}"/*.hook.chroot; do
