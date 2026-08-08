@@ -3,6 +3,7 @@ VERSION="1.0"
 ID=risingos
 ID_LIKE=debian
 PRETTY_NAME="RisingOS 1.0"
+LOGO=distributor-logo
 VERSION_ID="1.0"
 HOME_URL="https://rising-arrow.com"
 SUPPORT_URL="https://rising-arrow.com"

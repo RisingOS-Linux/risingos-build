@@ -9,7 +9,8 @@ echo "[icon-cache] === Generando caché de íconos ==="
 
 # Directorios de íconos que necesitan caché
 ICON_DIRS=(
-    /usr/share/icons/Rising-dark-orange
+    /usr/share/icons/RisingOS-orange
+    /usr/share/icons/RisingOS-orange-dark
     /usr/share/icons/Papirus
     /usr/share/icons/Papirus-Dark
     /usr/share/icons/hicolor
