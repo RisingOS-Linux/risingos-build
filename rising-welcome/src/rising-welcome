@@ -60,6 +60,14 @@ def is_live_session() -> bool:
     except Exception:
         return False
 
+def get_settings_command() -> str:
+    """Devuelve el comando correcto para abrir la configuración del sistema,
+    según el entorno de escritorio activo (XFCE o GNOME)."""
+    desktop = os.environ.get("XDG_CURRENT_DESKTOP", "").upper()
+    if "GNOME" in desktop:
+        return "gnome-control-center"
+    return "xfce4-settings-manager"
+
 def load_css():
     provider = Gtk.CssProvider()
     try:
@@ -513,7 +521,7 @@ class ScreenPersonalizacion(Gtk.Box):
 
         btn_cfg = Gtk.Button(label=_("⚙  Abrir configuración del sistema"))
         btn_cfg.add_css_class("btn-action")
-        btn_cfg.connect("clicked", lambda _w: self._launch("xfce4-settings-manager"))
+        btn_cfg.connect("clicked", lambda _w: self._launch(get_settings_command()))
 
         # Tip
         tip = Gtk.Label(
