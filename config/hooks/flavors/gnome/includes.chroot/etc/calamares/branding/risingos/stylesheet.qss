@@ -1,0 +1,103 @@
+/* RisingOS — Calamares stylesheet */
+
+/* Ocultar botones Ayuda, Notas, Donate, Known Issues */
+#donateButton,
+#supportButton,
+#releaseNotesButton,
+#knownIssuesButton {
+    display: none;
+}
+
+/* Ventana principal */
+#mainApp {
+    background-color: #0c1221;
+    color: #e8eaf0;
+}
+
+/* Botones de navegación (Siguiente, Atrás, Instalar) */
+QPushButton {
+    background-color: #1a2340;
+    color: #e8eaf0;
+    border: 1px solid #1a2340;
+    border-radius: 4px;
+    padding: 6px 14px;
+}
+
+QPushButton:hover {
+    background-color: #ff6a3d;
+    color: #ffffff;
+    border-color: #ff6a3d;
+}
+
+QPushButton#nextButton,
+QPushButton#installButton {
+    background-color: #ff6a3d;
+    color: #ffffff;
+    font-weight: bold;
+}
+
+/* Texto general SOLO en paginas 100% oscuras (ChoicePage queda afuera
+   a proposito: mezcla fondo oscuro con tarjetas blancas de eleccion) */
+WelcomePage QLabel,
+LocalePage QLabel,
+KeyboardPage QLabel,
+UsersPage QLabel,
+SummaryPage QLabel,
+FinishedPage QLabel {
+    color: #e8eaf0;
+}
+
+/* Checkbox "Iniciar sesion automaticamente..." (bug independiente,
+   QCheckBox no hereda de QLabel) */
+UsersPage QCheckBox {
+    color: #e8eaf0;
+}
+
+/* Checkbox "Encriptar sistema" (ChoicePage, zona oscura confirmada) */
+ChoicePage QCheckBox {
+    color: #e8eaf0;
+}
+
+/* Fondo del contenedor de Resumen: el texto ya estaba bien seteado
+   a color claro, pero el QScrollArea que lo envuelve tiene fondo
+   blanco de fabrica -> texto claro sobre blanco = ilegible.
+   Oscurecemos el contenedor en vez de tocar el color del texto. */
+SummaryPage QScrollArea,
+SummaryPage QScrollArea QWidget {
+    background-color: #0c1221;
+}
+
+/* ChoicePage (Particiones): fix puntual por ID, SOLO los labels
+   de la franja oscura. Las tarjetas blancas (PrettyRadioButton/
+   ClickableLabel) quedan afuera a proposito, tienen objectName vacio. */
+#m_drivesLabel,
+#m_messageLabel,
+#m_previewBeforeLabel,
+#m_previewAfterLabel,
+#bootInfoLabel,
+#deviceInfoLabel {
+    color: #e8eaf0;
+}
+
+/* Fondo del grafico de particiones (300 MiB FAT32, etc.) - el texto
+   es Qt::black/Qt::gray hardcodeado en el codigo fuente de Calamares,
+   no se puede pintar via QSS. Forzamos el fondo oscuro de RisingOS
+   para que ese texto oscuro sea legible (en vez de depender de que
+   Qt decida un fondo claro u oscuro solo, que varia entre GNOME/XFCE). */
+PartitionLabelsView#partitionLabel {
+    background-color: #0c1221;
+}
+
+/* Barra de progreso durante la instalacion (exec) */
+QProgressBar#exec-progress {
+    background-color: #1a2340;
+    border: none;
+    border-radius: 4px;
+    text-align: center;
+    color: #ffffff;
+}
+
+QProgressBar#exec-progress::chunk {
+    background-color: #ff6a3d;
+    border-radius: 4px;
+}
