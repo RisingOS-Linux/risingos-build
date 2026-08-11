@@ -79,6 +79,18 @@ SummaryPage QScrollArea QWidget {
     color: #e8eaf0;
 }
 
+/* Fondo de los indicadores informativos EFI/dispositivo (ChoicePage).
+   Solo tenian color de texto claro seteado, sin fondo propio -> el
+   sistema cae en el fondo por defecto de Qt, que varia entre GNOME
+   (blanco) y XFCE (oscuro). Forzamos el mismo fondo oscuro de RisingOS
+   para consistencia entre entornos. */
+#bootInfoIcon,
+#bootInfoLabel,
+#deviceInfoIcon,
+#deviceInfoLabel {
+    background-color: #0c1221;
+}
+
 /* Fondo del grafico de particiones (300 MiB FAT32, etc.) - el texto
    es Qt::black/Qt::gray hardcodeado en el codigo fuente de Calamares,
    no se puede pintar via QSS. Forzamos el fondo oscuro de RisingOS
