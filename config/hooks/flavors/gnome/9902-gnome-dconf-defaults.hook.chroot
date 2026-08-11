@@ -23,7 +23,7 @@ echo "[gnome-dconf] Perfil de usuario creado: ${DCONF_PROFILE}"
 # Defaults del sistema
 cat > "${DCONF_DIR}/01-risingos-gnome" << 'KEYFILE_EOF'
 [org/gnome/desktop/interface]
-icon-theme='RisingOS-orange'
+icon-theme='RisingOS-orange-dark'
 gtk-theme='Adwaita'
 color-scheme='prefer-dark'
 accent-color='orange'
