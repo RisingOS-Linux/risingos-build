@@ -1,0 +1,18 @@
+# RisingOS — overrides de branding para la pantalla de login (GDM)
+# Se compila junto con 00-upstream-settings y 90-debian-settings via
+# /usr/share/gdm/generate-config (dconf compile), que corre automaticamente
+# como ExecStartPre/ExecReload del servicio gdm3.service. El prefijo 95
+# (mayor que 90-debian-settings) asegura que estos valores ganen sin
+# necesidad de tocar el archivo original de Debian.
+
+[org/gnome/login-screen]
+logo='/usr/share/risingos/branding/risingos-imagotipo-login.png'
+
+[org/gnome/desktop/interface]
+gtk-theme='Adwaita'
+color-scheme='prefer-dark'
+accent-color='orange'
+
+[org/gnome/desktop/background]
+picture-uri='file:///usr/share/risingos/wallpapers/andes_icy_rising.png'
+picture-options='zoom'
