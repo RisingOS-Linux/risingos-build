@@ -15,4 +15,5 @@ accent-color='orange'
 
 [org/gnome/desktop/background]
 picture-uri='file:///usr/share/risingos/wallpapers/andes_icy_rising.png'
+picture-uri-dark='file:///usr/share/risingos/wallpapers/andes_icy_rising.png'
 picture-options='zoom'
