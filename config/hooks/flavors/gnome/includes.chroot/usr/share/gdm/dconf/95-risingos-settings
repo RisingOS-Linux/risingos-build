@@ -13,7 +13,12 @@ gtk-theme='Adwaita'
 color-scheme='prefer-dark'
 accent-color='orange'
 
-[org/gnome/desktop/background]
-picture-uri='file:///usr/share/risingos/wallpapers/andes_icy_rising.png'
-picture-uri-dark='file:///usr/share/risingos/wallpapers/andes_icy_rising.png'
-picture-options='zoom'
+# NOTA: el fondo de esta pantalla (blur/wallpaper) NO se controla via
+# gsettings/dconf. GNOME Shell define el fondo del login/bloqueo via CSS
+# compilado dentro de gnome-shell-theme.gresource (selector #lockDialogGroup),
+# ignorando org/gnome/desktop/background por completo en este contexto.
+# Confirmado empiricamente: se probo picture-uri + picture-uri-dark, ambos
+# compilaron y se leyeron bien via 'strings'/gsettings, sin efecto visual.
+# Requeriria desempaquetar y parchear el .gresource (riesgo alto, afecta
+# el tema visual completo del shell) - descartado por decision de Fran,
+# 11/08/2026. Se acepta como limitacion conocida.
