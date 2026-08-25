@@ -1,0 +1,30 @@
+#!/bin/bash
+# postrm para risingbiz
+set -e
+
+PKG_NAME="risingbiz"
+DATA_DIR="/var/lib/${PKG_NAME}"
+CONF_DIR="/etc/${PKG_NAME}"
+
+case "$1" in
+    remove)
+        # Deshabilitar el sitio de Apache, pero conservar datos y config
+        if command -v a2dissite >/dev/null 2>&1; then
+            a2dissite "${PKG_NAME}.conf" >/dev/null 2>&1 || true
+        fi
+        if command -v systemctl >/dev/null 2>&1 && systemctl is-active --quiet apache2; then
+            systemctl reload apache2 || true
+        fi
+        echo "risingbiz: desinstalado. Tus datos se conservan en ${DATA_DIR}"
+        echo "risingbiz: para borrarlos también, usá 'sudo apt purge ${PKG_NAME}'"
+        ;;
+
+    purge)
+        # El usuario pidió explícitamente borrar todo, incluyendo datos
+        rm -rf "$DATA_DIR"
+        rm -rf "$CONF_DIR"
+        echo "risingbiz: datos y configuración eliminados (${DATA_DIR}, ${CONF_DIR})"
+        ;;
+esac
+
+exit 0

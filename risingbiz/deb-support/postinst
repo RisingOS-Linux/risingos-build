@@ -1,0 +1,58 @@
+#!/bin/bash
+# postinst para risingbiz
+set -e
+
+PKG_NAME="risingbiz"
+DATA_DIR="/var/lib/${PKG_NAME}"
+DB_PATH="${DATA_DIR}/database.sqlite"
+SCHEMA_PATH="/usr/share/${PKG_NAME}/schema.sql"
+
+case "$1" in
+    configure)
+        # 1) Crear directorio de datos si no existe
+        if [ ! -d "$DATA_DIR" ]; then
+            mkdir -p "$DATA_DIR"
+            echo "risingbiz: creado ${DATA_DIR}"
+        fi
+
+        # 2) Crear la base de datos vacía (con el esquema) solo si no existe.
+        #    Si ya existe (ej. una actualización del paquete), NO se toca:
+        #    así nunca se pierden datos de instalaciones previas.
+        if [ ! -f "$DB_PATH" ]; then
+            # sqlite_sequence es una tabla interna que SQLite crea sola
+            # (por las columnas AUTOINCREMENT); no se puede crear a mano.
+            grep -v "CREATE TABLE sqlite_sequence" "$SCHEMA_PATH" | sqlite3 "$DB_PATH"
+            echo "risingbiz: base de datos inicializada en ${DB_PATH}"
+            echo "risingbiz: sin usuarios todavía — el primer acceso por navegador pedirá crear el admin"
+        else
+            echo "risingbiz: base de datos existente detectada, no se modifica"
+        fi
+
+        # 3) Permisos: el proceso de Apache (www-data) necesita leer/escribir
+        chown -R www-data:www-data "$DATA_DIR"
+        chmod 750 "$DATA_DIR"
+        chmod 660 "$DB_PATH"
+
+        # 4) Habilitar el sitio de Apache
+        if command -v a2ensite >/dev/null 2>&1; then
+            a2ensite "${PKG_NAME}.conf" >/dev/null 2>&1 || true
+        fi
+        if command -v systemctl >/dev/null 2>&1 && systemctl is-active --quiet apache2; then
+            systemctl reload apache2 || true
+        elif command -v service >/dev/null 2>&1; then
+            service apache2 reload || true
+        fi
+
+        # 5) Entrada en /etc/hosts (solo si no existe ya una línea igual)
+        HOSTS_LINE="127.0.0.1 ${PKG_NAME}.local"
+        if ! grep -qxF "$HOSTS_LINE" /etc/hosts 2>/dev/null; then
+            echo "$HOSTS_LINE" >> /etc/hosts
+            echo "risingbiz: agregado '${HOSTS_LINE}' a /etc/hosts"
+        fi
+
+        echo ""
+        echo "RisingBiz instalado. Accedé desde el navegador a: http://${PKG_NAME}.local/"
+        ;;
+esac
+
+exit 0

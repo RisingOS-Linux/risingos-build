@@ -1,0 +1,482 @@
+/* =====================
+   RisingBiz Design System
+   ===================== */
+
+:root {
+  --bg-main: #1E1E1E;
+  --bg-card: #2A2A2A;
+  --bg-soft: #333333;
+
+  --text-main: #FFFFFF;
+  --text-muted: #B5B5B5;
+
+  --cian: #21B6E6;
+  --magenta: #E6429A;
+  --amarillo: #F2E94E;
+  --verde: #4CAF50;
+  --rojo: #E53935;
+
+  --radius: 10px;
+  --shadow: 0 6px 20px rgba(0,0,0,0.3);
+  --transition: 0.2s ease-in-out;
+}
+
+/* Reset mínimo */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg-main);
+  color: var(--text-main);
+  font-size: 15px;
+}
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 24px;
+  background: var(--bg-card);
+  box-shadow: var(--shadow);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: bold;
+  color: var(--amarillo);
+}
+
+.menu a {
+  margin: 0 10px;
+  text-decoration: none;
+  color: var(--text-main);
+  font-weight: 500;
+  transition: var(--transition);
+}
+
+.menu a:hover {
+  color: var(--cian);
+}
+
+.user a {
+  color: var(--magenta);
+  text-decoration: none;
+}
+
+.container {
+  padding: 24px;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+.card {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow);
+  transition: var(--transition);
+}
+
+.card:hover {
+  transform: translateY(-3px);
+}
+
+.card h3 {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.card .value {
+  margin-top: 8px;
+  font-size: 1.6rem;
+  font-weight: bold;
+}
+
+/* Botones */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.btn-primary {
+  background: var(--cian);
+  color: #000;
+}
+
+.btn-primary:hover {
+  opacity: 0.85;
+}
+
+.btn-secondary {
+  background: var(--bg-soft);
+  color: var(--text-main);
+}
+
+.btn-secondary:hover {
+  background: #3b3b3b;
+}
+
+.btn-success {
+  background: var(--verde);
+  color: #fff;
+}
+
+.btn-danger {
+  background: var(--rojo);
+  color: #fff;
+}
+
+.btn-icon {
+  padding: 6px 8px;
+}
+
+.contacto-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(140px, 1fr));
+  gap: 6px 16px;
+  font-size: 0.95rem;
+}
+
+.contacto-item {
+  white-space: nowrap;
+  color: var(--text-muted);
+}
+
+.contacto-item span {
+  color: var(--text-main);
+}
+
+.acciones {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* =========================
+   Clientes – Responsive
+   ========================= */
+
+@media (max-width: 768px) {
+
+  .table thead {
+    display: none;
+  }
+
+  .table,
+  .table tbody,
+  .table tr,
+  .table td {
+    display: block;
+    width: 100%;
+  }
+
+  .table tr {
+    background: var(--bg-card);
+    margin-bottom: 12px;
+    border-radius: var(--radius);
+    padding: 12px;
+    box-shadow: var(--shadow);
+  }
+
+  .table td {
+    padding: 6px 0;
+    border: none;
+  }
+
+  .table td:first-child {
+    text-align: right;
+  }
+
+  .cliente-nombre {
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  .cliente-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 6px 0;
+  }
+
+  .cliente-contacto {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+
+  .cliente-acciones {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .cliente-acciones .btn {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .bulk-actions {
+    position: sticky;
+    bottom: 0;
+    background: var(--bg-card);
+    padding: 10px;
+    box-shadow: 0 -4px 12px rgba(0,0,0,0.4);
+    border-radius: 10px 10px 0 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .table thead {
+    display: none;
+  }
+
+  .table tr {
+    display: grid;
+    grid-template-columns: 1fr;
+    background: var(--bg-card);
+    margin-bottom: 12px;
+    padding: 12px;
+    border-radius: var(--radius);
+  }
+
+  .table td {
+    border: none;
+    padding: 6px 0;
+  }
+
+  .cliente-nombre {
+    font-weight: bold;
+    font-size: 1.05rem;
+  }
+
+  .acciones {
+    justify-content: flex-start;
+  }
+
+  .contacto-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.clientes-filtros {
+  display: flex;
+  gap: 12px;
+  margin: 16px 0;
+  flex-wrap: wrap;
+}
+
+.input {
+  background: var(--bg-card);
+  color: var(--text-main);
+  border: 1px solid var(--bg-soft);
+  border-radius: var(--radius);
+  padding: 8px 12px;
+  font-size: 0.9rem;
+  min-width: 220px;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--cian);
+}
+
+@media (max-width: 768px) {
+  .clientes-filtros {
+    flex-direction: column;
+  }
+
+  .input {
+    width: 100%;
+  }
+}
+
+/* =====================
+   Tabla Clientes – mejoras visuales
+   ===================== */
+
+.table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 10px; /* aire entre filas */
+}
+
+.table thead th {
+  text-align: left;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  padding: 10px 12px;
+}
+
+.table tbody tr {
+  background: var(--bg-card);
+  box-shadow: var(--shadow);
+}
+
+.table tbody td {
+  padding: 14px 16px;
+  vertical-align: middle;
+  font-size: 0.95rem;
+}
+
+/* Nombre del cliente */
+.cliente-nombre {
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+/* Contacto */
+.contacto-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.contacto-item {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+/* Badge estado */
+.badge {
+  padding: 6px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Acciones */
+.acciones {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.btn {
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center
+}
+
+/* Separación general del dashboard */
+.dashboard-grid-1,
+.dashboard-grid-2 {
+    margin-top: 32px;
+}
+
+/* Espacio entre cards */
+.dashboard-grid-1 .card,
+.dashboard-grid-2 .card {
+    margin-bottom: 24px;
+}
+
+/* Si usás grid */
+.dashboard-grid-2 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 24px;
+}
+
+.card h3 {
+    margin-bottom: 16px;
+}
+
+/* Fondo general del login */
+.login-wrapper {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg);
+}
+
+/* Card central */
+.login-card {
+    width: 100%;
+    max-width: 380px;
+    padding: 32px;
+    background: var(--card-bg);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+}
+
+/* Logo */
+.login-logo {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.login-logo img {
+    max-width: 160px;
+}
+
+/* Inputs */
+.login-card input {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    font-size: 15px;
+}
+
+/* Botón ocupa todo */
+.btn-block {
+    width: 100%;
+    margin-top: 16px;
+}
+
+.login-card {
+    animation: fadeIn 0.4s ease;
+}
+
+.chart-small {
+    max-width: 280px;
+    margin: 0 auto; /* lo centra */
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.app-footer {
+    margin-top: 3rem;
+    padding: 1rem 0;
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--gris-suave);
+    border-top: 1px solid var(--borde);
+}
+
+.footer-content {
+    opacity: 0.8;
+}
+

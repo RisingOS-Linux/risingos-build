@@ -35,3 +35,5 @@ __pycache__/
 # Artefactos .deb sueltos en la raíz del build (los .deb versionados
 # a propósito viven en config/packages.chroot/, no acá)
 /*.deb
+risingbiz/deb-build/
+risingbiz/storage/*.sqlite
