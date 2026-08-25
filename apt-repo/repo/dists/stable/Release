@@ -1,24 +1,24 @@
 Architectures: amd64
 Codename: trixie
 Components: main
-Date: Fri, 17 Jul 2026 03:21:28 +0000
+Date: Tue, 25 Aug 2026 02:38:59 +0000
 Description: Repositorio oficial de RisingOS - Rising Arrow
 Label: RisingOS
 Origin: RisingOS
 Suite: stable
 MD5Sum:
- 062da1b89f2631d7a30b99e21fac9f21              200 Release
- 2b88fa8226193819de62912114e486cb             2635 main/binary-amd64/Packages
- bc4017ec015012f5cbd39284575b507b             1297 main/binary-amd64/Packages.gz
+ afb40e9025ada712596724ecf7779c17              200 Release
+ 098df2fbc0f27bdaefbbad02acea2be3             3302 main/binary-amd64/Packages
+ f1333f61608618b39a26418ca9e38022             1581 main/binary-amd64/Packages.gz
 SHA1:
- f06bda784bdfee8a274b89713833a3b26c7630e9              200 Release
- de0bdd3e3e89eda5faa2d469b8b74d33313d7c31             2635 main/binary-amd64/Packages
- f0ae4a42f378c11b31021b1933a5e9ac5fe18762             1297 main/binary-amd64/Packages.gz
+ 61c38f4d4edeaa34d10196bf8c18ffa15c29e505              200 Release
+ 8d7abeba97b5751e1c9f60d9c00689ec8c2b6c4c             3302 main/binary-amd64/Packages
+ 02696b38210c22c54f6cee1a08cae4315e528904             1581 main/binary-amd64/Packages.gz
 SHA256:
- 0c39c3328a586dcef35b10b8480b50095e43723b6408e33868f83920bd73ac10              200 Release
- 3c51116b0f4afd18b68d2180eae508475e2f922d8e93e795327047dfc1b50a5e             2635 main/binary-amd64/Packages
- 8891ce3a908cbf2e79313e32a2919f01c2a9fceef7d92a195b0d695d4c55f64e             1297 main/binary-amd64/Packages.gz
+ a37a363a02bb5d13c0d0eb49d3d2f73c40dca1b38f7f087520b8e9da4be29737              200 Release
+ 791adccd25bb0fdc4c3158954d195090a8afc7271e890ebe06c2eccfa5caa3a2             3302 main/binary-amd64/Packages
+ 4d9f7cfb1f7454a249ad817ce106f65d523bbb57e340efcca85bfc75e9ce70e4             1581 main/binary-amd64/Packages.gz
 SHA512:
- b19160b11e1c9814ba8b60949bbf6641c37d68705bcf73091590161bcdaef7bc2a99ddafca1d2223fcbcb5bcf9733e1ab716777dc57194f3305dc7c41164c589              200 Release
- 36ae5b8be407868abcecb7ae825246bbcfb1f1dc024d17d5a1b4dbc000e33f1d7e46f58aad9207d74d91311743bdc9e319112c6346a2cabbbf6ab1f29ddcc22b             2635 main/binary-amd64/Packages
- 7fa7c962b842013cecefd5f3a8f2407af0256c5c175c0aa09fdc1122fc150f7d899aa9196dd5bb4799c4bc2b8debf9e5861dc8886d30a7c74567818b9757d43e             1297 main/binary-amd64/Packages.gz
+ abe3b76bf8514af792ada372ef56edc188049409065f59b4ebb05399146ddcde33ba3ea8fa46e758fba5a111004a3b1443e0b0548e7093936c645c5e4ad667be              200 Release
+ f6f11a2acbc7661e21b0266db35a44012ea39f90b19870ed05e5a67a5416427ce787f507818f2482654c9d194ae28ba27fae6432ff5233a09fb032f3c3480d61             3302 main/binary-amd64/Packages
+ 74f7559483999898b50afa10986d9f8b6240aee4feb07d42e3e3f4f931467a58ac3b33cfca5dc93bec50580c41b79f320c3906957bc91495b7257500f8c48d0a             1581 main/binary-amd64/Packages.gz

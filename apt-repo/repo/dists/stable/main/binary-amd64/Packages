@@ -60,3 +60,19 @@ Description: Asistente de bienvenida de RisingOS
  Incluye actualización del sistema con Polkit, tour del escritorio,
  personalización, aplicaciones preinstaladas e integración con Rising IA.
 
+Package: risingbiz
+Version: 1.0.1
+Architecture: all
+Maintainer: Francisco Galaso <franciscogalaso@rising-arrow.com>
+Depends: apache2, libapache2-mod-php, php-sqlite3, php-gd, php-curl, php-intl, php-mbstring, php-xml, php-zip, sqlite3
+Filename: pool/main/risingbiz_1.0.1_all.deb
+Size: 247224
+MD5sum: 77e991009022f27b5b4572a7abd5004b
+SHA1: 21982398e267517f7cfa8bae75dfcb727aa9e906
+SHA256: cef48e501058eed3ddcb91cd0409e4bca9a8609847819c937c780694e0066d59
+Section: web
+Priority: optional
+Description: RisingBiz - gestión de clientes, productos, ventas e insumos
+ Aplicación web de gestión (MVC, PHP + SQLite) para pequeños negocios.
+ Parte del ecosistema RisingOS.
+
