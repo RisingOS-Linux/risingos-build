@@ -61,15 +61,15 @@ Description: Asistente de bienvenida de RisingOS
  personalización, aplicaciones preinstaladas e integración con Rising IA.
 
 Package: risingbiz
-Version: 1.0.1
+Version: 1.0.4
 Architecture: all
 Maintainer: Francisco Galaso <franciscogalaso@rising-arrow.com>
 Depends: apache2, libapache2-mod-php, php-sqlite3, php-gd, php-curl, php-intl, php-mbstring, php-xml, php-zip, sqlite3
-Filename: pool/main/risingbiz_1.0.1_all.deb
-Size: 247224
-MD5sum: 77e991009022f27b5b4572a7abd5004b
-SHA1: 21982398e267517f7cfa8bae75dfcb727aa9e906
-SHA256: cef48e501058eed3ddcb91cd0409e4bca9a8609847819c937c780694e0066d59
+Filename: pool/main/risingbiz_1.0.4_all.deb
+Size: 247696
+MD5sum: 073bcda0a339d6f8d778caf0b2ddd515
+SHA1: f33ea0435d9c0a4503e87a0933271c37a37f1e02
+SHA256: e257cd16a304e2b6d6cd930b65203dd1ef8e10391da65bde5c0e379b4c3b98f9
 Section: web
 Priority: optional
 Description: RisingBiz - gestión de clientes, productos, ventas e insumos

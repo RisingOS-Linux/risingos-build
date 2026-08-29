@@ -1,0 +1,11 @@
+[Unit]
+Description=Asegura la entrada de risingbiz.local en /etc/hosts
+After=local-fs.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/lib/risingbiz/ensure-hosts-entry.sh
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

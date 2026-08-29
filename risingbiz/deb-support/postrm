@@ -15,6 +15,9 @@ case "$1" in
         if command -v systemctl >/dev/null 2>&1 && systemctl is-active --quiet apache2; then
             systemctl reload apache2 || true
         fi
+        if command -v systemctl >/dev/null 2>&1; then
+            systemctl disable --now risingbiz-hosts.service >/dev/null 2>&1 || true
+        fi
         echo "risingbiz: desinstalado. Tus datos se conservan en ${DATA_DIR}"
         echo "risingbiz: para borrarlos también, usá 'sudo apt purge ${PKG_NAME}'"
         ;;

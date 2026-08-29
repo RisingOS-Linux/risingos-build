@@ -50,6 +50,15 @@ case "$1" in
             echo "risingbiz: agregado '${HOSTS_LINE}' a /etc/hosts"
         fi
 
+        # 6) Habilitar el servicio que re-asegura esta línea en CADA arranque.
+        #    Necesario porque instaladores como Calamares regeneran /etc/hosts
+        #    al configurar el hostname de la máquina destino, perdiendo la
+        #    línea que agregamos arriba durante el build de la ISO.
+        if command -v systemctl >/dev/null 2>&1; then
+            systemctl daemon-reload || true
+            systemctl enable --now risingbiz-hosts.service >/dev/null 2>&1 || true
+        fi
+
         echo ""
         echo "RisingBiz instalado. Accedé desde el navegador a: http://${PKG_NAME}.local/"
         ;;
