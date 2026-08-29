@@ -1,0 +1,3 @@
+[submodule "rising-today"]
+	path = rising-today
+	url = https://github.com/RisingOS-Linux/rising-today.git
