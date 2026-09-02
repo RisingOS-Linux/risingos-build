@@ -4,6 +4,7 @@
 calamares
 dosfstools
 btrfs-progs
+xfsprogs
 e2fsprogs
 squashfs-tools
 rsync
