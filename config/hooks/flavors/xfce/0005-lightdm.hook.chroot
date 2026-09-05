@@ -1,15 +1,7 @@
 #!/bin/bash
 set -e
-
-# Configurar lightdm para usar gtk-greeter
-cat > /etc/lightdm/lightdm.conf << 'LIGHTDM'
-[Seat:*]
-greeter-session=lightdm-gtk-greeter
-user-session=xfce
-autologin-user=
-LIGHTDM
-
-# Escribir configuración del greeter
+# Configurar lightdm-gtk-greeter (theming). NO tocar [Seat:*]/lightdm.conf acá —
+# autologin-user lo define normal/9960-usuario.hook.chroot como fuente única.
 cat > /etc/lightdm/lightdm-gtk-greeter.conf << 'GREETER'
 [greeter]
 background=/usr/share/backgrounds/xfce/risingos/andes_icy_rising.png
@@ -28,7 +20,4 @@ user-background=false
 position=50%,center 50%,center
 panel-position=top
 GREETER
-
 chmod 644 /etc/lightdm/lightdm-gtk-greeter.conf
-chmod 644 /etc/lightdm/lightdm.conf
-
