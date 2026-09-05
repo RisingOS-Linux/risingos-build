@@ -13,5 +13,6 @@ autologin-user=usuario
 autologin-user-timeout=0
 user-session=xfce
 greeter-session=lightdm-gtk-greeter
+greeter-hide-users=false
 LIGHTDM
 
