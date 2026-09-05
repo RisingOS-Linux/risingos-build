@@ -6,8 +6,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rising-welcome 1.0.2\n"
-"Report-Msgid-Bugs-To: franciscogalaso@rising-arrow.com\n"
-"POT-Creation-Date: 2026-07-11 23:19+0000\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-05 15:18-0300\n"
 "PO-Revision-Date: 2026-07-11 23:19+0000\n"
 "Last-Translator: Francisco Galaso <franciscogalaso@rising-arrow.com>\n"
 "Language-Team: English\n"
@@ -16,50 +16,69 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/rising-welcome:111
+#: src/rising-welcome:119
 #, python-brace-format
 msgid "[ {name} ]"
 msgstr "[ {name} ]"
 
-#: src/rising-welcome:180
+#: src/rising-welcome:188
 msgid "Rendimiento puro. Libertad total. Powered by Debian"
 msgstr "Pure performance. Total freedom. Powered by Debian"
 
-#: src/rising-welcome:190
+#: src/rising-welcome:199
+msgid ""
+"Estás probando RisingOS en modo live. Este es un tour guiado por tu nuevo "
+"sistema, para mostrarte todo lo que vas a tener disponible una vez instalado."
+msgstr ""
+"You're trying out RisingOS in live mode. This is a guided tour of your new "
+"system, showing you everything you'll have available once installed."
+
+#: src/rising-welcome:205
 msgid ""
 "Gracias por instalar RisingOS. Esperamos que disfrutes esta experiencia y "
 "para eso este es un tour guiado por tu nuevo sistema, para mostrarte todo lo "
 "que tenés disponible."
 msgstr ""
-"Thanks for installing RisingOS. We hope you enjoy the experience, and "
-"that's what this is for: a guided tour of your new system, to show you "
-"everything you have available."
+"Thanks for installing RisingOS. We hope you enjoy the experience, and that's "
+"what this is for: a guided tour of your new system, to show you everything "
+"you have available."
 
-#: src/rising-welcome:220
+#: src/rising-welcome:235
 msgid "Conectado a internet"
 msgstr "Connected to the internet"
 
-#: src/rising-welcome:225
+#: src/rising-welcome:240
 msgid "Sin conexión — algunas funciones no estarán disponibles"
 msgstr "No connection — some features won't be available"
 
-#: src/rising-welcome:248 src/rising-welcome:320
+#: src/rising-welcome:264
+msgid "No disponible en modo live"
+msgstr "Not available in live mode"
+
+#: src/rising-welcome:266
+msgid ""
+"Una vez instalado RisingOS, aquí podrás mantener tu sistema actualizado."
+msgstr ""
+"Once RisingOS is installed, you'll be able to keep your system up to date "
+"here."
+
+#: src/rising-welcome:269 src/rising-welcome:346
 msgid "↓  Actualizar ahora"
 msgstr "↓  Update now"
 
-#: src/rising-welcome:250
+#: src/rising-welcome:271
 msgid "Sin conexión — no disponible"
 msgstr "No connection — not available"
 
-#: src/rising-welcome:252
+#: src/rising-welcome:273
 msgid "Conectate a internet para actualizar el sistema."
 msgstr "Connect to the internet to update the system."
 
-#: src/rising-welcome:256
+#: src/rising-welcome:277
 msgid "PASO 2 — SISTEMA"
 msgstr "STEP 2 — SYSTEM"
 
-#: src/rising-welcome:257
+#: src/rising-welcome:278
 msgid ""
 "Actualizaciones\n"
 "del sistema"
@@ -67,48 +86,56 @@ msgstr ""
 "System\n"
 "updates"
 
-#: src/rising-welcome:258
+#: src/rising-welcome:280
+msgid ""
+"En modo live no hace falta actualizar nada — vas a poder mantener tu sistema "
+"al día una vez que lo instales."
+msgstr ""
+"No need to update anything in live mode — you'll be able to keep your "
+"system up to date once you install it."
+
+#: src/rising-welcome:283
 msgid ""
 "Antes de empezar, asegurate de tener el sistema al día. Un sistema "
 "actualizado es más seguro, más estable y aprovecha mejor tu hardware."
 msgstr ""
-"Before you start, make sure your system is up to date. An updated system "
-"is more secure, more stable, and makes better use of your hardware."
+"Before you start, make sure your system is up to date. An updated system is "
+"more secure, more stable, and makes better use of your hardware."
 
-#: src/rising-welcome:302
+#: src/rising-welcome:328
 msgid "● Salida del sistema en tiempo real"
 msgstr "● Live system output"
 
-#: src/rising-welcome:388
+#: src/rising-welcome:414
 msgid "Actualizando..."
 msgstr "Updating..."
 
-#: src/rising-welcome:410
+#: src/rising-welcome:436
 #, python-brace-format
 msgid "Error: {error}\n"
 msgstr "Error: {error}\n"
 
-#: src/rising-welcome:418
+#: src/rising-welcome:444
 msgid "✓  Sistema actualizado"
 msgstr "✓  System updated"
 
-#: src/rising-welcome:421
+#: src/rising-welcome:447
 msgid "Tu sistema está al día."
 msgstr "Your system is up to date."
 
-#: src/rising-welcome:424
+#: src/rising-welcome:450
 msgid "Reintentar"
 msgstr "Retry"
 
-#: src/rising-welcome:426
+#: src/rising-welcome:452
 msgid "Ocurrió un error. Podés intentarlo más tarde."
 msgstr "An error occurred. You can try again later."
 
-#: src/rising-welcome:444
+#: src/rising-welcome:470
 msgid "Menú de aplicaciones"
 msgstr "Applications menu"
 
-#: src/rising-welcome:445
+#: src/rising-welcome:471
 msgid ""
 "Hacé clic en el logo de RisingOS abajo a la izquierda para buscar y abrir "
 "cualquier programa."
@@ -116,22 +143,22 @@ msgstr ""
 "Click the RisingOS logo at the bottom left to search for and open any "
 "program."
 
-#: src/rising-welcome:447
+#: src/rising-welcome:473
 msgid "Barra de tareas"
 msgstr "Taskbar"
 
-#: src/rising-welcome:448
+#: src/rising-welcome:474
 msgid ""
 "Cada ventana abierta aparece en la barra inferior. Hacé clic para cambiar "
 "entre ellas."
 msgstr ""
 "Every open window appears on the bottom bar. Click to switch between them."
 
-#: src/rising-welcome:450
+#: src/rising-welcome:476
 msgid "Área de notificaciones"
 msgstr "Notification area"
 
-#: src/rising-welcome:451
+#: src/rising-welcome:477
 msgid ""
 "En la esquina inferior derecha encontrás el reloj, el volumen, la red y las "
 "notificaciones del sistema."
@@ -139,15 +166,15 @@ msgstr ""
 "In the bottom right corner you'll find the clock, volume, network, and "
 "system notifications."
 
-#: src/rising-welcome:481
+#: src/rising-welcome:507
 msgid "Abrir gestor de archivos"
 msgstr "Open file manager"
 
-#: src/rising-welcome:486
+#: src/rising-welcome:512
 msgid "PASO 3 — TOUR"
 msgstr "STEP 3 — TOUR"
 
-#: src/rising-welcome:487
+#: src/rising-welcome:513
 msgid ""
 "Tu nuevo\n"
 "escritorio"
@@ -155,7 +182,7 @@ msgstr ""
 "Your new\n"
 "desktop"
 
-#: src/rising-welcome:489
+#: src/rising-welcome:515
 msgid ""
 "RisingOS usa el entorno XFCE: rápido, liviano y completamente configurable. "
 "En 30 segundos lo conocés."
@@ -163,26 +190,25 @@ msgstr ""
 "RisingOS uses the XFCE desktop environment: fast, lightweight, and fully "
 "configurable. You'll get the hang of it in 30 seconds."
 
-#: src/rising-welcome:514
+#: src/rising-welcome:540
 msgid "⚙  Abrir configuración del sistema"
 msgstr "⚙  Open system settings"
 
-#: src/rising-welcome:520
+#: src/rising-welcome:546
 msgid ""
 "💡  También podés hacer clic derecho sobre el escritorio para cambiar el "
 "fondo de pantalla."
-msgstr ""
-"💡  You can also right-click on the desktop to change the wallpaper."
+msgstr "💡  You can also right-click on the desktop to change the wallpaper."
 
-#: src/rising-welcome:529
+#: src/rising-welcome:555
 msgid "PASO 4 — PERSONALIZACIÓN"
 msgstr "STEP 4 — CUSTOMIZATION"
 
-#: src/rising-welcome:530
+#: src/rising-welcome:556
 msgid "Hacelo tuyo"
 msgstr "Make it yours"
 
-#: src/rising-welcome:532
+#: src/rising-welcome:558
 msgid ""
 "Cambiá el tema de escritorio, los íconos, los colores de las ventanas y los "
 "fondos de pantalla. Configurá el panel a tu gusto: podés ajustar su posición "
@@ -192,35 +218,35 @@ msgstr ""
 "panel your way: adjust its position and add or remove widgets. You're in "
 "full control."
 
-#: src/rising-welcome:555
+#: src/rising-welcome:581
 msgid "Navegador web Firefox"
 msgstr "Firefox web browser"
 
-#: src/rising-welcome:556
+#: src/rising-welcome:582
 msgid "Gestor de correo electrónico Thunderbird"
 msgstr "Thunderbird email client"
 
-#: src/rising-welcome:557
+#: src/rising-welcome:583
 msgid "Explorador de archivos Thunar"
 msgstr "Thunar file explorer"
 
-#: src/rising-welcome:558
+#: src/rising-welcome:584
 msgid "Suite de oficina LibreOffice completa"
 msgstr "Full LibreOffice office suite"
 
-#: src/rising-welcome:559
+#: src/rising-welcome:585
 msgid "Reproductor multimedia VLC"
 msgstr "VLC media player"
 
-#: src/rising-welcome:581
+#: src/rising-welcome:607
 msgid "Abrir Centro de Software"
 msgstr "Open Software Center"
 
-#: src/rising-welcome:586
+#: src/rising-welcome:612
 msgid "PASO 5 — APLICACIONES"
 msgstr "STEP 5 — APPLICATIONS"
 
-#: src/rising-welcome:587
+#: src/rising-welcome:613
 msgid ""
 "Ya tenés todo\n"
 "para trabajar"
@@ -228,11 +254,11 @@ msgstr ""
 "Everything you\n"
 "need is ready"
 
-#: src/rising-welcome:589
+#: src/rising-welcome:615
 msgid "RisingOS viene con software básico listo para usar:"
 msgstr "RisingOS comes with essential software ready to use:"
 
-#: src/rising-welcome:593
+#: src/rising-welcome:619
 msgid ""
 "Y si necesitás más, desde el Centro de Software podés instalar miles de "
 "programas."
@@ -240,35 +266,35 @@ msgstr ""
 "And if you need more, the Software Center lets you install thousands of "
 "programs."
 
-#: src/rising-welcome:619
+#: src/rising-welcome:645
 msgid "Requisitos mínimos recomendados:"
 msgstr "Recommended minimum requirements:"
 
-#: src/rising-welcome:625
+#: src/rising-welcome:651
 msgid "CPU    4 núcleos"
 msgstr "CPU    4 cores"
 
-#: src/rising-welcome:626
+#: src/rising-welcome:652
 msgid "RAM    8 GB"
 msgstr "RAM    8 GB"
 
-#: src/rising-welcome:627
+#: src/rising-welcome:653
 msgid "Disco  10 GB libres"
 msgstr "Disk   10 GB free"
 
-#: src/rising-welcome:628
+#: src/rising-welcome:654
 msgid "GPU    Opcional (NVIDIA mejora rendimiento)"
 msgstr "GPU    Optional (NVIDIA improves performance)"
 
-#: src/rising-welcome:638
+#: src/rising-welcome:664
 msgid "✦  Abrir Rising IA"
 msgstr "✦  Open Rising IA"
 
-#: src/rising-welcome:643
+#: src/rising-welcome:669
 msgid "PASO 6 — INTELIGENCIA ARTIFICIAL"
 msgstr "STEP 6 — ARTIFICIAL INTELLIGENCE"
 
-#: src/rising-welcome:644
+#: src/rising-welcome:670
 msgid ""
 "IA local,\n"
 "en tu máquina."
@@ -276,7 +302,7 @@ msgstr ""
 "Local AI,\n"
 "on your machine."
 
-#: src/rising-welcome:646
+#: src/rising-welcome:672
 msgid ""
 "Rising IA es tu asistente para instalar de forma automatizada tu propia IA "
 "local. Funciona sin internet, sin suscripciones y con privacidad total.\n"
@@ -285,31 +311,30 @@ msgid ""
 "modelo que mejor se adapte a tu equipo. Si detecta una GPU NVIDIA, te ofrece "
 "instalar el driver propietario para un mejor rendimiento."
 msgstr ""
-"Rising IA is your assistant for automatically installing your own local "
-"AI. It works without internet, without subscriptions, and with full "
-"privacy.\n"
+"Rising IA is your assistant for automatically installing your own local AI. "
+"It works without internet, without subscriptions, and with full privacy.\n"
 "\n"
 "Rising IA installs and configures Ollama + Open WebUI, letting you choose "
 "the model that best fits your hardware. If it detects an NVIDIA GPU, it "
 "offers to install the proprietary driver for better performance."
 
-#: src/rising-welcome:680
+#: src/rising-welcome:706
 msgid "Rendimiento puro. Libertad total."
 msgstr "Pure performance. Total freedom."
 
-#: src/rising-welcome:689
+#: src/rising-welcome:715
 msgid "Comunidad · Foro de soporte"
 msgstr "Community · Support forum"
 
-#: src/rising-welcome:698
+#: src/rising-welcome:724
 msgid "No mostrar esta guía al iniciar sesión"
 msgstr "Don't show this guide at login"
 
-#: src/rising-welcome:705
+#: src/rising-welcome:731
 msgid "💿  Instalar RisingOS"
 msgstr "💿  Install RisingOS"
 
-#: src/rising-welcome:713
+#: src/rising-welcome:739
 msgid ""
 "¡Todo listo\n"
 "para empezar!"
@@ -317,15 +342,15 @@ msgstr ""
 "All set,\n"
 "ready to go!"
 
-#: src/rising-welcome:715
+#: src/rising-welcome:741
 msgid ""
 "Tu sistema está configurado y listo para usar. Podés volver a esta guía "
 "cuando quieras desde el menú de inicio → Bienvenida a RisingOS."
 msgstr ""
-"Your system is configured and ready to use. You can come back to this "
-"guide anytime from the start menu → Welcome to RisingOS."
+"Your system is configured and ready to use. You can come back to this guide "
+"anytime from the start menu → Welcome to RisingOS."
 
-#: src/rising-welcome:742
+#: src/rising-welcome:768
 msgid ""
 "Hecho con ❤ en Salta, Argentina\n"
 "Rising Arrow · Francisco Galaso"
@@ -333,23 +358,23 @@ msgstr ""
 "Made with ❤ in Salta, Argentina\n"
 "Rising Arrow · Francisco Galaso"
 
-#: src/rising-welcome:773
+#: src/rising-welcome:799
 msgid "Bienvenido a RisingOS"
 msgstr "Welcome to RisingOS"
 
-#: src/rising-welcome:808
+#: src/rising-welcome:835
 msgid "← Anterior"
 msgstr "← Back"
 
-#: src/rising-welcome:832 src/rising-welcome:852
+#: src/rising-welcome:859 src/rising-welcome:879
 msgid "Siguiente →"
 msgstr "Next →"
 
-#: src/rising-welcome:852
+#: src/rising-welcome:879
 msgid "Cerrar  ✓"
 msgstr "Close  ✓"
 
-#: src/rising-welcome:853
+#: src/rising-welcome:880
 #, python-brace-format
 msgid "{current} / {total}"
 msgstr "{current} / {total}"

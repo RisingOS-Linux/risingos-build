@@ -1,3 +1,14 @@
+rising-welcome (1.1.3) trixie; urgency=medium
+
+  * Fix: mensaje de bienvenida (pantalla 1) y paso de actualización
+    (pantalla 2) asumían sistema instalado incluso en modo live.
+    Se extendió la detección is_live_session() (ya usada en la pantalla
+    final para el botón de instalar) a estas dos pantallas: texto de
+    bienvenida contextual, y botón de actualizar deshabilitado en modo
+    live con mensaje explicativo.
+
+ -- Francisco Galaso <franciscogalaso@rising-arrow.com>  Sat, 05 Sep 2026 15:11:34 -0300
+
 rising-welcome (1.1.2) trixie; urgency=medium
 
   * Fix: botón "Abrir configuración del sistema" (pantalla 4) estaba

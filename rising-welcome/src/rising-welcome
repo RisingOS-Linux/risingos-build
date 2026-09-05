@@ -177,7 +177,7 @@ def make_body(text):
 # ── Pantallas 1 y 2 ────────────────────────────────────────────
 
 class ScreenBienvenida(Gtk.Box):
-    def __init__(self, has_internet: bool):
+    def __init__(self, has_internet: bool, is_live: bool):
         super().__init__(orientation=Gtk.Orientation.HORIZONTAL, spacing=0)
         self.add_css_class("screen")
 
@@ -194,11 +194,18 @@ class ScreenBienvenida(Gtk.Box):
         logo_credit.add_css_class("logo-credit")
         logo_credit.set_xalign(0)
 
-        body_txt = make_body(
-            _("Gracias por instalar RisingOS. Esperamos que disfrutes esta experiencia "
-              "y para eso este es un tour guiado por tu nuevo sistema, para mostrarte "
-              "todo lo que tenés disponible.")
-        )
+        if is_live:
+            body_txt = make_body(
+                _("Estás probando RisingOS en modo live. Este es un tour guiado "
+                  "por tu nuevo sistema, para mostrarte todo lo que vas a tener "
+                  "disponible una vez instalado.")
+            )
+        else:
+            body_txt = make_body(
+                _("Gracias por instalar RisingOS. Esperamos que disfrutes esta experiencia "
+                  "y para eso este es un tour guiado por tu nuevo sistema, para mostrarte "
+                  "todo lo que tenés disponible.")
+            )
 
         self._conn = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
         self._conn.add_css_class("conn-indicator")
@@ -234,10 +241,11 @@ class ScreenBienvenida(Gtk.Box):
 
 
 class ScreenActualizaciones(Gtk.Box):
-    def __init__(self, has_internet: bool):
+    def __init__(self, has_internet: bool, is_live: bool):
         super().__init__(orientation=Gtk.Orientation.HORIZONTAL, spacing=0)
         self.add_css_class("screen")
         self._updating = False
+        self._is_live = is_live
 
         self._status = Gtk.Label()
         self._status.add_css_class("update-status")
@@ -252,7 +260,12 @@ class ScreenActualizaciones(Gtk.Box):
         self._progress.add_css_class("update-progress")
         self._progress.set_visible(False)
 
-        if has_internet:
+        if is_live:
+            self._btn.set_label(_("No disponible en modo live"))
+            self._btn.set_sensitive(False)
+            self._status.set_label(_("Una vez instalado RisingOS, aquí podrás mantener tu sistema actualizado."))
+            self._status.add_css_class("status-warn")
+        elif has_internet:
             self._btn.set_label(_("↓  Actualizar ahora"))
         else:
             self._btn.set_label(_("Sin conexión — no disponible"))
@@ -263,9 +276,14 @@ class ScreenActualizaciones(Gtk.Box):
         lp = left_panel(
             make_tag(_("PASO 2 — SISTEMA")),
             make_title(_("Actualizaciones\ndel sistema")),
-            make_body(_("Antes de empezar, asegurate de tener el sistema al día. "
-                      "Un sistema actualizado es más seguro, más estable "
-                      "y aprovecha mejor tu hardware.")),
+            make_body(
+                _("En modo live no hace falta actualizar nada — vas a poder mantener "
+                  "tu sistema al día una vez que lo instales.")
+                if is_live else
+                _("Antes de empezar, asegurate de tener el sistema al día. "
+                  "Un sistema actualizado es más seguro, más estable "
+                  "y aprovecha mejor tu hardware.")
+            ),
             self._btn,
             self._progress,
             self._status,
@@ -320,7 +338,7 @@ class ScreenActualizaciones(Gtk.Box):
         self.append(self._right_stack)
 
     def update_connectivity(self, has_internet: bool):
-        if not has_internet or self._updating:
+        if not has_internet or self._updating or self._is_live:
             return
         self._status.remove_css_class("status-warn")
         self._status.set_label("")
@@ -788,9 +806,10 @@ class WelcomeWindow(Gtk.ApplicationWindow):
         self.set_resizable(True)
 
         self._cur = 0
+        is_live = is_live_session()
         self._screens = [
-            ScreenBienvenida(has_internet),
-            ScreenActualizaciones(has_internet),
+            ScreenBienvenida(has_internet, is_live),
+            ScreenActualizaciones(has_internet, is_live),
             ScreenTour(),
             ScreenPersonalizacion(),
             ScreenAplicaciones(),
