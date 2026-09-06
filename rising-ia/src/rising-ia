@@ -441,9 +441,15 @@ class ViewInicio(Gtk.Box):
         panel_widgets.append(btn)
 
         lp = left_panel(*panel_widgets)
+        lp.set_valign(Gtk.Align.START)  # arranca arriba en vez de centrado al scrollear
+
+        lp_scroll = Gtk.ScrolledWindow()
+        lp_scroll.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+        lp_scroll.set_vexpand(True)
+        lp_scroll.set_child(lp)
 
         # Panel derecho: ilustración de componentes
-        self.append(lp)
+        self.append(lp_scroll)
         self.append(right_panel(self._build_stack_illustration()))
 
     def _get_selected_models(self) -> list:

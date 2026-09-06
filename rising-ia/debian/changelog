@@ -1,3 +1,15 @@
+rising-ia (1.2.2) trixie; urgency=medium
+
+  * Fix: la ventana principal (ViewInicio) no podía achicarse en vertical,
+    cortando el botón de instalar en pantallas de resolución chica. El
+    panel izquierdo apilaba todo su contenido (logo, requisitos, selector
+    de modelo, estado de componentes, botón) directo en un Gtk.Box sin
+    scroll, lo que fijaba una altura mínima mayor a la disponible en
+    pantallas pequeñas. Se envolvió el panel en un Gtk.ScrolledWindow
+    con scroll vertical automático.
+
+ -- Francisco Galaso <franciscogalaso@rising-arrow.com>  Sat, 05 Sep 2026 22:43:50 -0300
+
 rising-ia (1.2.1) trixie; urgency=medium
 
   * Eliminada dependencia dura de docker.io en debian/control. El propio
