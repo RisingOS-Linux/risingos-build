@@ -276,8 +276,8 @@ sequence:
   - grubcfg
   - bootloader
   - shellprocess@shellprocess-grub
-  - shellprocess@shellprocess-removecalamares
   - removeuser
+  - shellprocess@shellprocess-removecalamares
   - umount
 - show:
   - finished
@@ -317,9 +317,12 @@ cat > "${MODULES_DIR}/shellprocess-removecalamares.conf" << 'EOF'
 # Calamares esta pensado para correr desde el live, no debe quedar disponible
 # ni ejecutable en el sistema ya instalado (riesgo de uso accidental).
 dontChroot: false
+# apt en discos lentos (HDD 5400rpm) supera el default de 30 s: visto en campo
+timeout: 300
 script:
-  - "apt-get purge -y calamares >> /var/log/risingos-remove-calamares.log 2>&1"
-  - "apt-get autoremove -y --purge >> /var/log/risingos-remove-calamares.log 2>&1"
+  - "-rm -f /etc/sudoers.d/calamares"
+  - "-DEBIAN_FRONTEND=noninteractive apt-get purge -y calamares >> /var/log/risingos-remove-calamares.log 2>&1"
+  - "-DEBIAN_FRONTEND=noninteractive apt-get autoremove -y --purge >> /var/log/risingos-remove-calamares.log 2>&1"
 EOF
 echo "[9900] shellprocess-removecalamares.conf escrito"
 
