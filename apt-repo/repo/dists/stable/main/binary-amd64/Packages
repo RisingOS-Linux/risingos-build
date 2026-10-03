@@ -1,14 +1,14 @@
 Package: rising-ia
-Version: 1.2.1
+Version: 1.2.2
 Architecture: all
 Maintainer: Francisco Galaso <franciscogalaso@rising-arrow.com>
 Installed-Size: 74
 Depends: python3 (>= 3.11), python3-gi, gir1.2-gtk-4.0, polkitd, pkexec, curl
-Filename: pool/main/rising-ia_1.2.1_all.deb
-Size: 24664
-MD5sum: c05d96a04166e516afccf9f9bebc105a
-SHA1: f79165e8ee2fa64219e0328634c969e00470857a
-SHA256: b26692c413df29412c619aa0be92c736b04254c7a66c7d7b87b9b6c9b876a995
+Filename: pool/main/rising-ia_1.2.2_all.deb
+Size: 24992
+MD5sum: bb6efdf630f870c74dd4f17e584a734e
+SHA1: c47c643ebad9760b28a0b1420e2659ef0cd183df
+SHA256: b50adc96b63b75e2662301ce3fa4fe12483b79ecd59e7ae2c60427b8e7d7ec49
 Section: utils
 Priority: optional
 Homepage: https://github.com/RisingOS-Linux/rising-ia
@@ -42,16 +42,16 @@ Description: Notificador y actualizador de sistema para RisingOS
  ventana simple, con un solo click y confirmación de contraseña.
 
 Package: rising-welcome
-Version: 1.1.0
+Version: 1.1.3
 Architecture: all
 Maintainer: Francisco Galaso <franciscogalaso@rising-arrow.com>
-Installed-Size: 3680
+Installed-Size: 3683
 Depends: python3 (>= 3.11), python3-gi, gir1.2-gtk-4.0, polkitd, pkexec
-Filename: pool/main/rising-welcome_1.1.0_all.deb
-Size: 3666524
-MD5sum: fdaf157155cc0dff1dafd06788a123a2
-SHA1: 4b8ce31d1d80e1d5d3d610ffbcc0e703c1b1116e
-SHA256: 8961a6f650ed27e1ffcd3416fa4615ecfcbb7668f114836d7f633a02ad38be33
+Filename: pool/main/rising-welcome_1.1.3_all.deb
+Size: 3667504
+MD5sum: 6bd0de2c0496eb6a625f362b225e5b6d
+SHA1: 85115fde2540c47388e564738e92b62320e6c2ef
+SHA256: 34208ca792782d1a46961ec6dec9d0833658680607a1c2443c10cc3876a46b4b
 Section: utils
 Priority: optional
 Homepage: https://github.com/RisingOS-Linux/rising-welcome
